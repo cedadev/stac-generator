@@ -16,8 +16,10 @@ jobs:
       - name: Install requirements
         run: |
           pip install -r requirements.txt
-#      - name: Build docs
-#        run:
+      - name: Build docs
+        run: make html
+        working-directory: ./docs_src
+
 #      - name: Push changes
 #        uses: ad-m/github-push-action@v0.6.0
 #        with:
