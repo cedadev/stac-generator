@@ -4,7 +4,7 @@ Babel==2.9.1
 certifi==2021.5.30
 chardet==4.0.0
 git+https://github.com/cedadev/directory-tree#egg=directory-tree==0.1.0
-docutils==0.17.1
+docutils==0.17
 elasticsearch==7.13.1
 idna==2.10
 imagesize==1.2.0
