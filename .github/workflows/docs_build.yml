@@ -1,0 +1,25 @@
+name: Build docs and push
+on: [push]
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.8
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+#      - name: Build docs
+#        run:
+#      - name: Push changes
+#        uses: ad-m/github-push-action@v0.6.0
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          branch: ${{ github.ref }}
