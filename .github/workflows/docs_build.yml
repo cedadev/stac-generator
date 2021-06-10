@@ -6,9 +6,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-        with:
-          persist-credentials: false
-          fetch-depth: 0
       - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
@@ -16,12 +13,12 @@ jobs:
       - name: Install requirements
         run: |
           pip install -r requirements.txt
+          pip install -e .
       - name: Build docs
         run: make html
         working-directory: ./docs_src
-
-#      - name: Push changes
-#        uses: ad-m/github-push-action@v0.6.0
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          branch: ${{ github.ref }}
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.11.0
+        with:
+          commit_message: Build docs
+          repository: docs
