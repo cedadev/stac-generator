@@ -15,6 +15,13 @@ Welcome to asset_scanner's documentation!
    output_plugins
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: API:
+
+   extractor
+
+
 
 Indices and tables
 ==================

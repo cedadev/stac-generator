@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Usage &mdash; asset_scanner  documentation</title>
@@ -94,6 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="input_plugins.html">Input Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_plugins.html">Output Plugins</a></li>
 </ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extractor.html">Extractor API</a></li>
+</ul>
 
             
           
@@ -160,30 +163,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="usage">
+  <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>There is a console script defined by this package which can be used to run the
 extractors <code class="docutils literal notranslate"><span class="pre">asset_extractor</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/venv/bin/asset_scanner&quot;, line 11, in &lt;module&gt;
-    load_entry_point(&#39;asset-scanner&#39;, &#39;console_scripts&#39;, &#39;asset_scanner&#39;)()
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/venv/lib/python3.7/site-packages/pkg_resources/__init__.py&quot;, line 480, in load_entry_point
-    return get_distribution(dist).load_entry_point(group, name)
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/venv/lib/python3.7/site-packages/pkg_resources/__init__.py&quot;, line 2693, in load_entry_point
-    return ep.load()
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/venv/lib/python3.7/site-packages/pkg_resources/__init__.py&quot;, line 2324, in load
-    return self.resolve()
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/venv/lib/python3.7/site-packages/pkg_resources/__init__.py&quot;, line 2330, in resolve
-    module = __import__(self.module_name, fromlist=[&#39;__name__&#39;], level=0)
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/asset_scanner/scripts/asset_scanner.py&quot;, line 17, in &lt;module&gt;
-    from asset_scanner.core.handler_picker import HandlerPicker
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/asset_scanner/core/__init__.py&quot;, line 11, in &lt;module&gt;
-    from .extractor import BaseExtractor
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/asset_scanner/core/extractor.py&quot;, line 14, in &lt;module&gt;
-    from .item_describer import ItemDescriptions
-  File &quot;/Users/vdn73631/Documents/dev/asset-scanner/asset_scanner/core/item_describer.py&quot;, line 15, in &lt;module&gt;
-    from directory_tree import DatasetNode, DirectoryNode
-ModuleNotFoundError: No module named &#39;directory_tree&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: asset_scanner [-h] conf
+
+Run the asset scanner as configured
+
+positional arguments:
+  conf        Path to a yaml configuration file
+
+optional arguments:
+  -h, --help  show this help message and exit
 </pre></div>
 </div>
 <p>The configuration file feeds this top level scrip and configures the input/output
@@ -207,7 +199,7 @@ an entry point. The configuration value take precedence over entry points.</p>
 <p class="admonition-title">Warning</p>
 <p>Only the first extractor will be loaded from entry points.</p>
 </div>
-</section>
+</div>
 
 
            </div>
