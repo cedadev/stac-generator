@@ -1,5 +1,9 @@
 # encoding: utf-8
 """
+Extractor API
+-------------
+
+This module provides the base class for all derived extractors.
 
 """
 __author__ = 'Richard Smith'
@@ -19,6 +23,12 @@ from typing import List
 class BaseExtractor(ABC):
     """
     Base class to define an interface for other extractor classes
+
+    Attributes:
+        PROCESSOR_ENTRY_POINT:
+            Defines the entry point to look for in the setup.py for the downstream
+            package. This is used by the ``asset_scanner`` command to load the extractor
+            if the extractor is not specifically defined in the the configuration file.
     """
     PROCESSOR_ENTRY_POINT = None
 

@@ -16,12 +16,12 @@ jobs:
       - name: Install requirements
         run: |
           pip install -r requirements.txt
+          pip install -e .
       - name: Build docs
         run: make html
         working-directory: ./docs_src
-
-#      - name: Push changes
-#        uses: ad-m/github-push-action@v0.6.0
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          branch: ${{ github.ref }}
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.11.0
+        with:
+          commit_message: Build docs
+          repository: docs
