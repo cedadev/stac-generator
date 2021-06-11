@@ -11,8 +11,8 @@ scanners which operate at a file level. These extractors run on each file and re
 content based on the configuration file.
 
 Current implementations of the Extractor are:
-   Asset Scanner
-   Facet Scanner
+   - `Asset Extractor <https://github.com/cedadev/asset-extractor>`_
+   - `Facet Extractor <https://github.com/cedadev/item-generator>`_
 
 .. toctree::
    :maxdepth: 2
