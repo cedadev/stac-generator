@@ -10,8 +10,11 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 import pkg_resources
 from .processor import BaseProcessor
+import logging
 
 from typing import Optional
+
+LOGGER = logging.getLogger(__name__)
 
 
 class HandlerPicker:
