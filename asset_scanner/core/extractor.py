@@ -51,8 +51,6 @@ class BaseExtractor(ABC):
         pass
 
     def output(self, data, namespace=None):
-        print(self.output_plugins)
-        print([plugin.namespace for plugin in self.output_plugins])
         for backend in self.output_plugins:
             if not backend.namespace or backend.namespace == namespace :
                 backend.export(data)

@@ -8,6 +8,25 @@ using the Elasticsearch API
 
 **Backend name:** ``elasticsearch``
 
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - ``connection_kwargs``
+      - ``dict``
+      - ``REQUIRED`` Connection kwargs passed to the `elasticsearch client  <https://elasticsearch-py.readthedocs.io/en/latest/api.html#elasticsearch>`_
+    * - ``index.name``
+      - ``str``
+      - ``REQUIRED`` The index to output the content.
+    * - ``index.mapping``
+      - ``str``
+      - Path to a yaml file which defines the mapping for the index
+    * - ``namespace``
+      - ``str``
+      - Can be used by downstream processors to separate outputs to different indices or clusters
+
 Example Configuration:
     .. code-block:: yaml
 
@@ -15,7 +34,9 @@ Example Configuration:
             - name: elasticsearch
               connection_kwargs:
                 hosts: ['host1','host2']
-              index: 'assets-2021-06-02'
+              index:
+                name: 'assets-2021-06-02'
+              namespace: assets
 """
 __author__ = 'Richard Smith'
 __date__ = '01 Jun 2021'

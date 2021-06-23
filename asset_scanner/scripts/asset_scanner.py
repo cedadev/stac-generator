@@ -9,12 +9,10 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 import argparse
-import os
 import yaml
 from pydoc import locate
 import pkg_resources
 
-from asset_scanner.core.handler_picker import HandlerPicker
 from asset_scanner.core import BaseExtractor
 from asset_scanner.core.utils import load_plugins
 from asset_scanner.core.exceptions import NoPluginsError

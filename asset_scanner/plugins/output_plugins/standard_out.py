@@ -8,6 +8,16 @@ Useful for testing and debugging.
 
 **Backend name:** ``standard_out``
 
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - ``namespace``
+      - ``str``
+      - Can be used by downstream processors to separate outputs.
+
 Example configuration:
     .. code-block:: yaml
 

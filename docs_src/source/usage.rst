@@ -4,7 +4,18 @@ Usage
 There is a console script defined by this package which can be used to run the
 extractors ``asset_extractor``.
 
-.. program-output:: asset_scanner -h
+.. code-block:: console
+
+    usage: asset_scanner [-h] conf
+
+    Run the asset scanner as configured
+
+    positional arguments:
+      conf        Path to a yaml configuration file
+
+    optional arguments:
+      -h, --help  show this help message and exit
+
 
 The configuration file feeds this top level scrip and configures the input/output
 plugins as well as the extractor class. You will need to see you extractor documentation
