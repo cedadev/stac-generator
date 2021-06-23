@@ -14,11 +14,14 @@ Current implementations of the Extractor are:
    - `Asset Extractor <https://github.com/cedadev/asset-extractor>`_
    - `Facet Extractor <https://github.com/cedadev/item-generator>`_
 
+Both of these implementation make use of :ref:`item description <item-descriptions>` files
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    usage
+   item_descriptions
    input_plugins
    output_plugins
 
