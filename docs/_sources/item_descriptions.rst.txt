@@ -8,7 +8,7 @@ These documents describe how to process the files within a dataset and extract f
 These documents are aggregated along the branch with the information lower in the tree taking
 precendence.
 Having multiple files at different points in the tree allow for a narrowing of information.
-i.e. A default set at a higher level, if not overwritten will exist at all points down the tree.
+i.e. A default set at a higher level, if not overwritten, will exist at all points down the tree.
 
 Example Description File
 ========================
