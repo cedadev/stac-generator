@@ -12,6 +12,7 @@ setup(
     long_description_content_type='text/markdown',
     license='BSD - See asset_extractor/LICENSE file for details',
     packages=find_packages(),
+    test_suite='tests',
     package_data={
         'asset_scanner': [
             'LICENSE'
@@ -34,6 +35,9 @@ setup(
         ]
     },
     python_requires='>=3.5',
+    tests_require=[
+        'pytest'
+    ],
     entry_points={
         'console_scripts': [
             'asset_scanner = asset_scanner.scripts.asset_scanner:main'

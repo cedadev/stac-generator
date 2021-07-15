@@ -20,7 +20,7 @@ import hashlib
 import collections
 
 # Typing imports
-from typing import List
+from typing import List, Any, Dict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,3 +103,30 @@ def dict_merge(*args, add_keys=True) -> dict:
 
     return rtn_dct
 
+
+def dot2dict(key: str, val: Any) -> Dict[str, Any]:
+    """
+    Convert a dot separated string into
+    a dictionary construct. Can work with
+    single layer or multi-layer strings.
+
+    Recursively creates from bottom up.
+
+    :param key: Key value. Can be single layer. e.g. ``properties`` or
+                multi-level e.g. ``properties.start_time``
+    :param val: The value associated with the key
+
+    :return: dict
+    """
+    if not key:
+        return val
+
+    # Split on .
+    parts = key.split('.')
+    tail = parts.pop()
+
+    # Create the new key
+    key = '.'.join(parts)
+
+    val = {tail: val}
+    return dot2dict(key, val)
