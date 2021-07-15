@@ -9,15 +9,14 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 # Package imports
-from .utils import dict_merge
+from asset_scanner.core.utils import dict_merge
 
 # 3rd Party Imports
-from directory_tree import DatasetNode, DirectoryNode
+from directory_tree import DatasetNode
 
 # Python imports
 from pathlib import Path
 import yaml
-import json
 from functools import lru_cache
 
 # Typing imports
