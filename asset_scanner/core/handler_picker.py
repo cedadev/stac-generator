@@ -12,13 +12,26 @@ import pkg_resources
 from .processor import BaseProcessor
 import logging
 
-from typing import Optional
+from typing import Optional, Union, List, Dict
 
 LOGGER = logging.getLogger(__name__)
 
 
 class HandlerPicker:
-    def __init__(self, entry_point_key: str):
+    """Loads the entrypoints
+
+    Attributes:
+        handlers - Dictionary of entry points. The dict is structured:
+
+        .. code-block::
+
+            {
+                <entry-point-name>: <entry-point>,
+                ...
+            }
+    """
+
+    def __init__(self, entry_point_key: Union[List,str]):
         """
         Entry points to load from in the setup.py
 
@@ -29,12 +42,21 @@ class HandlerPicker:
         if not entry_point_key:
             raise ValueError('No entry point specified. No handlers will be loaded')
 
-        for entry_point in pkg_resources.iter_entry_points(entry_point_key):
-            # print(vars(entry_point))
-            # e_point = entry_point.load()
-            self.handlers[entry_point.name] = entry_point
+        self.handlers = self._get_entrypoints(entry_point_key)
 
-            # Only load entry points which inherit from the base class
+    @staticmethod
+    def _get_entrypoints(group) -> Dict:
+        """Get entrypoints for given group
+
+        :param group: The named entry group
+        :return: dict of entrypoints
+        """
+        entry_points = {}
+
+        for entry_point in pkg_resources.iter_entry_points(group):
+            entry_points[entry_point.name] = entry_point
+
+        return entry_points
 
     def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
         """

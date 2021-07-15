@@ -40,8 +40,8 @@ class BaseExtractor(ABC):
 
         self.load_processors()
 
-    def load_processors(self) -> None:
-        self.processors = HandlerPicker(self.PROCESSOR_ENTRY_POINT)
+    def load_processors(self, entrypoint: str = None) -> None:
+        self.processors = HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
 
     def load_output_plugins(self) -> List:
         return load_plugins(self.conf, 'asset_scanner.output_plugins', 'outputs')
@@ -52,5 +52,5 @@ class BaseExtractor(ABC):
 
     def output(self, data, namespace=None):
         for backend in self.output_plugins:
-            if not backend.namespace or backend.namespace == namespace :
+            if not backend.namespace or backend.namespace == namespace:
                 backend.export(data)
