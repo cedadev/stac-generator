@@ -34,14 +34,14 @@ class BaseExtractor(ABC):
 
     def __init__(self, conf: dict):
         self.conf = conf
-        self.processors = None
+        self.processors = self.load_processors()
         self.output_plugins = self.load_output_plugins()
         self.item_descriptions = ItemDescriptions(conf['item_descriptions']['root_directory'])
 
         self.load_processors()
 
-    def load_processors(self, entrypoint: str = None) -> None:
-        self.processors = HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
+    def load_processors(self, entrypoint: str = None) -> HandlerPicker:
+        return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
 
     def load_output_plugins(self) -> List:
         return load_plugins(self.conf, 'asset_scanner.output_plugins', 'outputs')
