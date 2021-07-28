@@ -20,7 +20,7 @@ import hashlib
 import collections
 
 # Typing imports
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -130,3 +130,22 @@ def dot2dict(key: str, val: Any) -> Dict[str, Any]:
 
     val = {tail: val}
     return dot2dict(key, val)
+
+
+def nested_get(key_list: List, input_dict: Dict) -> Optional[Any]:
+    """
+    Takes an iterable of keys and returns none if not found or the value
+    :param key_list: List of keys to try against the dict
+    :param input_dict: Dict to extract key from
+
+    :return: Value found at the key location or None
+    """
+
+    last_key = key_list[-1]
+    dict_nest = input_dict
+
+    for key in key_list:
+        if key != last_key:
+            dict_nest = dict_nest.get(key, {})
+        else:
+            return dict_nest.get(key)
