@@ -46,7 +46,9 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 from .base import OutputBackend
 from elasticsearch import Elasticsearch
-from asset_scanner.core.utils import load_yaml
+from asset_scanner.core.utils import load_yaml, Coordinates
+
+from typing import Dict
 
 
 class ElasticsearchOutputBackend(OutputBackend):
@@ -55,6 +57,10 @@ class ElasticsearchOutputBackend(OutputBackend):
     documents to elasticsearch.
 
     """
+
+    CLEAN_METHODS = [
+            '_format_bbox'
+        ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -71,7 +77,45 @@ class ElasticsearchOutputBackend(OutputBackend):
                 mapping = load_yaml(index_conf.get('mapping'))
                 self.es.indices.create(self.index_name, body=mapping)
 
+    @staticmethod
+    def _format_bbox(data: Dict) -> Dict:
+        """
+        Convert WGS84 coordinates into GeoJSON and
+        format for Elasticsearch. Replaces the bbox key.
+
+        :param data: Input data dictionary
+        """
+        body = data['body']
+
+        if body.get('bbox'):
+            bbox = body.pop('bbox')
+
+            body['spatial'] = {
+                    "bbox": {
+                        "type": "envelope",
+                        "coordinates": Coordinates.from_wgs84(
+                            bbox).to_geojson()
+                    }
+                }
+
+        return data
+
+    def clean(self, data: Dict) -> Dict:
+        """
+        Condition the input dictionary for elasticsearch
+        :param data: Input dictionary
+        :returns: Dictionary produced as a result of the clean methods
+        """
+
+        for method in self.CLEAN_METHODS:
+            m = getattr(self, method)
+            data = m(data)
+
+        return data
+
     def export(self, data, **kwargs):
+
+        data = self.clean(data)
 
         index_kwargs = {
             'index': self.index_name,
