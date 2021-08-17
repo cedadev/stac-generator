@@ -1,4 +1,4 @@
-name: Build docs and push
+name: Docs
 on: [push]
 jobs:
   docs:
