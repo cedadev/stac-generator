@@ -118,7 +118,10 @@ Extraction Methods
 ~~~~~~~~~~~~~~~~~~~
 
 A list of functions to run, and their arguments. A full list of functions and their
-expected parameters can be found here.
+expected parameters can be found `here <https://cedadev.github.io/item-generator/processors.html>`_.
+
+Extraction methods can use the ``description`` key to allow you to write notes to your future self
+about what the extractor is for. This is not used in running the code.
 
 Aggregation Facets
 ~~~~~~~~~~~~~~~~~~
