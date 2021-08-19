@@ -30,6 +30,7 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 from .base import BaseInputPlugin
 
 import os
+from datetime import datetime
 
 from typing import TYPE_CHECKING
 
@@ -47,11 +48,11 @@ class FileSystemInputPlugin(BaseInputPlugin):
 
     def run(self, extractor: 'BaseExtractor' ):
         total_files = 0
-
+        start = datetime.now()
         for root, _, files in os.walk(self.root_path):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
                 extractor.process_file(filename, 'posix')
                 total_files += 1
-
-        print(f'Processed {total_files} files from {self.root_path}')
+        end = datetime.now()
+        print(f'Processed {total_files} files from {self.root_path} in {end-start}')
