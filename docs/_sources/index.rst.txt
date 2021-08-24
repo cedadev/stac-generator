@@ -67,7 +67,7 @@ Base configuration options:
    * - ``logging``
      - Kwargs passed to the `logging.basicConfig <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_ setup method
 
-The extractor can be specified in the configration file or can be loaded from
+The extractor can be specified in the configuration file or can be loaded from
 an entry point. The configuration value take precedence over entry points.
 
 .. warning::
