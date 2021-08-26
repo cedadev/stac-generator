@@ -59,7 +59,8 @@ class ElasticsearchOutputBackend(OutputBackend):
     """
 
     CLEAN_METHODS = [
-            '_format_bbox'
+            '_format_bbox',
+            '_format_temporal_extent'
         ]
 
     def __init__(self, **kwargs):
@@ -97,6 +98,27 @@ class ElasticsearchOutputBackend(OutputBackend):
                             bbox).to_geojson()
                     }
                 }
+
+        return data
+
+    @staticmethod
+    def _format_temporal_extent(data: Dict) -> Dict:
+        """
+        Convert `extent object<https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#extent-object>_` for Elasticsearch.
+
+        :param data: Input data dictionary
+        """
+        body = data['body']
+
+        if body.get('extent', {}).get('temporal'):
+            temporal_extent = body['extent'].pop('temporal')
+
+            if temporal_extent[0][0]:
+                body['extent']['temporal'] = {'gte': temporal_extent[0][0]}
+            if temporal_extent[0][1]:
+                temporal = body['extent'].get('temporal',{})
+                temporal['lte'] = temporal_extent[0][1]
+                body['extent']['temporal'] = temporal
 
         return data
 

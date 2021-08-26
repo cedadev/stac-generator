@@ -18,6 +18,7 @@ import yaml
 import logging
 import hashlib
 import collections
+from pathlib import Path
 
 # Typing imports
 from typing import List, Any, Dict, Optional, Union
@@ -215,3 +216,14 @@ def nested_get(key_list: List, input_dict: Dict) -> Optional[Any]:
             dict_nest = dict_nest.get(key, {})
         else:
             return dict_nest.get(key)
+
+
+def load_description_files(path: str) -> List[str]:
+    """
+    Load the yaml description files recursively under the root path
+
+    :param path: Root path for the description files
+    """
+
+    exts = ['.yml', '.yaml']
+    return [p for p in Path(path).rglob('*') if p.suffix in exts]

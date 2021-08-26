@@ -9,18 +9,21 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 # Package imports
-from asset_scanner.core.utils import dict_merge
+from asset_scanner.core.utils import dict_merge, load_description_files
 
 # 3rd Party Imports
 from directory_tree import DatasetNode
 
 # Python imports
-from pathlib import Path
 import yaml
 from functools import lru_cache
+import logging
 
 # Typing imports
 from typing import List, Optional
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ItemDescription:
@@ -66,6 +69,10 @@ class ItemDescription:
     def categories(self):
         return self._description.get('categories', [])
 
+    @property
+    def collection(self):
+        return self._description.get('collection', {})
+
 
 class ItemDescriptions:
 
@@ -87,8 +94,11 @@ class ItemDescriptions:
         :param root_path: Path at the top of the yaml file tree
         """
 
-        exts = ['.yml', '.yaml']
-        files = [p for p in Path(root_path).rglob('*') if p.suffix in exts]
+        files = load_description_files(root_path)
+
+        if not files:
+            LOGGER.error("No description files found. Check the path in your configuration. Exiting...")
+            exit()
 
         for file in files:
             with open(file) as reader:
