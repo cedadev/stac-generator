@@ -60,6 +60,8 @@ Base configuration options:
      - Description
    * - ``extractor``
      - The python import path to the extractor class. If not specified, it picks up the class installed with the entry point ``asset_scanner.extractors``
+   * - ``item_descriptions``
+     - ``REQUIRED`` Path to the root directory for the item descriptions. Used to describe workflows.
    * - ``inputs``
      - ``REQUIRED`` Must have at least one `input plugin <https://cedadev.github.io/asset-scanner/input_plugins.html>`_.
    * - ``outputs``
@@ -79,6 +81,8 @@ Sample configuration
    .. code-block:: yaml
 
       extractor: item_generator.FacetExtractor
+      item_descriptions:
+         root_directory: /home/users/rsmith013/search_futures/item-descriptions/descriptions
       inputs:
         - name: file_system
           path: /badc/faam/data/2005/b069-jan-05

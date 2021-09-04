@@ -220,13 +220,16 @@ to get additional configuration options.</p>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extractor</span></code></p></td>
 <td><p>The python import path to the extractor class. If not specified, it picks up the class installed with the entry point <code class="docutils literal notranslate"><span class="pre">asset_scanner.extractors</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inputs</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">item_descriptions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Path to the root directory for the item descriptions. Used to describe workflows.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">inputs</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Must have at least one <a class="reference external" href="https://cedadev.github.io/asset-scanner/input_plugins.html">input plugin</a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outputs</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outputs</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Must have at least one <a class="reference external" href="https://cedadev.github.io/asset-scanner/output_plugins.html">output plugin</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logging</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">logging</span></code></p></td>
 <td><p>Kwargs passed to the <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.basicConfig">logging.basicConfig</a> setup method</p></td>
 </tr>
 </tbody>
@@ -242,6 +245,8 @@ an entry point. The configuration value take precedence over entry points.</p>
 <h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">extractor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">item_generator.FacetExtractor</span>
+<span class="nt">item_descriptions</span><span class="p">:</span>
+   <span class="nt">root_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/users/rsmith013/search_futures/item-descriptions/descriptions</span>
 <span class="nt">inputs</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file_system</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/badc/faam/data/2005/b069-jan-05</span>
