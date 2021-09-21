@@ -1,13 +1,35 @@
 # encoding: utf-8
 """
 Object Store Input
------------------
+------------------
 
-Takes a enpoint url and optionally a bucket prefix and delimiter and will
+Takes an endpoint url and optionally a bucket prefix and delimiter and will
 scan the items at these points in the object store, submitting each to the
 asset extractor
 
 **Plugin name:** ``object_store``
+
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - ``session_kwargs``
+      - ``dict``
+      - ``REQUIRED`` Dictionary containing the S3 access and secret keys
+    * - ``endpoint_url``
+      - ``string``
+      - ``REQUIRED`` URL for S3 endpoint
+    * - ``bucket``
+      - ``string``
+      - Bucket to be scanned. If ``None`` all buckets in endpoint will be scanned.
+    * - ``prefix``
+      - ``string``
+      - Only items with prefix will be scanned
+    * - ``delimiter``
+      - ``string``
+      - Group items after delimiter into one object
 
 Example Configuration:
     .. code-block:: yaml
@@ -22,18 +44,6 @@ Example Configuration:
                 bucket: my_bucket
                 prefix: directory_or_file
                 delimiter: .zarr/
-
-Config Arguments:
-    session_kwargs
-        ``REQUIRED`` dictionary containing the aws access and secret keys
-    endpoint_url
-        ``REQUIRED`` url for aws endpoint
-    bucket
-        bucket to be scanned if none all buckets in endpoint will be scanned
-    prefix
-        only items with prefix will be scanned
-    delimiter
-        group items after delimiter into one object
 
 """
 __author__ = 'Rhys Evans'

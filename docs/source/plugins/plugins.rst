@@ -19,6 +19,8 @@ Entrypoint: ``asset_scanner.input_plugins``
      - Description
    * - :ref:`File System Input <plugins/input_plugins:file system input>`
      - Works with POSIX style file systems and performs a python `os.walk <https://docs.python.org/3/library/os.html#os.walk>`_.
+   * - :ref:`Object Store Input <plugins/input_plugins:object store input>`
+     - Works with S3 endpoints.
 
 .. toctree::
    :maxdepth: 3
