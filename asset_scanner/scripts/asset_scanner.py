@@ -59,7 +59,7 @@ def load_extractor(conf: dict) -> BaseExtractor:
 
     extractor = None
 
-    if conf['extractor']:
+    if conf.get('extractor'):
         extractor = locate(conf['extractor'])
 
     if not extractor:
