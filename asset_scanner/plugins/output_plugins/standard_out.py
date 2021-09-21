@@ -6,7 +6,7 @@ Standard Out
 An output backend which outputs the generated metadata to standard out.
 Useful for testing and debugging.
 
-**Backend name:** ``standard_out``
+**Plugin name:** ``standard_out``
 
 .. list-table::
     :header-rows: 1

@@ -1,6 +1,7 @@
 # encoding: utf-8
 """
-
+Item Description
+================
 """
 __author__ = 'Richard Smith'
 __date__ = '27 May 2021'
@@ -9,19 +10,21 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 # Package imports
-from .utils import dict_merge
+from asset_scanner.core.utils import dict_merge, load_description_files
 
 # 3rd Party Imports
-from directory_tree import DatasetNode, DirectoryNode
+from directory_tree import DatasetNode
 
 # Python imports
-from pathlib import Path
 import yaml
-import json
 from functools import lru_cache
+import logging
 
 # Typing imports
 from typing import List, Optional
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ItemDescription:
@@ -37,38 +40,56 @@ class ItemDescription:
 
     @property
     def defaults(self) -> dict:
+        """Returns defaults"""
         return self._description.get('defaults', {})
 
     @property
     def overrides(self) -> Optional[dict]:
+        """Returns overrides"""
         return self._description.get('overrides')
 
     @property
     def mappings(self) -> Optional[dict]:
+        """Returns mappings"""
         return self._description.get('mappings')
 
     @property
     def allowed_facets(self) -> List:
+        """Returns allowed facets"""
         return self.facet_extract_conf.get('allowed_facets', [])
 
     @property
     def extraction_methods(self) -> List[dict]:
+        """Returns extraction methods"""
         return self.facet_extract_conf.get('extraction_methods', [])
 
     @property
     def aggregation_facets(self) -> List:
+        """Returns aggregation facets
+        """
         return self.facet_extract_conf.get('aggregation_facets', [])
 
     @property
     def facet_extract_conf(self) -> dict:
+        """Returns facets key"""
         return self._description.get('facets', {})
 
     @property
     def categories(self):
+        """Returns categories"""
         return self._description.get('categories', [])
+
+    @property
+    def collection(self):
+        """Returns collection"""
+        return self._description.get('collection', {})
 
 
 class ItemDescriptions:
+    """
+    Holds references to all the description files and handles loading, merging
+    and returning an :py:obj:`ItemDescription`
+    """
 
     def __init__(self, root_path: str):
         """
@@ -88,8 +109,11 @@ class ItemDescriptions:
         :param root_path: Path at the top of the yaml file tree
         """
 
-        exts = ['.yml', '.yaml']
-        files = [p for p in Path(root_path).rglob('*') if p.suffix in exts]
+        files = load_description_files(root_path)
+
+        if not files:
+            LOGGER.error("No description files found. Check the path in your configuration. Exiting...")
+            exit()
 
         for file in files:
             with open(file) as reader:
@@ -115,8 +139,7 @@ class ItemDescriptions:
         Dict values are overridden by more specific files and
         arrays are appended to, with duplicates ignored.
 
-        :param filepath:
-        :return:
+        :param filepath: Path for which to retrieve the description
         """
         nodes = self.tree.search_all(filepath)
         description_files = [node.description_file for node in nodes]
@@ -130,7 +153,7 @@ class ItemDescriptions:
         """
 
         :param args: each arg is a filepath to a description file
-        :return:
+        :return: Dictionary containing the merged properties of all the matching nodes
         """
         base_dict = {}
         for file in args:

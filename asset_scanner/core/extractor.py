@@ -1,7 +1,7 @@
 # encoding: utf-8
 """
-Extractor API
--------------
+Base Extractor
+--------------
 
 This module provides the base class for all derived extractors.
 
@@ -25,6 +25,7 @@ class BaseExtractor(ABC):
     Base class to define an interface for other extractor classes
 
     Attributes:
+
         PROCESSOR_ENTRY_POINT:
             Defines the entry point to look for in the setup.py for the downstream
             package. This is used by the ``asset_scanner`` command to load the extractor
@@ -34,14 +35,14 @@ class BaseExtractor(ABC):
 
     def __init__(self, conf: dict):
         self.conf = conf
-        self.processors = None
+        self.processors = self.load_processors()
         self.output_plugins = self.load_output_plugins()
         self.item_descriptions = ItemDescriptions(conf['item_descriptions']['root_directory']) if 'item_descriptions' in conf else None
 
         self.load_processors()
 
-    def load_processors(self) -> None:
-        self.processors = HandlerPicker(self.PROCESSOR_ENTRY_POINT)
+    def load_processors(self, entrypoint: str = None) -> HandlerPicker:
+        return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
 
     def load_output_plugins(self) -> List:
         return load_plugins(self.conf, 'asset_scanner.output_plugins', 'outputs')
@@ -50,7 +51,7 @@ class BaseExtractor(ABC):
     def process_file(self, filepath: str, source_media: str = 'POSIX', **kwargs) -> None:
         pass
 
-    def output(self, data, namespace=None):
+    def output(self, filepath: str, source_media: str, data: dict, namespace: str = None) -> None:
         for backend in self.output_plugins:
-            if not backend.namespace or backend.namespace == namespace :
+            if not backend.namespace or backend.namespace == namespace:
                 backend.export(data)
