@@ -6,11 +6,12 @@ atomically and the input plugins provide this atomic action.
 You can configure more than one input plugin, if you wanted
 to input the content from more than one place.
 
-Input plugins are loaded as named entry points.
+Input plugins are loaded as named entry points with the namespace:
+``asset_scanner.input_plugins``
 
 .. warning::
     Blocking input plugins will prevent others from being run. They are run
-    sequentially. For example, with the :ref:`file_system<file system input>` plugin, you could configure
+    sequentially. For example, with the `file system input`_ plugin, you could configure
     several to scan multiple directories.
 """
 __author__ = 'Richard Smith'

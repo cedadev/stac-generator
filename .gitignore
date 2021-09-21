@@ -4,4 +4,4 @@ venv
 conf
 __pycache__
 *.pyc
-docs_src/build/
+docs/build/

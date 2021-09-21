@@ -6,7 +6,7 @@ Elasticsearch
 An output backend which outputs the content generated to elasticsearch
 using the Elasticsearch API
 
-**Backend name:** ``elasticsearch``
+**Plugin name:** ``elasticsearch``
 
 .. list-table::
     :header-rows: 1

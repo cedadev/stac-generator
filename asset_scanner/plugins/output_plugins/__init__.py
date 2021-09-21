@@ -6,7 +6,8 @@ extraction process.
 You can configure more than one active plugin, if you wanted
 to output the content to more than one place.
 
-Output plugins are loaded as named entry points.
+Output plugins are loaded as named entry points with the namespace:
+``asset_scanner.output_plugins``
 """
 __author__ = 'Richard Smith'
 __date__ = '08 Jun 2021'
