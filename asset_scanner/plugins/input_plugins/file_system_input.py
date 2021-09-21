@@ -8,16 +8,22 @@ each file to the asset extractor
 
 **Plugin name:** ``file_system``
 
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - ``path``
+      - ``string``
+      - ``REQUIRED`` The root path to scan
+
 Example Configuration:
     .. code-block:: yaml
 
         inputs:
             - name: file_system
               path: test_directory
-
-Config Arguments:
-    path
-        The root path to scan
 
 """
 __author__ = 'Richard Smith'

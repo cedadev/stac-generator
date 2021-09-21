@@ -37,7 +37,7 @@ class BaseExtractor(ABC):
         self.conf = conf
         self.processors = self.load_processors()
         self.output_plugins = self.load_output_plugins()
-        self.item_descriptions = ItemDescriptions(conf['item_descriptions']['root_directory'])
+        self.item_descriptions = ItemDescriptions(conf['item_descriptions']['root_directory']) if 'item_descriptions' in conf else None
 
         self.load_processors()
 

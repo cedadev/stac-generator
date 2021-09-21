@@ -50,7 +50,8 @@ setup(
             'path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter'
         ],
         'asset_scanner.input_plugins': [
-            'file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin'
+            'file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin',
+            'object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin'
         ]
     }
 )
