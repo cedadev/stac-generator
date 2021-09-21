@@ -46,6 +46,9 @@ setup(
             'standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend',
             'elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend'
         ],
+        'asset_scanner.plugin_filters': [
+            'path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter'
+        ],
         'asset_scanner.input_plugins': [
             'file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin'
         ]

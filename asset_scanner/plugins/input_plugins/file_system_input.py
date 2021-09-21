@@ -31,6 +31,9 @@ from .base import BaseInputPlugin
 
 import os
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 from typing import TYPE_CHECKING
 
@@ -40,10 +43,11 @@ if TYPE_CHECKING:
 
 class FileSystemInputPlugin(BaseInputPlugin):
     """
+    Performs an os.walk to provide a stream of paths for procesing.
     """
 
     def __init__(self, **kwargs):
-
+        super().__init__(**kwargs)
         self.root_path = kwargs['path']
 
     def run(self, extractor: 'BaseExtractor' ):
@@ -52,7 +56,12 @@ class FileSystemInputPlugin(BaseInputPlugin):
         for root, _, files in os.walk(self.root_path):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
-                extractor.process_file(filename, 'posix')
+
+                if self.should_process(filename, 'posix'):
+                    extractor.process_file(filename, 'posix')
+                    logger.debug(f'Input processing: {filename}')
+                else:
+                    logger.debug(f'Input skipping: {filename}')
                 total_files += 1
         end = datetime.now()
         print(f'Processed {total_files} files from {self.root_path} in {end-start}')
