@@ -17,6 +17,12 @@ each file to the asset extractor
     * - ``path``
       - ``string``
       - ``REQUIRED`` The root path to scan
+    * - ``kwargs``
+      - ``dict``
+      - Optional kwargs to pass to `os.walk <https://docs.python.org/3/library/os.html#os.walk>`_
+    * - ``filters``
+      - :ref:`PluginFilter <plugins/plugin_filters>`
+      - Optional filter plugins
 
 Example Configuration:
     .. code-block:: yaml
@@ -55,11 +61,12 @@ class FileSystemInputPlugin(BaseInputPlugin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.root_path = kwargs['path']
+        self.kwargs = kwargs.get('kwargs', {})
 
     def run(self, extractor: 'BaseExtractor' ):
         total_files = 0
         start = datetime.now()
-        for root, _, files in os.walk(self.root_path):
+        for root, _, files in os.walk(self.root_path, **self.kwargs):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
 
