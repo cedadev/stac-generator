@@ -32,6 +32,9 @@ setup(
         ],
         'elasticsearch': [
             'elasticsearch'
+        ],
+        'intake-esm': [
+            'intake-esm'
         ]
     },
     python_requires='>=3.5',
@@ -40,18 +43,19 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'asset_scanner = asset_scanner.scripts.asset_scanner:main'
+            'asset_scanner = asset_scanner.scripts.asset_scanner:main',
         ],
         'asset_scanner.output_plugins': [
             'standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend',
-            'elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend'
+            'elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend',
         ],
         'asset_scanner.plugin_filters': [
-            'path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter'
+            'path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter',
         ],
         'asset_scanner.input_plugins': [
             'file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin',
-            'object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin'
+            'object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin',
+            'intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin',
         ]
     }
 )

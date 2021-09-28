@@ -11,6 +11,7 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 from abc import ABC, abstractmethod
 from asset_scanner.core import BaseExtractor
 from asset_scanner.core.utils import load_plugins
+from asset_scanner.types.source_media import StorageType
 
 
 class BaseInputPlugin(ABC):
@@ -20,7 +21,7 @@ class BaseInputPlugin(ABC):
         if kwargs.get('filters'):
             self.filters = load_plugins(kwargs, 'asset_scanner.plugin_filters', 'filters')
 
-    def should_process(self, filepath, source_media) -> bool:
+    def should_process(self, filepath, source_media: StorageType) -> bool:
         """
         Should the path be sent for processing?
 

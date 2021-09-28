@@ -40,6 +40,8 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 
 from .base import BaseInputPlugin
+from asset_scanner.types.source_media import StorageType
+from tqdm import tqdm
 
 import os
 from datetime import datetime
@@ -66,12 +68,12 @@ class FileSystemInputPlugin(BaseInputPlugin):
     def run(self, extractor: 'BaseExtractor' ):
         total_files = 0
         start = datetime.now()
-        for root, _, files in os.walk(self.root_path, **self.kwargs):
+        for root, _, files in tqdm(os.walk(self.root_path, **self.kwargs)):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
 
-                if self.should_process(filename, 'posix'):
-                    extractor.process_file(filename, 'posix')
+                if self.should_process(filename, StorageType.POSIX):
+                    extractor.process_file(filename, StorageType.POSIX)
                     logger.debug(f'Input processing: {filename}')
                 else:
                     logger.debug(f'Input skipping: {filename}')
