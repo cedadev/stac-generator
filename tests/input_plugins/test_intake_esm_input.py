@@ -9,6 +9,7 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 import pytest
+import sys
 
 from asset_scanner.plugins.input_plugins.intake_esm_input import IntakeESMInputPlugin
 
@@ -26,6 +27,8 @@ def intake_input():
     )
 
 
+@pytest.mark.skipif(sys.version_info < (3,7),
+                    reason="requires python3.7")
 def test_open_remote_catalog(intake_input):
     catalog = intake_input.open_catalog()
     assert len(catalog.df) == 3
