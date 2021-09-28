@@ -1,5 +1,7 @@
+aiohttp==3.7.4.post0
 alabaster==0.7.12
 anytree==2.8.0
+async-timeout==3.0.1
 Babel==2.9.1
 boto3==1.18.44
 botocore==1.21.44
@@ -13,6 +15,7 @@ imagesize==1.2.0
 Jinja2==3.0.1
 jmespath==0.10.0
 MarkupSafe==2.0.1
+multidict==5.1.0
 packaging==20.9
 Pygments==2.9.0
 pyparsing==2.4.7
@@ -32,4 +35,6 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-programoutput==0.17
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
+typing-extensions==3.10.0.2
 urllib3==1.26.5
+yarl==1.6.3

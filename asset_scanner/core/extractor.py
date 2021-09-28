@@ -16,6 +16,7 @@ from abc import ABC, abstractmethod
 from .utils import load_plugins
 from .handler_picker import HandlerPicker
 from .item_describer import ItemDescriptions
+from asset_scanner.types.source_media import StorageType
 
 from typing import List
 
@@ -41,6 +42,28 @@ class BaseExtractor(ABC):
 
         self.load_processors()
 
+    @staticmethod
+    def _get_path(filepath, **kwargs) -> str:
+        """
+        Check to see if there is a `ParseResult <https://docs.python.org/3/library/urllib.parse.html?highlight=parseresult#urllib.parse.ParseResult>_
+        object. If there is and it contains a network location, return just the path
+        e.g.
+        - https://data.ceda.ac.uk/badc/ukmo -> /badc/ukmo
+        - http://cmip6-zarr-o.s3.jc.rl.ac.uk/CMIP6.CFMIP.IPSL.IPSL-CM6A-LR/amip-p4K.r1i1p1f1.Amon.evspsbl.gr.v20180906.zarr -> CMIP6.CFMIP.IPSL.IPSL-CM6A-LR/amip-p4K.r1i1p1f1.Amon.evspsbl.gr.v20180906.zarr
+
+        :param filepath:
+        :param kwargs:
+        :return:
+        """
+        parse_result = kwargs.get('uri_parse')
+        if not parse_result:
+            return filepath
+
+        if not parse_result.netloc:
+            return filepath
+
+        return parse_result.path
+
     def load_processors(self, entrypoint: str = None) -> HandlerPicker:
         return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
 
@@ -48,10 +71,10 @@ class BaseExtractor(ABC):
         return load_plugins(self.conf, 'asset_scanner.output_plugins', 'outputs')
 
     @abstractmethod
-    def process_file(self, filepath: str, source_media: str = 'POSIX', **kwargs) -> None:
+    def process_file(self, filepath: str, source_media: StorageType = StorageType.POSIX, **kwargs) -> None:
         pass
 
-    def output(self, filepath: str, source_media: str, data: dict, namespace: str = None) -> None:
+    def output(self, filepath: str, source_media: StorageType, data: dict, namespace: str = None) -> None:
         for backend in self.output_plugins:
             if not backend.namespace or backend.namespace == namespace:
                 backend.export(data)

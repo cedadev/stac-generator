@@ -61,6 +61,8 @@ def load_extractor(conf: dict) -> BaseExtractor:
 
     if conf.get('extractor'):
         extractor = locate(conf['extractor'])
+        if not extractor:
+            raise ImportError(f'Unable to find {conf["extractor"]}. Check that it is installed.')
 
     if not extractor:
         for entry_point in pkg_resources.iter_entry_points('asset_scanner.extractors'):
