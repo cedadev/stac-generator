@@ -106,7 +106,7 @@ This section describes how the facets are extracted and has a few nested section
 
     facets:
         extraction_methods:
-          - method: string_regex
+          - name: string_regex
             inputs:
               regex: '^\/(?:[^/]*/)(?P<project>\w*)\/(?:[^/]*/){2}(?P<flight_number>[\w\d]*).*\/(?:[^_]*_){2}(?P<date>\d*)'
         aggregation_facets:
