@@ -35,6 +35,9 @@ setup(
         ],
         'intake-esm': [
             'intake-esm'
+        ],
+        'rabbitmq': [
+            'pika'
         ]
     },
     python_requires='>=3.5',
