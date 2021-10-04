@@ -15,8 +15,9 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 from abc import ABC, abstractmethod
 from .utils import load_plugins
 from .handler_picker import HandlerPicker
-from .item_describer import ItemDescriptions
+from .item_describer import ItemDescriptions, ItemDescription
 from asset_scanner.types.source_media import StorageType
+import re
 
 from typing import List
 
@@ -63,6 +64,43 @@ class BaseExtractor(ABC):
             return filepath
 
         return parse_result.path
+
+    @staticmethod
+    def _get_category(string, label, regex):
+        """
+
+        :param string:
+        :param label:
+        :param regex:
+        :return:
+
+        """
+
+        m = re.search(regex, string)
+
+        if not m:
+            label = None
+
+        return label
+
+    def get_categories(self, filepath: str, source_media: StorageType, description: ItemDescription) -> List:
+        """
+        Get asset category labels
+
+        :param filepath: Asset path
+        :param source_media: Source media class
+        :param description: ItemDescription for asset
+        :return:
+
+        """
+        categories = set()
+
+        for conf in description.categories:
+            label = self._get_category(filepath, **conf)
+            if label:
+                categories.add(label)
+
+        return list(categories) or ['data']
 
     def load_processors(self, entrypoint: str = None) -> HandlerPicker:
         return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
