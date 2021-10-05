@@ -1,6 +1,7 @@
 .idea
 *.egg-info
 venv
+docs_venv
 conf
 __pycache__
 *.pyc

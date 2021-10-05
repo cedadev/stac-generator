@@ -21,7 +21,7 @@ each file to the asset extractor
       - ``dict``
       - Optional kwargs to pass to `os.walk <https://docs.python.org/3/library/os.html#os.walk>`_
     * - ``filters``
-      - :ref:`PluginFilter <plugins/plugin_filters:plugin filters>`
+      - :ref:`PluginFilter <asset_scanner/plugin_filters:plugin filters>`
       - Optional filter plugins
 
 Example Configuration:

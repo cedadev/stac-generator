@@ -1,8 +1,3 @@
-.. asset_scanner documentation master file, created by
-   sphinx-quickstart on Tue Jun  8 15:30:14 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 **************
 Asset Scanner
 **************
@@ -10,104 +5,68 @@ Asset Scanner
 The asset scanner provides the framework and access to shared tools. The framework
 allows you to build extractors to get metadata from file objects using plugins to
 change the source of the files, the output of the metadata and the processing chain
-which extracts the metadata.
+which extracts the metadata. The framework leverages a modular, plugin architecture
+to allow users to modify the workflow to fit their needs.
 
-Current implementations of the Extractor are:
-   - `Asset Extractor <https://github.com/cedadev/asset-extractor>`_
-   - `Facet Extractor <https://github.com/cedadev/item-generator>`_
+The process expects a stream of "assets" (an asset being a file, zarr object, etc.).
+The source of this stream is configured with `input plugins <asset_scanner/input_plugins>`_
+which could be as simple as listing directories on a file system or using message
+queues as part of a complex ingest system. The `extractors <extractors>`_ operate on this stream and
+pass to `output plugins <asset_scanner/output_plugins>`_. The output is at the level
+of an "asset" so higher level aggregated objects may require an aggregation step.
 
-Both of these implementation make use of :ref:`item description <item-descriptions>` files.
-These files describe the workflow to extract metadata from the objects.
+These outputs are also configurable so could dump to the terminal (for debugging), file,
+a data store (postgres, elasticsearch, etc.) or even a message queue for onward processing.
 
-Installing
-==========
+.. image:: images/asset_scanner_diagram.png
 
-.. code-block:: console
+The framework was constructed to extract metadata for creating STAC catalogs
+but could be used to extract metadata for any faceted search system.
 
-   pip install git+https://github.com/cedadev/asset-scanner
-
-Usage
-======
-
-There is a console script defined by this package which can be used to run the
-extractors ``asset_extractor``.
-
-.. code-block:: console
-
-    usage: asset_scanner [-h] conf
-
-    Run the asset scanner as configured
-
-    positional arguments:
-      conf        Path to a yaml configuration file
-
-    optional arguments:
-      -h, --help  show this help message and exit
-
-
-Configuration
+What is STAC?
 ==============
 
-The configuration file feeds this top level script and configures the input/output
-plugins as well as the extractor class. You will need to see the extractor documentation
-to get additional configuration options.
+The SpatioTemporal Asset Catalog (`STAC <https://stacspec.org/>`_) specification provides a common language to
+describe a range of geospatial information, so it can more easily be indexed and discovered.
+A "spatiotemporal asset" is any file that represents information about the earth captured
+in a certain space and time.
 
-Base configuration options:
----------------------------
+Extractors
+==========
+
+The different packages are designed to extract different types and levels of metadata.
 
 .. list-table::
-   :header-rows: 1
+    :header-rows: 1
 
-   * - Option
-     - Description
-   * - ``extractor``
-     - The python import path to the extractor class. If not specified, it picks up the class installed with the entry point ``asset_scanner.extractors``
-   * - ``item_descriptions``
-     - ``REQUIRED`` Path to the root directory for the item descriptions. Used to describe workflows.
-   * - ``inputs``
-     - ``REQUIRED`` Must have at least one `input plugin <https://cedadev.github.io/asset-scanner/input_plugins.html>`_.
-   * - ``outputs``
-     - ``REQUIRED`` Must have at least one `output plugin <https://cedadev.github.io/asset-scanner/output_plugins.html>`_
-   * - ``logging``
-     - Kwargs passed to the `logging.basicConfig <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_ setup method
+    * - Name
+      - Description
+    * - :ref:`Asset Generator <asset_generator/index:asset generator>`
+      - The asset generator is focused on asset level metadata (name, location, size, etc.)
+    * - :ref:`Item Generator <item_generator/index:item generator>`
+      - The item generator takes the stream of assets and runs a workflow, defined by :ref:`item descriptions <item_descriptions/item_descriptions:item descriptions>` , to extract facets.
+        The output of this is still at the asset level so some aggregation may be needed.
+        Using upserts, `elasticsearch <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html>`_
+        performs this aggregation for you.
 
-The extractor can be specified in the configuration file or can be loaded from
-an entry point. The configuration value takes precedence over entry points.
-
-.. warning::
-    Only the first extractor will be loaded from entry points.
-
-Sample configuration
---------------------
-
-   .. code-block:: yaml
-
-      extractor: item_generator.FacetExtractor
-      item_descriptions:
-         root_directory: /home/users/rsmith013/search_futures/item-descriptions/descriptions
-      inputs:
-        - name: file_system
-          path: /badc/faam/data/2005/b069-jan-05
-      outputs:
-        - name: standard_out
-      logging:
-         level: INFO
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   plugins/plugins
-   item_descriptions
+   asset_scanner/index
+   asset_generator/index
+   item_generator/index
+   item_descriptions/item_descriptions
 
 .. toctree::
    :maxdepth: 2
    :caption: API:
 
-   api/extractor
-   api/item_descriptions
-
+   api/asset_scanner/asset_scanner_api
+   api/asset_generator/api
+   api/item_generator/item_generator_api
 
 
 Indices and tables

@@ -26,6 +26,7 @@ Uses an `Intake catalog <https://intake.readthedocs.io/>`_ as a source for file 
       - ``dict``
       - Optional kwargs to pass to `esm_datastore.search <https://intake-esm.readthedocs.io/en/latest/api.html#intake_esm.core.esm_datastore.search>`_
 
+
 Example Configuration:
     .. code-block:: yaml
 
