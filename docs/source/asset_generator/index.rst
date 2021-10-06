@@ -7,8 +7,10 @@
 Asset Generator
 ***************
 
-The asset extractor indexes individual file objects.
-The asset extractor is used to gather file level metadata where
+:fa:`github` `View on Github <https://github.com/cedadev/asset-extractor>`_
+
+The asset generator indexes individual file objects.
+The asset generator is used to gather file level metadata where
 the file is the source of truth. i.e. Checksum, location, size, modified time.
 
 Installation

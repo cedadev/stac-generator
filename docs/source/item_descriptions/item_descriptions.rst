@@ -1,4 +1,3 @@
-.. _item-descriptions:
 
 ******************
 Item Descriptions

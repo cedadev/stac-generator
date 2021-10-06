@@ -2,6 +2,8 @@
 Asset Scanner
 *************
 
+:fa:`github` `View on Github <https://github.com/cedadev/asset-scanner>`_
+
 Installing
 ==========
 

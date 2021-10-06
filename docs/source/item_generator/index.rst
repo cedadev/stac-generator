@@ -1,7 +1,8 @@
-
 ***************
 Item Generator
 ***************
+
+:fa:`github` `View on Github <https://github.com/cedadev/item-generator>`_
 
 .. toctree::
    :maxdepth: 2

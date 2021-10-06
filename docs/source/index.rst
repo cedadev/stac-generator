@@ -2,6 +2,8 @@
 Asset Scanner
 **************
 
+:fa:`github` `View on Github <https://github.com/cedadev/asset-scanner>`_
+
 The asset scanner provides the framework and access to shared tools. The framework
 allows you to build extractors to get metadata from file objects using plugins to
 change the source of the files, the output of the metadata and the processing chain

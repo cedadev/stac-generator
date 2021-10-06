@@ -1,9 +1,9 @@
 Orientation
 ===========
 
-The Item Generator is part of a framework defined by the `Asset Scanner <https://cedadev.github.io/asset-scanner/>`_
+The Item Generator is part of a framework defined by the :ref:`Asset Scanner <index:asset scanner>`
 and is build to be modular and extensible. This can be confusing for new users
-but this guide helps to act as an orientation to help new users understand what
+but this guide aims to act as an orientation to help new users understand what
 this package can do and how the pieces fit together.
 
 There are various pluggable pieces:
@@ -13,8 +13,9 @@ There are various pluggable pieces:
     - Pre/Post processors
 
 These pieces should allow you to construct a workflow which works for your use case and provide
-python entrypoints to allow you to write your own plugins.
-The Asset Scanner package stores some common `input and output plugins <https://cedadev.github.io/asset-scanner/plugins/plugins.html>`_ (PRs welcome).
+python entry points to allow you to write your own plugins.
+The Asset Scanner package stores some common :ref:`input <asset_scanner/input_plugins:input plugins>`
+and :ref:`output plugins <asset_scanner/output_plugins:output plugins>` (PRs welcome).
 This package, Item Generator, contains some processors which are used to extract attributes from files and
 passes them to the output plugin. You can read more about the processors, and how pre/post processors work
 :ref:`here <item_generator/processors/processors:processors>`.
@@ -26,13 +27,14 @@ An example can be found :ref:`here <item_generator/index:sample configuration>`.
 
 The second level of configuration comes in the form of item-descriptions. These YAML files
 describe the workflow for extracting facets and other metadata to build the STAC Item.
-Background for item-descriptions can be found `here <https://cedadev.github.io/asset-scanner/item_descriptions.html>`_
+Background for item-descriptions can be found `here <item_descriptions/item_descriptions:item descriptions>`_
 and a guide for how to build, and test these files is :ref:`here <item_generator/user_guide/building_a_workflow:building an item description>`.
 
 The different available processors which can construct these workflows are found :ref:`here <item_generator/processors/processors:processors>`.
 
 The `CEDA repository containing these item-descriptions <https://github.com/cedadev/item-descriptions>`_ can
-be used as an example. An example which includes extracting metadata from the NetCDF header is `sentinel5 <https://github.com/cedadev/item-descriptions/blob/master/descriptions/neodc/sentinel/sentinel5.yml>`_
+be used as an example. An example which includes extracting metadata from the NetCDF header is
+`sentinel5 <https://github.com/cedadev/item-descriptions/blob/master/descriptions/neodc/sentinel/sentinel5.yml>`_
 
 .. code-block:: yaml
 
