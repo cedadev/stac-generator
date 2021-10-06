@@ -76,12 +76,12 @@ be used as an example. An example which includes extracting metadata from the Ne
 
 The “extraction_methods” are the workflow. In the example above I extract some facets from the file path,
 some from the file name and some from the header.
-To run regex on the filename, I use the filename_reducer and to convert my extracted dates to ISO 8601
-format, I run the isodate_processor.
+To run regex on the filename, I use the ``filename_reducer`` and to convert my extracted dates to ISO 8601
+format, I run the ``isodate_processor``.
 
 As all of these “assets” are treated individually, we need a way to make sure they end up together.
 The aggregation facets are used to generate a STAC item ID. So for the linked example, all assets
-which return the same value for platform, processing_level, variable, product_version and datetime,
+which return the same value for ``platform``, ``processing_level``, ``variable``, ``product_version`` and ``datetime``,
 will be considered 1 STAC Item and be assigned the same ID.
 
 This works in Elasticsearch because each individual elasticsearch document has the same id and are
