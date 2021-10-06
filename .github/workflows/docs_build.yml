@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs: {}
+  
 
 jobs:
   sphinx_docs_to_gh-pages:
