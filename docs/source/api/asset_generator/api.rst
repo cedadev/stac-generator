@@ -2,6 +2,8 @@
 Asset Generator API
 ********************
 
+:fa:`github` `View on Github <https://github.com/cedadev/asset-extractor>`_
+
 Asset Extractor
 ===============
 
