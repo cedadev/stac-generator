@@ -238,7 +238,9 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         filename = message.filepath
 
         try:
-            storage_class = message.message.get('storage_type', StorageType.POSIX)
+            # TODO: How to get this from message? CEDA message.message is str
+            # storage_class = message.message.get('storage_type', StorageType.POSIX)
+            storage_class = StorageType.POSIX
             if isinstance(storage_class, str):
                 storage_class = StorageType[storage_class]
         except KeyError:
