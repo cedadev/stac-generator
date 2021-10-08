@@ -15,20 +15,76 @@ TODO: Make the callback more flexible (open to collaboration)
     * - Option
       - Value Type
       - Description
-    * - ``connection``
-      - ``dict``
-      - ``REQUIRED`` The URI of a path or URL to an ESM collection JSON file.
-    * - ``object_path_attr``
-      - ``string``
-      - ``REQUIRED`` The column header which contains the URI to the file object.
-    * - ``catalog_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to `intake.open_esm_datastore <https://intake-esm.readthedocs.io/en/latest/api.html#intake_esm.core.esm_datastore>`_
-    * - ``search_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to `esm_datastore.search <https://intake-esm.readthedocs.io/en/latest/api.html#intake_esm.core.esm_datastore.search>`_
+    * - ``connection.host``
+      - string
+      - ``REQUIRED`` RabbitMQ server host
+    * - ``connection.user``
+      - string
+      - ``REQUIRED`` Username
+    * - ``connection.password``
+      - string
+      - ``REQUIRED`` password
+    * - ``connection.vhost``
+      - string
+      - ``REQUIRED`` `Virtual host <https://www.rabbitmq.com/vhosts.html>`_
+    * - ``connection.kwargs``
+      - dict
+      - connection parameter kwargs `pika.conneciton.ConnectionParameters <https://pika.readthedocs.io/en/stable/modules/parameters.html#connectionparameters>`_
+    * - ``exchange.source_exchange``
+      - dict
+      - Dictionary describing the source exchange. `exchange`_
+    * - ``exchange.dest_exchange``
+      - dict
+      - ``REQUIRED`` The final exchange. This is where the queues will be bound. `exchange`_
+    * - ``queues``
+      - ``list``
+      - ``REQUIRED`` Queue parameters. `queues`_
+
+
+exchange
+^^^^^^^^
+
+The source and dest exchange keys comprise:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - name
+      - string
+      - ``REQUIRED`` Exchange name
+    * - type
+      - string
+      - ``REQUIRED`` `Exchange type <https://medium.com/trendyol-tech/rabbitmq-exchange-types-d7e1f51ec825>`_
+
+queues
+^^^^^^
+
+List of queue objects. Each queue object comprises:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Option
+      - Value Type
+      - Description
+    * - name
+      - string
+      - ``REQUIRED`` Queue name
+    * - kwargs
+      - dict
+      - kwargs passed to `pika.channel.queue_declare <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.queue_declare>`_
+    * - bind_kwargs
+      - dict
+      - kwargs passed to `pika.channel.queue_bind <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.queue_bind>`_
+    * - consume_kwargs
+      - dict
+      - kwargs passed to `pika.channel.Channel.basic_consume <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.basic_consume>`_
 
 Example Configuration:
+
     .. code-block:: yaml
 
         inputs:
@@ -36,7 +92,7 @@ Example Configuration:
               connection:
                 host: my-rabbit-server.co.uk
                 user: user
-                password: *********
+                password: '*********'
                 vhost: my_virtual_host
                 kwargs: 
                     heartbeat: 300
@@ -47,11 +103,14 @@ Example Configuration:
                 destination_exchange: 
                     name: mydest-exchange
                     type: fanout
-                prefetch_count: 1
               queues:
                 - name:
                   kwargs:
+                    durable: true
                   bind_kwargs:
+                    routing_key: my.routing.key
+                  consume_kwargs:
+                    auto_ack: false
 
 
 """
@@ -240,14 +299,17 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         try:
             # TODO: How to get this from message? CEDA message.message is str
             # storage_class = message.message.get('storage_type', StorageType.POSIX)
+
             storage_class = StorageType.POSIX
             if isinstance(storage_class, str):
                 storage_class = StorageType[storage_class]
+
         except KeyError:
             storage_class = StorageType.POSIX
 
         if self.should_process(filename, storage_class):
             extractor.process_file(filename, storage_class)
+
             LOGGER.debug(f'Input processing: {filename}')
             self.acknowledge_message(ch, method.delivery_tag, connection)
         else:
