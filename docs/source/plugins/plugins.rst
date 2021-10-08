@@ -21,6 +21,8 @@ Entrypoint: ``asset_scanner.input_plugins``
      - Works with POSIX style file systems and performs a python `os.walk <https://docs.python.org/3/library/os.html#os.walk>`_.
    * - :ref:`Object Store Input <plugins/input_plugins:object store input>`
      - Works with S3 endpoints.
+   * - :ref:`RabbitMQ Input <plugins/input_plugins:rabbitmq input>`
+     - Connects to queues from RabbitMQ.
 
 .. toctree::
    :maxdepth: 3
