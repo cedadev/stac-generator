@@ -4,6 +4,8 @@ RabbitMQ Input
 -----------------
 
 Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a source for file objects.
+At the moment, this expects a CEDA specifc message format.
+TODO: Make the callback more flexible (open to collaboration)
 
 **Plugin name:** ``rabbitmq``
 
@@ -43,7 +45,7 @@ Example Configuration:
                     name: mysource-exchange
                     type: fanout
                 destination_exchange: 
-                    name: mysource-exchange
+                    name: mydest-exchange
                     type: fanout
                 prefetch_count: 1
               queues:
@@ -60,6 +62,8 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 from .base import BaseInputPlugin
+from asset_scanner.types.source_media import StorageType
+from asset_scanner.core import BaseExtractor
 
 # Third-party imports
 import pika
@@ -67,8 +71,12 @@ import pika
 # Python imports
 import functools
 import logging
+from collections import namedtuple
+import json
 
 LOGGER = logging.getLogger(__name__)
+
+IngestMessage = namedtuple('IngestMessage',['datetime','filepath','action','filesize','message'])
 
 
 class RabbitMQInputPlugin(BaseInputPlugin):
@@ -79,7 +87,53 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         self.exchange_conf = kwargs.get('exchange', {})
         self.queues_conf = kwargs.get('queues', [])
 
-    def _connect(self) -> pika.channel.Channel:
+    @staticmethod
+    def decode_message(body: bytes) -> IngestMessage:
+        """
+        Takes the message and turns into a dictionary.
+        String message format when split on :
+            date_hour = split_line[0]
+            min = split_line[1]
+            sec = split_line[2]
+            path = split_line[3]
+            action = split_line[4]
+            filesize = split_line[5]
+            message = ":".join(split_line[6:])
+
+        :param body: Message body, either a json string or text
+        :return: IngestMessage
+            {
+                'datetime': ':'.join(split_line[:3]),
+                'filepath': split_line[3],
+                'action': split_line[4],
+                'filesize': split_line[5],
+                'message': ':'.join(split_line[6:])
+            }
+
+        """
+
+        # Decode the byte string to utf-8
+        body = body.decode('utf-8')
+
+        try:
+            msg = json.loads(body)
+            return IngestMessage(**msg)
+
+        except json.JSONDecodeError:
+            # Assume the message is in the old format and split on :
+            split_line = body.strip().split(":")
+
+            msg = {
+                'datetime': ':'.join(split_line[:3]),
+                'filepath': split_line[3],
+                'action': split_line[4],
+                'filesize': split_line[5],
+                'message': ':'.join(split_line[6:])
+            }
+
+        return IngestMessage(**msg)
+
+    def _connect(self, extractor) -> pika.channel.Channel:
         """
         Start Pika connection to server. This is run in each thread.
 
@@ -113,29 +167,89 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         # Create a new channel
         channel = connection.channel()
-        channel.basic_qos(self.exchange_conf.get('prefetch_count', 1))
 
         # Declare relevant exchanges
-        channel.exchange_declare(exchange=src_exchange['name'], exchange_type=src_exchange['type'])
+        if src_exchange:
+            channel.exchange_declare(exchange=src_exchange['name'], exchange_type=src_exchange['type'])
         channel.exchange_declare(exchange=dest_exchange['name'], exchange_type=dest_exchange['type'])
 
         # Bind source exchange to dest exchange
-        channel.exchange_bind(destination=dest_exchange['name'], source=src_exchange['name'])
+        if src_exchange:
+            channel.exchange_bind(destination=dest_exchange['name'], source=src_exchange['name'])
 
         # Declare queue and bind queue to the dest exchange
-        queues = self.queues_conf.get('queues')
-        for queue in queues:
+        for queue in self.queues_conf:
             declare_kwargs = queue.get('kwargs', {})
             bind_kwargs = queue.get('bind_kwargs', {})
+            consume_kwargs = queue.get('consume_kwargs', {})
 
             channel.queue_declare(queue=queue['name'], **declare_kwargs)
             channel.queue_bind(exchange=dest_exchange['name'], queue=queue['name'], **bind_kwargs)
 
             # Set callback
-            callback = functools.partial(self.callback, connection=connection)
-            channel.basic_consume(queue=queue['name'], on_message_callback=callback, auto_ack=False)
+            callback = functools.partial(self.callback, connection=connection, extractor=extractor)
+            channel.basic_consume(queue=queue['name'], on_message_callback=callback, **consume_kwargs)
 
         return channel
+
+    @staticmethod
+    def _acknowledge_message(channel: pika.channel.Channel, delivery_tag: str):
+        """
+        Acknowledge message
+
+        :param channel: Channel which message came from
+        :param delivery_tag: Message id
+        """
+
+        LOGGER.debug(f'Acknowledging message: {delivery_tag}')
+        if channel.is_open:
+            channel.basic_ack(delivery_tag)
+
+    def acknowledge_message(self, channel: pika.channel.Channel, delivery_tag: str, connection: pika.connection.Connection):
+        """
+        Acknowledge message and move onto the next. All of the required
+        params come from the message callback params.
+
+        :param channel: callback channel param
+        :param delivery_tag: from the callback method param. eg. method.delivery_tag
+        :param connection: connection object from the callback param
+        """
+        cb = functools.partial(self._acknowledge_message, channel, delivery_tag)
+        connection.add_callback_threadsafe(cb)
+
+    def callback(self,
+                 ch: pika.channel.Channel,
+                 method: pika.frame.Method,
+                 properties: pika.frame.Header,
+                 body: bytes,
+                 connection: pika.connection.Connection,
+                 extractor: BaseExtractor) -> None:
+
+        # Get message
+        try:
+            message = self.decode_message(body)
+
+        except IndexError:
+            # Acknowledge message if the message is not compliant
+            self.acknowledge_message(ch, method.delivery_tag, connection)
+            return
+
+        # Extract filename and storage class
+        filename = message.filepath
+
+        try:
+            storage_class = message.message.get('storage_type', StorageType.POSIX)
+            if isinstance(storage_class, str):
+                storage_class = StorageType[storage_class]
+        except KeyError:
+            storage_class = StorageType.POSIX
+
+        if self.should_process(filename, storage_class):
+            extractor.process_file(filename, storage_class)
+            LOGGER.debug(f'Input processing: {filename}')
+            self.acknowledge_message(ch, method.delivery_tag, connection)
+        else:
+            LOGGER.debug(f'Input skipping: {filename}')
 
     def should_process(self, filepath, source_media: StorageType) -> bool:
         """
@@ -154,18 +268,10 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         return True
 
-    def callback(self,
-                 ch: pika.channel.Channel,
-                 method: pika.frame.Method,
-                 properties: pika.frame.Header,
-                 body: bytes,
-                 connection: pika.connection.Connection) -> None:
-        ...
-
     def run(self, extractor: BaseExtractor):
         
         while True:
-            channel = self._connect()
+            channel = self._connect(extractor)
 
             try:
                 LOGGER.info('READY')
