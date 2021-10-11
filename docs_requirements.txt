@@ -10,7 +10,7 @@ certifi==2021.5.30
 charset-normalizer==2.0.6
 cloudpickle==2.0.0
 dask==2021.9.1
-git+https://github.com/cedadev/directory-treedirectory-tree@0.1.0#egg=directory_tree
+git+https://github.com/cedadev/directory-tree#egg=directory_tree
 docutils==0.17.1
 elasticsearch==7.15.0
 entrypoints==0.3
