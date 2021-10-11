@@ -30,8 +30,10 @@ author = 'Richard Smith'
 extensions = [
     "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
+    "sphinx.ext.githubpages",
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.programoutput",
+    "sphinx_fontawesome",
 ]
 
 # Make sure the target is unique
@@ -58,4 +60,9 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'styles.css',
+]
+
 html_favicon = '_static/favicon.ico'
+html_logo = 'https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png'
