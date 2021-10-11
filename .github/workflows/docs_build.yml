@@ -24,6 +24,7 @@ jobs:
           pip install -r docs_requirements.txt
           python setup.py install
       - name: Running the Sphinx to gh-pages Action
+        shell: bash -l {0}
         uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.0-beta.2
         with:
           branch: master
