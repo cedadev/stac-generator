@@ -3,6 +3,12 @@
 Item Descriptions
 ******************
 
+.. toctree::
+    :hidden:
+
+    building_a_workflow
+
+
 These documents describe how to process the files within a dataset and extract facets.
 These documents are aggregated along the branch with the information lower in the tree taking
 precendence.

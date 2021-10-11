@@ -15,7 +15,7 @@ Usage
 ======
 
 There is a console script defined by this package which can be used to run the
-extractors ``asset_extractor``.
+extractors ``asset_generator``.
 
 .. code-block:: console
 

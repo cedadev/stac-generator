@@ -9,7 +9,6 @@ Item Generator
    :hidden:
 
    user_guide/orientation
-   user_guide/building_a_workflow
    processors/processors
 
 

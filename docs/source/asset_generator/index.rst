@@ -1,13 +1,9 @@
-.. asset_extractor documentation master file, created by
-   sphinx-quickstart on Tue Jun  1 17:21:29 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 ***************
 Asset Generator
 ***************
 
-:fa:`github` `View on Github <https://github.com/cedadev/asset-extractor>`_
+:fa:`github` `View on Github <https://github.com/cedadev/asset-generator>`_
 
 The asset generator indexes individual file objects.
 The asset generator is used to gather file level metadata where
@@ -64,7 +60,7 @@ Sample configuration:
 
    .. code-block:: yaml
 
-      extractor: asset_extractor.AssetExtractor
+      extractor: asset_generator.AssetExtractor
       item_descriptions:
         root_directory: /etc/item-generator/item_descriptions/descriptions
       inputs:

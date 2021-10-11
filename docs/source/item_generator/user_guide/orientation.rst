@@ -28,7 +28,7 @@ An example can be found :ref:`here <item_generator/index:sample configuration>`.
 The second level of configuration comes in the form of item-descriptions. These YAML files
 describe the workflow for extracting facets and other metadata to build the STAC Item.
 Background for item-descriptions can be found `here <item_descriptions/item_descriptions:item descriptions>`_
-and a guide for how to build, and test these files is :ref:`here <item_generator/user_guide/building_a_workflow:building an item description>`.
+and a guide for how to build, and test these files is :ref:`here <item_descriptions/building_a_workflow:building an item description>`.
 
 The different available processors which can construct these workflows are found :ref:`here <item_generator/processors/processors:processors>`.
 
