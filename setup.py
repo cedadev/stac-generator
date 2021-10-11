@@ -35,6 +35,9 @@ setup(
         ],
         'intake-esm': [
             'intake-esm'
+        ],
+        'rabbitmq': [
+            'pika'
         ]
     },
     python_requires='>=3.5',
@@ -56,6 +59,7 @@ setup(
             'file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin',
             'object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin',
             'intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin',
+            'rabbit_mq = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin',
         ]
     }
 )
