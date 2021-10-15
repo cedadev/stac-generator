@@ -5,8 +5,8 @@ with open("README.md") as readme_file:
 
 setup(
     name='asset_scanner',
-    version='0.1.0',
-    description='High level library to provide I/O packages',
+    version='0.1.1',
+    description='Framework to provide plugin architecture to allow the scanning of assets to extract metadata and facets.',
     author='Richard Smith',
     url='https://github.com/cedadev/asset-scanner/',
     long_description=_long_description,
@@ -21,7 +21,7 @@ setup(
     },
     install_requires=[
         'pyyaml',
-        'directory_tree',
+        'ceda-directory-tree',
         'tqdm'
     ],
     extras_require={
