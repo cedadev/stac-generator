@@ -5,6 +5,7 @@ with open("README.md") as readme_file:
 
 setup(
     name='asset_scanner',
+    version='0.1.0',
     description='High level library to provide I/O packages',
     author='Richard Smith',
     url='https://github.com/cedadev/asset-scanner/',
