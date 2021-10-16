@@ -13,7 +13,7 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 from asset_scanner.core.utils import dict_merge, load_description_files
 
 # 3rd Party Imports
-from directory_tree import DatasetNode
+from ceda_directory_tree import DatasetNode
 
 # Python imports
 import yaml
