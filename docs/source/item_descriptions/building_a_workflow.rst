@@ -3,7 +3,7 @@ Building an Item Description
 ****************************
 
 Building an item-generation workflow consists of 4 mains steps:
-    1. Write an `item_description <https://cedadev.github.io/asset-scanner/item_descriptions.html>`_ file to describe the workflow
+    1. Write an :ref:`item_description <item_descriptions/item_descriptions:item descriptions>` file to describe the workflow
     2. Test the workflow on a subset of data
     3. Index that subset of data to check it works as expected
     4. Index full dataset
@@ -19,11 +19,11 @@ A basic item-description consists of 3 sections:
     2. ``collection``
     3. ``facets``
 
-An example item-description can be found `here <https://cedadev.github.io/asset-scanner/item_descriptions.html#example-description-file>`_
+An example item-description can be found :ref:`here <item_descriptions/item_descriptions:example description file>`
 
 The extraction methods section describes how the facets are extracted from the data.
 
-Files are aggregated into items based on the `aggregation facets <https://cedadev.github.io/asset-scanner/item_descriptions.html#aggregation-facets>`_
+Files are aggregated into items based on the :ref:`aggregation facets <item_descriptions/item_descriptions:aggregation facets>`
 
 .. warning::
 
