@@ -9,7 +9,7 @@ Installing
 
 .. code-block:: console
 
-   pip install git+https://github.com/cedadev/asset-scanner
+   pip install asset-scanner
 
 Usage
 ======
