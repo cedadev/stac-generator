@@ -5,7 +5,7 @@ with open("README.md") as readme_file:
 
 setup(
     name='asset_scanner',
-    version='0.1.2',
+    version='0.1.3',
     description='Framework to provide plugin architecture to allow the scanning of assets to extract metadata and facets.',
     author='Richard Smith',
     url='https://github.com/cedadev/asset-scanner/',
