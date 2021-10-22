@@ -107,7 +107,7 @@ class IntakeESMInputPlugin(BaseInputPlugin):
                 media_type = StorageType.POSIX
 
             if self.should_process(filepath, media_type):
-                extractor.process_file(filepath, media_type, uri_parse=parse_result)
+                extractor.process_file(filepath, media_type)
                 logger.debug(f'Input processing: {filepath}')
             else:
                 logger.debug(f'Input skipping: {filepath}')

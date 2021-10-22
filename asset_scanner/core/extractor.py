@@ -44,28 +44,6 @@ class BaseExtractor(ABC):
         self.load_processors()
 
     @staticmethod
-    def _get_path(filepath, **kwargs) -> str:
-        """
-        Check to see if there is a `ParseResult <https://docs.python.org/3/library/urllib.parse.html?highlight=parseresult#urllib.parse.ParseResult>_
-        object. If there is and it contains a network location, return just the path
-        e.g.
-        - https://data.ceda.ac.uk/badc/ukmo -> /badc/ukmo
-        - http://cmip6-zarr-o.s3.jc.rl.ac.uk/CMIP6.CFMIP.IPSL.IPSL-CM6A-LR/amip-p4K.r1i1p1f1.Amon.evspsbl.gr.v20180906.zarr -> CMIP6.CFMIP.IPSL.IPSL-CM6A-LR/amip-p4K.r1i1p1f1.Amon.evspsbl.gr.v20180906.zarr
-
-        :param filepath:
-        :param kwargs:
-        :return:
-        """
-        parse_result = kwargs.get('uri_parse')
-        if not parse_result:
-            return filepath
-
-        if not parse_result.netloc:
-            return filepath
-
-        return parse_result.path
-
-    @staticmethod
     def _get_category(string, label, regex):
         """
 

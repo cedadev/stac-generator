@@ -139,8 +139,17 @@ class ItemDescriptions:
         Dict values are overridden by more specific files and
         arrays are appended to, with duplicates ignored.
 
+        .. note::
+            For remote filepaths (e.g. https://... or gs://) a ``/``
+            character will be pre-pended. This is to enable the lookup
+            to pass as the root node of the tree is ``/``.
+
         :param filepath: Path for which to retrieve the description
         """
+
+        if not filepath[0] == '/':
+            filepath = f'/{filepath}'
+
         nodes = self.tree.search_all(filepath)
         description_files = [node.description_file for node in nodes]
 
