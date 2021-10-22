@@ -351,7 +351,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
                 continue
 
             except Exception as e:
-                LOGGER.critical(e)
+                LOGGER.critical(e, exc_info=True)
 
                 channel.stop_consuming()
                 break

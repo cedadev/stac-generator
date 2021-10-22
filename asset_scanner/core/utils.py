@@ -116,7 +116,7 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
             loaded_plugin = plugins.get_processor(**plugin_conf)
             loaded_plugins.append(loaded_plugin)
         except Exception as e:
-            LOGGER.error(f'Failed to load plugin: {plugin_conf["name"]} {e.with_traceback()}')
+            LOGGER.error(f'Failed to load plugin: {plugin_conf["name"]}', exc_info=True)
 
     if not loaded_plugins:
         raise NoPluginsError(f'No plugins were successfully loaded from {conf_section}')
