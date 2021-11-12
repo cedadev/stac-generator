@@ -84,6 +84,11 @@ class ItemDescription:
         """Returns collection"""
         return self._description.get('collection', {})
 
+    @propery
+    def extra_facets(self) -> List:
+        """Returns extra top level facets"""
+        return list(self._description.get('defaults', {}).get('properties', {}).keys())
+
 
 class ItemDescriptions:
     """
