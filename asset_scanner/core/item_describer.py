@@ -14,6 +14,7 @@ from asset_scanner.core.utils import dict_merge, load_description_files
 
 # 3rd Party Imports
 from directory_tree import DatasetNode
+from pydantic import BaseModel
 
 # Python imports
 import yaml
@@ -21,68 +22,44 @@ from functools import lru_cache
 import logging
 
 # Typing imports
-from typing import List, Optional
-
+from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ItemDescription:
-    """
-    Container to provide convenient access points into parts of
-    the item description.
-    """
-    def __init__(self, description):
-        self._description = description
+class Processor(BaseModel):
+    """Common model for processor."""
+    defaults: Optional[Dict] = {}
+    mappings: Optional[Dict] = {}
+    overrides: Optional[Dict] = {}
+    extraction_methods: List[Dict] = []
+
+
+class Category(BaseModel):
+    """Category label model."""
+    label: str
+    regex: str
+
+
+class Collections(Processor):
+    """Collections processor description model."""
+    id: Optional[Processor]
+
+
+class Facets(Processor):
+    """Facets processor description model."""
+    aggregation_facets: Optional[List] = []
+    categories: Optional[List[Category]] = []
+
+
+class ItemDescription(BaseModel):
+    """Top level container for ItemDescriptions."""
+    paths: List
+    collections: Optional[Collections] = {}
+    facets: Optional[Facets] = {}
 
     def __repr__(self):
-        return yaml.dump(self._description)
-
-    @property
-    def defaults(self) -> dict:
-        """Returns defaults"""
-        return self._description.get('defaults', {})
-
-    @property
-    def overrides(self) -> Optional[dict]:
-        """Returns overrides"""
-        return self._description.get('overrides')
-
-    @property
-    def mappings(self) -> Optional[dict]:
-        """Returns mappings"""
-        return self._description.get('mappings')
-
-    @property
-    def allowed_facets(self) -> List:
-        """Returns allowed facets"""
-        return self.facet_extract_conf.get('allowed_facets', [])
-
-    @property
-    def extraction_methods(self) -> List[dict]:
-        """Returns extraction methods"""
-        return self.facet_extract_conf.get('extraction_methods', [])
-
-    @property
-    def aggregation_facets(self) -> List:
-        """Returns aggregation facets
-        """
-        return self.facet_extract_conf.get('aggregation_facets', [])
-
-    @property
-    def facet_extract_conf(self) -> dict:
-        """Returns facets key"""
-        return self._description.get('facets', {})
-
-    @property
-    def categories(self):
-        """Returns categories"""
-        return self._description.get('categories', [])
-
-    @property
-    def collection(self):
-        """Returns collection"""
-        return self._description.get('collection', {})
+        return yaml.dump(self.dict())
 
 
 class ItemDescriptions:
@@ -119,7 +96,7 @@ class ItemDescriptions:
             with open(file) as reader:
                 data = yaml.safe_load(reader)
 
-                for dataset in data.get('datasets', []):
+                for dataset in data.get('paths', []):
                     # Strip trailing slash. Needed to make sure tree search works
                     dataset = dataset.rstrip('/')
 
@@ -155,7 +132,7 @@ class ItemDescriptions:
 
         config_description = self.load_config(*description_files)
 
-        return ItemDescription(config_description)
+        return ItemDescription(**config_description)
 
     @lru_cache(100)
     def load_config(self, *args: str) -> dict:
@@ -173,14 +150,15 @@ class ItemDescriptions:
 
 
 if __name__ == '__main__':
-
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('root')
+    parser.add_argument('root', help='root from which to load all the yaml description files')
+    parser.add_argument('path', help='path to retrieve description for')
     args = parser.parse_args()
 
     descriptions = ItemDescriptions(args.root)
 
-    description = descriptions.get_description('/badc/faam/data/2005/b069-jan-05/core_processed/core_faam_20050105_r0_b069.nc')
+    description = descriptions.get_description(args.path)
 
     print(description)
