@@ -49,7 +49,6 @@ class Collections(Processor):
 class Facets(Processor):
     """Facets processor description model."""
     aggregation_facets: Optional[List] = []
-    categories: Optional[List[Category]] = []
 
 
 class ItemDescription(BaseModel):
@@ -57,6 +56,7 @@ class ItemDescription(BaseModel):
     paths: List
     collections: Optional[Collections] = {}
     facets: Optional[Facets] = {}
+    categories: Optional[List[Category]] = []
 
     def __repr__(self):
         return yaml.dump(self.dict())
