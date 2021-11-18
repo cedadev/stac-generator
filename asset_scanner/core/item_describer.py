@@ -84,7 +84,7 @@ class ItemDescription:
         """Returns collection"""
         return self._description.get('collection', {})
 
-    @propery
+    @property
     def search_facets(self) -> List:
         """Returns extra top level facets"""
         return self.facet_extract_conf.get('search_facets', [])
