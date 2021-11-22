@@ -19,5 +19,7 @@ jobs:
         version: "21.5b1"
     - name: python-isort
       uses: isort/isort-action@v0.1.0
-    - name: Flake8 action
-      uses: suo/flake8-github-action@v1
+    - name: Flake8 with annotations
+      uses: TrueBrain/actions-flake8@v2.1
+      with:
+        path: asset_scanner
