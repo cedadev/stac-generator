@@ -1,0 +1,20 @@
+name: Formatting
+
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Python Blacken
+      uses: piotrpawlaczek/python-blacken@v20.8b1
+    - name: python-isort
+      uses: isort/isort-action@v0.1.0
+    - name: Flake8 action
+      uses: suo/flake8-github-action@v1
