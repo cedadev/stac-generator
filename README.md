@@ -3,6 +3,7 @@
 [![Test](https://github.com/cedadev/asset-scanner/actions/workflows/tests.yml/badge.svg)](https://github.com/cedadev/asset-scanner/actions/workflows/tests.yml)
 [![Docs](https://github.com/cedadev/asset-scanner/actions/workflows/docs_build.yml/badge.svg)](https://github.com/cedadev/asset-scanner/actions/workflows/docs_build.yml)
 [![Upload Python Package](https://github.com/cedadev/asset-scanner/actions/workflows/release.yml/badge.svg)](https://pypi.org/project/asset-scanner/)
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 Documentation: https://cedadev.github.io/asset-scanner/
 
