@@ -13,10 +13,7 @@ jobs:
       with:
         python-version: 3.8
     - name: Python Blacken
-      uses: piotrpawlaczek/python-blacken@v20.8b1
-      with:
-        path: asset_scanner
-        only-check: 'no'
+      uses: jose-lpa/python-black-check-action@master
     - name: python-isort
       uses: isort/isort-action@v0.1.0
     - name: Flake8 action
