@@ -147,4 +147,3 @@ By default, all files are given the category data.
     categories:
         label: metadata
         regex: 00README
-

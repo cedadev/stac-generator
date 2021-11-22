@@ -6,7 +6,7 @@ on:
       - master
   workflow_dispatch:
     inputs: {}
-  
+
 
 jobs:
   sphinx_docs_to_gh-pages:

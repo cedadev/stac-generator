@@ -32,24 +32,26 @@ Example Configuration:
               path: test_directory
 
 """
-__author__ = 'Richard Smith'
-__date__ = '02 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "02 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 
-from .base import BaseInputPlugin
-from asset_scanner.types.source_media import StorageType
-from tqdm import tqdm
-
+import logging
 import os
 from datetime import datetime
-import logging
+from typing import TYPE_CHECKING
+
+from tqdm import tqdm
+
+from asset_scanner.types.source_media import StorageType
+
+from .base import BaseInputPlugin
 
 logger = logging.getLogger(__name__)
 
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from asset_scanner.core import BaseExtractor
@@ -62,10 +64,10 @@ class FileSystemInputPlugin(BaseInputPlugin):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.root_path = kwargs['path']
-        self.kwargs = kwargs.get('kwargs', {})
+        self.root_path = kwargs["path"]
+        self.kwargs = kwargs.get("kwargs", {})
 
-    def run(self, extractor: 'BaseExtractor' ):
+    def run(self, extractor: "BaseExtractor"):
         total_files = 0
         start = datetime.now()
         for root, _, files in tqdm(os.walk(self.root_path, **self.kwargs)):
@@ -74,9 +76,9 @@ class FileSystemInputPlugin(BaseInputPlugin):
 
                 if self.should_process(filename, StorageType.POSIX):
                     extractor.process_file(filename, StorageType.POSIX)
-                    logger.debug(f'Input processing: {filename}')
+                    logger.debug(f"Input processing: {filename}")
                 else:
-                    logger.debug(f'Input skipping: {filename}')
+                    logger.debug(f"Input skipping: {filename}")
                 total_files += 1
         end = datetime.now()
-        print(f'Processed {total_files} files from {self.root_path} in {end-start}')
+        print(f"Processed {total_files} files from {self.root_path} in {end-start}")

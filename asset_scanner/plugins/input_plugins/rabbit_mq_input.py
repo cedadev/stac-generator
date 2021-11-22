@@ -29,7 +29,8 @@ TODO: Make the callback more flexible (open to collaboration)
       - ``REQUIRED`` `Virtual host <https://www.rabbitmq.com/vhosts.html>`_
     * - ``connection.kwargs``
       - dict
-      - connection parameter kwargs `pika.conneciton.ConnectionParameters <https://pika.readthedocs.io/en/stable/modules/parameters.html#connectionparameters>`_
+      - connection parameter kwargs `pika.conneciton.ConnectionParameters
+        <https://pika.readthedocs.io/en/stable/modules/parameters.html#connectionparameters>`_
     * - ``exchange.source_exchange``
       - dict
       - Dictionary describing the source exchange. `exchange`_
@@ -94,13 +95,13 @@ Example Configuration:
                 user: user
                 password: '*********'
                 vhost: my_virtual_host
-                kwargs: 
+                kwargs:
                     heartbeat: 300
               exchange:
-                source_exchange: 
+                source_exchange:
                     name: mysource-exchange
                     type: fanout
-                destination_exchange: 
+                destination_exchange:
                     name: mydest-exchange
                     type: fanout
               queues:
@@ -114,37 +115,39 @@ Example Configuration:
 
 
 """
-__author__ = 'Richard Smith'
-__date__ = '29 Sep 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "29 Sep 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
-from .base import BaseInputPlugin
-from asset_scanner.types.source_media import StorageType
-from asset_scanner.core import BaseExtractor
+# Python imports
+import functools
+import json
+import logging
+from collections import namedtuple
 
 # Third-party imports
 import pika
 
-# Python imports
-import functools
-import logging
-from collections import namedtuple
-import json
+from asset_scanner.core import BaseExtractor
+from asset_scanner.types.source_media import StorageType
+
+from .base import BaseInputPlugin
 
 LOGGER = logging.getLogger(__name__)
 
-IngestMessage = namedtuple('IngestMessage',['datetime','filepath','action','filesize','message'])
+IngestMessage = namedtuple(
+    "IngestMessage", ["datetime", "filepath", "action", "filesize", "message"]
+)
 
 
 class RabbitMQInputPlugin(BaseInputPlugin):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.connection_conf = kwargs.get('connection', {})
-        self.exchange_conf = kwargs.get('exchange', {})
-        self.queues_conf = kwargs.get('queues', [])
+        self.connection_conf = kwargs.get("connection", {})
+        self.exchange_conf = kwargs.get("exchange", {})
+        self.queues_conf = kwargs.get("queues", [])
 
     @staticmethod
     def decode_message(body: bytes) -> IngestMessage:
@@ -172,7 +175,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         """
 
         # Decode the byte string to utf-8
-        body = body.decode('utf-8')
+        body = body.decode("utf-8")
 
         try:
             msg = json.loads(body)
@@ -183,11 +186,11 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             split_line = body.strip().split(":")
 
             msg = {
-                'datetime': ':'.join(split_line[:3]),
-                'filepath': split_line[3],
-                'action': split_line[4],
-                'filesize': split_line[5],
-                'message': ':'.join(split_line[6:])
+                "datetime": ":".join(split_line[:3]),
+                "filepath": split_line[3],
+                "action": split_line[4],
+                "filesize": split_line[5],
+                "message": ":".join(split_line[6:]),
             }
 
         return IngestMessage(**msg)
@@ -200,12 +203,12 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         """
 
         # Get the username and password for rabbit
-        rabbit_user = self.connection_conf.get('user')
-        rabbit_password = self.connection_conf.get('password')
+        rabbit_user = self.connection_conf.get("user")
+        rabbit_password = self.connection_conf.get("password")
 
         # Get the server variables
-        rabbit_server = self.connection_conf.get('host')
-        rabbit_vhost = self.connection_conf.get('vhost')
+        rabbit_server = self.connection_conf.get("host")
+        rabbit_vhost = self.connection_conf.get("vhost")
 
         # Create the credentials object
         credentials = pika.PlainCredentials(rabbit_user, rabbit_password)
@@ -216,38 +219,50 @@ class RabbitMQInputPlugin(BaseInputPlugin):
                 host=rabbit_server,
                 credentials=credentials,
                 virtual_host=rabbit_vhost,
-                **self.connection_conf.get('kwargs', {})
+                **self.connection_conf.get("kwargs", {}),
             )
         )
 
         # Get the exchanges to bind
-        src_exchange = self.exchange_conf.get('source_exchange')
-        dest_exchange = self.exchange_conf.get('destination_exchange')
+        src_exchange = self.exchange_conf.get("source_exchange")
+        dest_exchange = self.exchange_conf.get("destination_exchange")
 
         # Create a new channel
         channel = connection.channel()
 
         # Declare relevant exchanges
         if src_exchange:
-            channel.exchange_declare(exchange=src_exchange['name'], exchange_type=src_exchange['type'])
-        channel.exchange_declare(exchange=dest_exchange['name'], exchange_type=dest_exchange['type'])
+            channel.exchange_declare(
+                exchange=src_exchange["name"], exchange_type=src_exchange["type"]
+            )
+        channel.exchange_declare(
+            exchange=dest_exchange["name"], exchange_type=dest_exchange["type"]
+        )
 
         # Bind source exchange to dest exchange
         if src_exchange:
-            channel.exchange_bind(destination=dest_exchange['name'], source=src_exchange['name'])
+            channel.exchange_bind(
+                destination=dest_exchange["name"], source=src_exchange["name"]
+            )
 
         # Declare queue and bind queue to the dest exchange
         for queue in self.queues_conf:
-            declare_kwargs = queue.get('kwargs', {})
-            bind_kwargs = queue.get('bind_kwargs', {})
-            consume_kwargs = queue.get('consume_kwargs', {})
+            declare_kwargs = queue.get("kwargs", {})
+            bind_kwargs = queue.get("bind_kwargs", {})
+            consume_kwargs = queue.get("consume_kwargs", {})
 
-            channel.queue_declare(queue=queue['name'], **declare_kwargs)
-            channel.queue_bind(exchange=dest_exchange['name'], queue=queue['name'], **bind_kwargs)
+            channel.queue_declare(queue=queue["name"], **declare_kwargs)
+            channel.queue_bind(
+                exchange=dest_exchange["name"], queue=queue["name"], **bind_kwargs
+            )
 
             # Set callback
-            callback = functools.partial(self.callback, connection=connection, extractor=extractor)
-            channel.basic_consume(queue=queue['name'], on_message_callback=callback, **consume_kwargs)
+            callback = functools.partial(
+                self.callback, connection=connection, extractor=extractor
+            )
+            channel.basic_consume(
+                queue=queue["name"], on_message_callback=callback, **consume_kwargs
+            )
 
         return channel
 
@@ -260,11 +275,16 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         :param delivery_tag: Message id
         """
 
-        LOGGER.debug(f'Acknowledging message: {delivery_tag}')
+        LOGGER.debug(f"Acknowledging message: {delivery_tag}")
         if channel.is_open:
             channel.basic_ack(delivery_tag)
 
-    def acknowledge_message(self, channel: pika.channel.Channel, delivery_tag: str, connection: pika.connection.Connection):
+    def acknowledge_message(
+        self,
+        channel: pika.channel.Channel,
+        delivery_tag: str,
+        connection: pika.connection.Connection,
+    ):
         """
         Acknowledge message and move onto the next. All of the required
         params come from the message callback params.
@@ -276,13 +296,15 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         cb = functools.partial(self._acknowledge_message, channel, delivery_tag)
         connection.add_callback_threadsafe(cb)
 
-    def callback(self,
-                 ch: pika.channel.Channel,
-                 method: pika.frame.Method,
-                 properties: pika.frame.Header,
-                 body: bytes,
-                 connection: pika.connection.Connection,
-                 extractor: BaseExtractor) -> None:
+    def callback(
+        self,
+        ch: pika.channel.Channel,
+        method: pika.frame.Method,
+        properties: pika.frame.Header,
+        body: bytes,
+        connection: pika.connection.Connection,
+        extractor: BaseExtractor,
+    ) -> None:
 
         # Get message
         try:
@@ -310,10 +332,10 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         if self.should_process(filename, storage_class):
             extractor.process_file(filename, storage_class)
 
-            LOGGER.debug(f'Input processing: {filename}')
+            LOGGER.debug(f"Input processing: {filename}")
             self.acknowledge_message(ch, method.delivery_tag, connection)
         else:
-            LOGGER.debug(f'Input skipping: {filename}')
+            LOGGER.debug(f"Input skipping: {filename}")
 
     def should_process(self, filepath, source_media: StorageType) -> bool:
         """
@@ -333,12 +355,12 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         return True
 
     def run(self, extractor: BaseExtractor):
-        
+
         while True:
             channel = self._connect(extractor)
 
             try:
-                LOGGER.info('READY')
+                LOGGER.info("READY")
                 channel.start_consuming()
 
             except KeyboardInterrupt:
@@ -347,7 +369,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
             except pika.exceptions.StreamLostError as e:
                 # Log problem
-                LOGGER.error('Connection lost, reconnecting', exc_info=e)
+                LOGGER.error("Connection lost, reconnecting", exc_info=e)
                 continue
 
             except Exception as e:

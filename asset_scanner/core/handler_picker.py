@@ -2,17 +2,18 @@
 """
 
 """
-__author__ = 'Richard Smith'
-__date__ = '01 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "01 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
+
+import logging
+from typing import Dict, List, Optional, Union
 
 import pkg_resources
-from .processor import BaseProcessor
-import logging
 
-from typing import Optional, Union, List, Dict
+from .processor import BaseProcessor
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class HandlerPicker:
             }
     """
 
-    def __init__(self, entry_point_key: Union[List,str]):
+    def __init__(self, entry_point_key: Union[List, str]):
         """
         Entry points to load from in the setup.py
 
@@ -40,7 +41,7 @@ class HandlerPicker:
         self.handlers = {}
 
         if not entry_point_key:
-            raise ValueError('No entry point specified. No handlers will be loaded')
+            raise ValueError("No entry point specified. No handlers will be loaded")
 
         self.handlers = self._get_entrypoints(entry_point_key)
 
@@ -71,7 +72,7 @@ class HandlerPicker:
         entry_point = self.handlers.get(name)
 
         if not entry_point:
-            LOGGER.error(f'Failed to load processor: {name}')
+            LOGGER.error(f"Failed to load processor: {name}")
             return
 
         # Try to load the processor

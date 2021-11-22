@@ -3,26 +3,26 @@
 Item Description
 ================
 """
-__author__ = 'Richard Smith'
-__date__ = '27 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "27 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
-# Package imports
-from asset_scanner.core.utils import dict_merge, load_description_files
-
-# 3rd Party Imports
-from directory_tree import DatasetNode
-
-# Python imports
-import yaml
-from functools import lru_cache
 import logging
+from functools import lru_cache
 
 # Typing imports
 from typing import List, Optional
 
+# Python imports
+import yaml
+
+# 3rd Party Imports
+from directory_tree import DatasetNode
+
+# Package imports
+from asset_scanner.core.utils import dict_merge, load_description_files
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ class ItemDescription:
     Container to provide convenient access points into parts of
     the item description.
     """
+
     def __init__(self, description):
         self._description = description
 
@@ -41,53 +42,52 @@ class ItemDescription:
     @property
     def defaults(self) -> dict:
         """Returns defaults"""
-        return self._description.get('defaults', {})
+        return self._description.get("defaults", {})
 
     @property
     def overrides(self) -> Optional[dict]:
         """Returns overrides"""
-        return self._description.get('overrides')
+        return self._description.get("overrides")
 
     @property
     def mappings(self) -> Optional[dict]:
         """Returns mappings"""
-        return self._description.get('mappings')
+        return self._description.get("mappings")
 
     @property
     def allowed_facets(self) -> List:
         """Returns allowed facets"""
-        return self.facet_extract_conf.get('allowed_facets', [])
+        return self.facet_extract_conf.get("allowed_facets", [])
 
     @property
     def extraction_methods(self) -> List[dict]:
         """Returns extraction methods"""
-        return self.facet_extract_conf.get('extraction_methods', [])
+        return self.facet_extract_conf.get("extraction_methods", [])
 
     @property
     def aggregation_facets(self) -> List:
-        """Returns aggregation facets
-        """
-        return self.facet_extract_conf.get('aggregation_facets', [])
+        """Returns aggregation facets"""
+        return self.facet_extract_conf.get("aggregation_facets", [])
 
     @property
     def facet_extract_conf(self) -> dict:
         """Returns facets key"""
-        return self._description.get('facets', {})
+        return self._description.get("facets", {})
 
     @property
     def categories(self):
         """Returns categories"""
-        return self._description.get('categories', [])
+        return self._description.get("categories", [])
 
     @property
     def collection(self):
         """Returns collection"""
-        return self._description.get('collection', {})
+        return self._description.get("collection", {})
 
     @property
     def search_facets(self) -> List:
         """Returns extra top level facets"""
-        return self.facet_extract_conf.get('search_facets', [])
+        return self.facet_extract_conf.get("search_facets", [])
 
 
 class ItemDescriptions:
@@ -117,16 +117,20 @@ class ItemDescriptions:
         files = load_description_files(root_path)
 
         if not files:
-            LOGGER.error("No description files found. Check the path in your configuration. Exiting...")
+            LOGGER.error(
+                "No description files found. "
+                "Check the path in your configuration. Exiting..."
+            )
             exit()
 
         for file in files:
             with open(file) as reader:
                 data = yaml.safe_load(reader)
 
-                for dataset in data.get('datasets', []):
-                    # Strip trailing slash. Needed to make sure tree search works
-                    dataset = dataset.rstrip('/')
+                for dataset in data.get("datasets", []):
+                    # Strip trailing slash.
+                    # Needed to make sure tree search works
+                    dataset = dataset.rstrip("/")
 
                     self.tree.add_child(dataset, description_file=file.as_posix())
 
@@ -152,8 +156,8 @@ class ItemDescriptions:
         :param filepath: Path for which to retrieve the description
         """
 
-        if not filepath[0] == '/':
-            filepath = f'/{filepath}'
+        if not filepath[0] == "/":
+            filepath = f"/{filepath}"
 
         nodes = self.tree.search_all(filepath)
         description_files = [node.description_file for node in nodes]
@@ -177,15 +181,18 @@ class ItemDescriptions:
         return base_dict
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('root')
+    parser.add_argument("root")
     args = parser.parse_args()
 
     descriptions = ItemDescriptions(args.root)
 
-    description = descriptions.get_description('/badc/faam/data/2005/b069-jan-05/core_processed/core_faam_20050105_r0_b069.nc')
+    description = descriptions.get_description(
+        "/badc/faam/data/2005/b069-jan-05/core_processed/core_faam_20050105_r0_b069.nc"
+    )
 
     print(description)
