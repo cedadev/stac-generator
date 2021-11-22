@@ -20,6 +20,7 @@ from pydantic import BaseModel
 import yaml
 from functools import lru_cache
 import logging
+from pathlib import Path
 
 # Typing imports
 from typing import Dict, List, Optional
@@ -68,25 +69,28 @@ class ItemDescriptions:
     and returning an :py:obj:`ItemDescription`
     """
 
-    def __init__(self, root_path: str):
+    def __init__(self, root_path: Optional[str] = None, filelist: Optional[List] = None):
         """
 
         :param root_path: Path to the root of the yaml store
+        :param filelist: Can supply a set of yml files to load. If present, root_path is ignored.
         """
 
         self.tree = DatasetNode()
 
-        self._build_tree(root_path)
+        self._build_tree(root_path, filelist)
 
-    def _build_tree(self, root_path: str) -> None:
+    def _build_tree(self, root_path: str, files: List[Path]) -> None:
         """
         Loads the yaml files from the root path and builds the dataset tree
         with references to the yaml files.
 
         :param root_path: Path at the top of the yaml file tree
+        :param files: List of files to open.
         """
 
-        files = load_description_files(root_path)
+        if not files:
+            files = load_description_files(root_path)
 
         if not files:
             LOGGER.error("No description files found. Check the path in your configuration. Exiting...")
