@@ -13,7 +13,7 @@ jobs:
       with:
         python-version: 3.8
     - name: Python Blacken
-      uses: piotrpawlaczek/python-blacken@stable
+      uses: piotrpawlaczek/python-blacken@v20.8b1
       with:
         only-check: 'no'
     - name: python-isort
