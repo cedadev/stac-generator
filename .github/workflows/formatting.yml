@@ -13,10 +13,9 @@ jobs:
       with:
         python-version: 3.8
     - name: Python Blacken
-    - uses: psf/black@stable
+      uses: psf/black@stable
       with:
         options: "--check --verbose"
-        src: "./src"
         version: "21.5b1"
     - name: python-isort
       uses: isort/isort-action@v0.1.0
