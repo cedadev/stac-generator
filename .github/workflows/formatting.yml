@@ -15,6 +15,7 @@ jobs:
     - name: Python Blacken
       uses: piotrpawlaczek/python-blacken@v20.8b1
       with:
+        path: asset_scanner
         only-check: 'no'
     - name: python-isort
       uses: isort/isort-action@v0.1.0
