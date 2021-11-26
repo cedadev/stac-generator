@@ -206,6 +206,8 @@ if __name__ == "__main__":
 
     descriptions = ItemDescriptions(args.root)
 
-    description = descriptions.get_description('/badc/faam/data/2005/b069-jan-05/core_processed/core_faam_20050105_r0_b069.nc')
+    description = descriptions.get_description(
+        '/badc/faam/data/2005/b069-jan-05/core_processed/core_faam_20050105_r0_b069.nc'
+    )
 
     print(description)
