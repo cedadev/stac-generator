@@ -25,10 +25,13 @@ paths for processing. Can use the ``exclude`` flag to flip the regex match.
 Example Configuration:
     .. code-block:: yaml
 
-        filters:
-            - name: path_regex
-              regex: ^\/badc\/cmip[56]\/.*files
-              exclude: 1
+        inputs:
+            - name: file_system
+              path: /badc/cmip5
+              filters:
+                - name: path_regex
+                  regex: ^\/badc\/cmip[56]\/.*files
+                  exclude: 1
 
 """
 __author__ = "Richard Smith"
