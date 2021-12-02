@@ -11,11 +11,13 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from functools import lru_cache
+
 # Typing imports
 from typing import List, Optional
 
 # Python imports
 import yaml
+
 # 3rd Party Imports
 from directory_tree import DatasetNode
 
