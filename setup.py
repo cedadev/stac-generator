@@ -61,6 +61,27 @@ setup(
             'object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin',
             'intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin',
             'rabbit_mq = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin',
+        ],
+        'asset_scanner.facet_extractors': [
+            'regex = asset_scanner.plugins.extraction_methods.regex_extract:RegexExtract',
+            'header_extract = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract',
+            'iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract',
+            'xml_extract = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract',
+        ],
+        'asset_scanner.extraction_methods.header_extract.backends': [
+            'xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend',
+            'cf = asset_scanner.plugins.extraction_methods.header_extract.backends.cf:CfBackend',
+        ],
+        'asset_scanner.pre_processors': [
+            'filename_reducer = asset_scanner.plugins.extraction_methods.preprocessors:ReducePathtoName',
+            'ceda_observation = asset_scanner.plugins.extraction_methods.preprocessors:CEDAObservation',
+        ],
+        'asset_scanner.post_processors': [
+            'isodate_processor = asset_scanner.plugins.extraction_methods.postprocessors:ISODateProcessor',
+            'facet_map = asset_scanner.plugins.extraction_methods.postprocessors:FacetMapProcessor',
+            'stac_bbox = asset_scanner.plugins.extraction_methods.postprocessors:BBOXProcessor',
+            'string_join = asset_scanner.plugins.extraction_methods.postprocessors:StringJoinProcessor',
+            'date_combinator = asset_scanner.plugins.extraction_methods.postprocessors:DateCombinatorProcessor',
         ]
     }
 )

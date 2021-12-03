@@ -44,7 +44,7 @@ class Category(BaseModel):
 
 class Collections(Processor):
     """Collections processor description model."""
-    id: Optional[Processor]
+    id: Optional[str]
 
 
 class Facets(Processor):

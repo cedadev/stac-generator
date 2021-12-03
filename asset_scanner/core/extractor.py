@@ -13,13 +13,14 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 from abc import ABC, abstractmethod
-from .utils import load_plugins
+import re
+from typing import List
+
+from asset_scanner.types.source_media import StorageType
 from .handler_picker import HandlerPicker
 from .item_describer import ItemDescriptions, ItemDescription
-from asset_scanner.types.source_media import StorageType
-import re
-
-from typing import List
+from .utils import dict_merge, dot2dict, generate_id, load_plugins
+from .processor import BaseProcessor
 
 
 class BaseExtractor(ABC):
@@ -41,7 +42,9 @@ class BaseExtractor(ABC):
         self.output_plugins = self.load_output_plugins()
         self.item_descriptions = ItemDescriptions(conf['item_descriptions']['root_directory']) if 'item_descriptions' in conf else None
 
-        self.load_processors()
+        self.facet_processors = self.load_processors(entrypoint='asset_scanner.facet_extractors')
+        self.pre_processors = self.load_processors(entrypoint='asset_scanner.pre_processors')
+        self.post_processors = self.load_processors(entrypoint='asset_scanner.post_processors')
 
     @staticmethod
     def _get_category(string, label, regex):
@@ -60,6 +63,69 @@ class BaseExtractor(ABC):
             label = None
 
         return label
+
+    def _get_processor(self, name: str, group: str = 'processors', **kwargs) -> BaseProcessor:
+        """
+
+        :param name: Name of the requested processor
+        :return: processor object
+        """
+
+        return getattr(self, group).get_processor(name, **kwargs)
+
+    def _load_extra_processors(self, processor: dict, key: str) -> List[BaseProcessor]:
+        """
+        Load the post processors for the given processor
+
+        :param processor: Configuration for the processor including any post processor
+        :param key: The name of the key which holds the list of extra processors
+
+        :return: List of loaded processors.
+        """
+
+        loaded_pprocessors = []
+
+        for pprocessor in processor.get(key, []):
+            pp_name = pprocessor['name']
+            pp_kwargs = pprocessor.get('inputs', {})
+
+            loaded = self._get_processor(pp_name, key, **pp_kwargs)
+
+            if loaded:
+                loaded_pprocessors.append(loaded)
+
+        return loaded_pprocessors
+
+    def _load_facet_processor(self, processor: dict) -> BaseProcessor:
+        processor_name = processor['name']
+        processor_inputs = processor.get('inputs', {})
+        output_key = processor.get('output_key')
+
+        return self._get_processor(
+            processor_name,
+            'facet_processors',
+            output_key=output_key,
+            **processor_inputs
+        )
+
+    def _run_facet_processor(self, processor: dict, filepath: str, source_media: StorageType) -> dict:
+        """Run the specified processor."""
+
+        # Load the processors
+        p = self._load_facet_processor(processor)
+        pre_processors = self._load_extra_processors(processor, 'pre_processors')
+        post_processors = self._load_extra_processors(processor, 'post_processors')
+
+        # Retrieve the metadata
+        metadata = p.run(filepath, source_media=source_media, post_processors=post_processors,
+                         pre_processors=pre_processors)
+
+        output_key = getattr(p, 'output_key', None)
+
+        if output_key and metadata:
+            metadata = dot2dict(output_key, metadata)
+
+        return metadata
 
     def get_categories(self, filepath: str, source_media: StorageType, description: ItemDescription) -> List:
         """

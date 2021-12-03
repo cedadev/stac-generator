@@ -39,10 +39,8 @@ class HandlerPicker:
         """
         self.handlers = {}
 
-        if not entry_point_key:
-            raise ValueError('No entry point specified. No handlers will be loaded')
-
-        self.handlers = self._get_entrypoints(entry_point_key)
+        if entry_point_key:
+            self.handlers = self._get_entrypoints(entry_point_key)
 
     @staticmethod
     def _get_entrypoints(group) -> Dict:
