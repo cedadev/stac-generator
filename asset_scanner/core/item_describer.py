@@ -89,6 +89,21 @@ class ItemDescription:
         """Returns extra top level facets"""
         return self.facet_extract_conf.get("search_facets", [])
 
+    @property
+    def templates(self):
+        """Return the templates section of the description"""
+        return self._description.get("templates", {})
+
+    @property
+    def title_template(self):
+        """Returns the template for the title"""
+        return self.templates.get("title_template")
+
+    @property
+    def description_template(self):
+        """Returns the template for the title"""
+        return self.templates.get("description_template")
+
 
 class ItemDescriptions:
     """
@@ -182,7 +197,6 @@ class ItemDescriptions:
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser()
