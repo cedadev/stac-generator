@@ -73,6 +73,44 @@ if TYPE_CHECKING:
     from asset_scanner.core import BaseExtractor
 
 
+def walk(cat, depth=1):
+    """Return a generator walking a THREDDS data catalog for datasets.
+    Parameters
+    ----------
+    cat : TDSCatalog
+      THREDDS catalog.
+    depth : int
+      Maximum recursive depth. Setting 0 will return only datasets within the top-level catalog. If None,
+      depth is set to 1000.
+    """
+    yield from cat.datasets.items()
+    if depth is None:
+        depth = 1000
+
+    if depth > 0:
+        for name, ref in cat.catalog_refs.items():
+            child = ref.follow()
+            yield from walk(child, depth=depth-1)
+
+
+def getsubattr(obj, path: str):
+    """
+    :param obj: Object
+    :param path: 'attr1.attr2.etc'
+    :return: obj.attr1.attr2.etc
+    """
+    attrs = path.split(".")
+
+    for attr in attrs:
+        if type(obj) == CaseInsensitiveDict:
+            obj = obj[attr]
+            continue
+
+        obj = getattr(obj, attr)
+
+    return obj
+
+
 class ThreddsInputPlugin(BaseInputPlugin):
     """
     Performs an os.walk to provide a stream of paths for procesing.
@@ -84,40 +122,28 @@ class ThreddsInputPlugin(BaseInputPlugin):
         self.object_attr = kwargs["object_path_attr"]
 
         self.thredds_kwargs = kwargs.get("catalog_kwargs", {})
-        self.search_kwargs = kwargs.get("search_kwargs")
 
     def open_catalog(self):
         """Open the Thredds catalog and perform a search, if required."""
         logger.info("Opening catalog")
         catalog = TDSCatalog(self.uri, **self.thredds_kwargs)
 
-        # if self.search_kwargs:
-        #     catalog = catalog.search(**self.search_kwargs)
-
-        logger.info(f"Found {len(catalog.datasets.items())} items")
-
         return catalog
 
+    def scrape_catalog(self, ds, extractor: "BaseExtractor"):
+        filepath = getsubattr(ds, self.object_attr)
+        parse_result = urlparse(filepath)
 
-    def getsubattr(self, obj, path: str):
-        """
-        :param obj: Object
-        :param path: 'attr1.attr2.etc'
-        :return: obj.attr1.attr2.etc
-        """
-        attrs = path.split(".")
+        # Set media type
+        media_type = StorageType.OBJECT_STORE
+        if not parse_result.netloc:
+            media_type = StorageType.POSIX
 
-        for attr in attrs:
-            if type(obj) == CaseInsensitiveDict:
-                obj = obj[attr]
-                continue
-
-            obj = getattr(obj, attr)
-
-        return obj
-
-
-
+        if self.should_process(filepath, media_type):
+            extractor.process_file(filepath, media_type)
+            logger.debug(f"Input processing: {filepath}")
+        else:
+            logger.debug(f"Input skipping: {filepath}")
 
     def run(self, extractor: "BaseExtractor"):
         total_files = 0
@@ -125,22 +151,8 @@ class ThreddsInputPlugin(BaseInputPlugin):
 
         catalog = self.open_catalog()
 
-        for index, row in catalog.datasets.items():
-            filepath = self.getsubattr(row, self.object_attr)
-
-            parse_result = urlparse(filepath)
-
-            # Set media type
-            media_type = StorageType.OBJECT_STORE
-            if not parse_result.netloc:
-                media_type = StorageType.POSIX
-
-            if self.should_process(filepath, media_type):
-                extractor.process_file(filepath, media_type)
-                logger.debug(f"Input processing: {filepath}")
-            else:
-                logger.debug(f"Input skipping: {filepath}")
-
+        for name, ds in walk(catalog, depth=None):
+            self.scrape_catalog(ds, extractor)
             total_files += 1
 
         end = datetime.now()
