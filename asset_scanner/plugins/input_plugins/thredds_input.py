@@ -54,12 +54,10 @@ from siphon.catalog import TDSCatalog, CaseInsensitiveDict
 
 # Framework imports
 from asset_scanner.types.source_media import StorageType
-
 # Package imports
 from .base import BaseInputPlugin
 
 logger = logging.getLogger(__name__)
-
 
 if TYPE_CHECKING:
     from asset_scanner.core import BaseExtractor
@@ -164,4 +162,4 @@ class ThreddsInputPlugin(BaseInputPlugin):
             total_files += 1
 
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.uri} in {end-start}")
+        print(f"Processed {total_files} files from {self.uri} in {end - start}")
