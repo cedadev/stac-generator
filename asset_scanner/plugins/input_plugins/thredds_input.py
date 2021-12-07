@@ -3,10 +3,10 @@
 Thredds Input
 -----------------
 
-Uses an `Intake catalog <https://intake.readthedocs.io/>`_
-as a source for file objects.
+Uses a `Thredds Data Server <https://www.unidata.ucar.edu/software/tds/current/>`_
+as a source.
 
-**Plugin name:** ``intake_esm``
+**Plugin name:** ``thredds``
 
 .. list-table::
     :header-rows: 1
@@ -16,7 +16,7 @@ as a source for file objects.
       - Description
     * - ``uri``
       - ``string``
-      - ``REQUIRED`` The URI of a path or URL to an ESM collection JSON file.
+      - ``REQUIRED`` The URL to a Thredds Data Server.
     * - ``object_path_attr``
       - ``string``
       - ``REQUIRED`` The column header which contains the URI to
@@ -24,22 +24,17 @@ as a source for file objects.
     * - ``catalog_kwargs``
       - ``dict``
       - Optional kwargs to pass to
-        `intake.open_esm_datastore
-        <https://intake-esm.readthedocs.io/en/latest
-        /api.html#intake_esm.core.esm_datastore>`_
-    * - ``search_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to `esm_datastore.search
-        <https://intake-esm.readthedocs.io/en/latest
-        /api.html#intake_esm.core.esm_datastore.search>`_
+        `siphon.catalog.TDSCatalog
+        <https://unidata.github.io/siphon/latest/api/catalog.html#siphon.catalog.TDSCatalog>`_
 
 
 Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: intake_catalog
-              uri: test_directory
+            - name: thredds
+              uri: test-url
+              object_path_attr: access_urls.OPENDAP
 
 """
 __author__ = "Mathieu Provencher"
@@ -49,14 +44,13 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
 # Python imports
-import functools
 import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 # Thirdparty imports
-from siphon.catalog import TDSCatalog
+from siphon.catalog import TDSCatalog, CaseInsensitiveDict
 
 # Framework imports
 from asset_scanner.types.source_media import StorageType
@@ -66,35 +60,34 @@ from .base import BaseInputPlugin
 
 logger = logging.getLogger(__name__)
 
-from siphon.catalog import CaseInsensitiveDict
-
 
 if TYPE_CHECKING:
     from asset_scanner.core import BaseExtractor
 
 
-def walk(cat, depth=1):
-    """Return a generator walking a THREDDS data catalog for datasets.
-    Parameters
-    ----------
-    cat : TDSCatalog
-      THREDDS catalog.
-    depth : int
-      Maximum recursive depth. Setting 0 will return only datasets within the top-level catalog. If None,
+def walk_tds(cat: TDSCatalog, depth: int = 1):
+    """
+    Return a generator walking a THREDDS data catalog for datasets.
+
+    :param cat: THREDDS catalog.
+    :param depth: Maximum recursive depth. Setting 0 will return only datasets within the top-level catalog. If None,
       depth is set to 1000.
     """
     yield from cat.datasets.items()
+
     if depth is None:
         depth = 1000
 
     if depth > 0:
         for name, ref in cat.catalog_refs.items():
             child = ref.follow()
-            yield from walk(child, depth=depth-1)
+            yield from walk_tds(child, depth=depth - 1)
 
 
-def getsubattr(obj, path: str):
+def get_sub_attr(obj: object, path: str):
     """
+    Returns a child or sub-child attribute of a dict object.
+
     :param obj: Object
     :param path: 'attr1.attr2.etc'
     :return: obj.attr1.attr2.etc
@@ -113,7 +106,7 @@ def getsubattr(obj, path: str):
 
 class ThreddsInputPlugin(BaseInputPlugin):
     """
-    Performs an os.walk to provide a stream of paths for procesing.
+    Process each dataset underneath a TDS catalog.
     """
 
     def __init__(self, **kwargs):
@@ -124,14 +117,24 @@ class ThreddsInputPlugin(BaseInputPlugin):
         self.thredds_kwargs = kwargs.get("catalog_kwargs", {})
 
     def open_catalog(self):
-        """Open the Thredds catalog and perform a search, if required."""
+        """
+        Open the Thredds catalog.
+
+        :return: TDSCatalog
+        """
         logger.info("Opening catalog")
         catalog = TDSCatalog(self.uri, **self.thredds_kwargs)
 
         return catalog
 
-    def scrape_catalog(self, ds, extractor: "BaseExtractor"):
-        filepath = getsubattr(ds, self.object_attr)
+    def process_ds(self, ds, extractor: "BaseExtractor"):
+        """
+        Process a single dataset.
+
+        :param ds: siphon.catalog.TDSCatalog.datasets
+        :param extractor: BaseExtractor
+        """
+        filepath = get_sub_attr(ds, self.object_attr)
         parse_result = urlparse(filepath)
 
         # Set media type
@@ -146,13 +149,18 @@ class ThreddsInputPlugin(BaseInputPlugin):
             logger.debug(f"Input skipping: {filepath}")
 
     def run(self, extractor: "BaseExtractor"):
+        """
+        Plugin's entrypoint.
+
+        :param extractor: BaseExtractor
+        """
         total_files = 0
         start = datetime.now()
 
         catalog = self.open_catalog()
 
-        for name, ds in walk(catalog, depth=None):
-            self.scrape_catalog(ds, extractor)
+        for name, ds in walk_tds(catalog, depth=None):
+            self.process_ds(ds, extractor)
             total_files += 1
 
         end = datetime.now()
