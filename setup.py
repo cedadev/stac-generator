@@ -26,6 +26,7 @@ setup(
         "elasticsearch": ["elasticsearch"],
         "intake-esm": ["intake-esm"],
         "rabbitmq": ["pika"],
+        "thredds": ["siphon"],
     },
     python_requires=">=3.5",
     tests_require=["pytest"],

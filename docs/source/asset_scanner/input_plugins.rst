@@ -22,6 +22,9 @@ Input Plugins
    * - :ref:`RabbitMQ Input <asset_scanner/input_plugins:rabbitmq input>`
      - Connect to a RabbitMQ message queue.
      - ``pip install asset-scanner[rabbitmq]``
+   * - :ref:`Thredds Input <asset_scanner/input_plugins:thredds input>`
+     - Use a THREDDS catalog as a source
+     - ``pip install asset-scanner[thredds]``
 
 .. automodule:: asset_scanner.plugins.input_plugins.file_system_input
 
@@ -30,3 +33,5 @@ Input Plugins
 .. automodule:: asset_scanner.plugins.input_plugins.intake_esm_input
 
 .. automodule:: asset_scanner.plugins.input_plugins.rabbit_mq_input
+
+.. automodule:: asset_scanner.plugins.input_plugins.thredds_input

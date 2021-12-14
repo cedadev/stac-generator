@@ -28,17 +28,17 @@ Core Processors
       - Extracts attributes from an xml formatted ISO19115 record at a given URL. Supports URL templating.
 
 
-.. automodule:: item_generator.extraction_methods.header_extract
+.. automodule:: asset_scanner.plugins.extraction_methods.header_extract
 
-.. autoclass:: item_generator.extraction_methods.header_extract.HeaderExtract
+.. autoclass:: asset_scanner.plugins.extraction_methods.header_extract.HeaderExtract
 
-.. automodule:: item_generator.extraction_methods.regex_extract
+.. automodule:: asset_scanner.plugins.extraction_methods.regex_extract
     :members:
 
-.. automodule:: item_generator.extraction_methods.iso19115_extract
+.. automodule:: asset_scanner.plugins.extraction_methods.iso19115_extract
     :members:
 
-.. automodule:: item_generator.extraction_methods.xml_extract
+.. automodule:: asset_scanner.plugins.extraction_methods.xml_extract
     :members:
 
 Third-Party Processors
@@ -62,7 +62,7 @@ be useful for others' workflows. Please make a pull request to add it to this ta
 Pre Processors
 ==============
 
-.. automodule:: item_generator.extraction_methods.preprocessors
+.. automodule:: asset_scanner.plugins.extraction_methods.preprocessors
 
 .. list-table::
     :header-rows: 1
@@ -79,14 +79,14 @@ Pre Processors
 Filename Reducer
 ----------------
 
-.. autoclass:: item_generator.extraction_methods.preprocessors.ReducePathtoName
+.. autoclass:: asset_scanner.plugins.extraction_methods.preprocessors.ReducePathtoName
 
 .. _ceda-observation:
 
 CEDA Observation
 ----------------
 
-.. autoclass:: item_generator.extraction_methods.preprocessors.CEDAObservation
+.. autoclass:: asset_scanner.plugins.extraction_methods.preprocessors.CEDAObservation
 
 
 Third-Party Pre-processors
@@ -111,46 +111,46 @@ be useful for others' workflows. Please make a pull request to add it to this ta
 Post Processors
 ===============
 
-.. automodule:: item_generator.extraction_methods.postprocessors
+.. automodule:: asset_scanner.plugins.extraction_methods.postprocessors
 
 .. list-table::
     :header-rows: 1
 
     * - Processor Name
       - Description
-    * - :ref:`facet_map <item_generator/processors/processors:facet map processor>`
+    * - :ref:`facet_map <asset_scanner/processors:facet map processor>`
       - In some cases, you may wish to map the header attributes to different facets. This method takes a map and converts the facet labels into those specified.
-    * - :ref:`isodate_processor <item_generator/processors/processors:iso date processor>`
+    * - :ref:`isodate_processor <asset_scanner/processors:iso date processor>`
       - Takes the source dict and the key to access the date and converts the date to ISO 8601 Format.
-    * - :ref:`date_combinator <item_generator/processors/processors:date combinator processor>`
+    * - :ref:`date_combinator <asset_scanner/processors:date combinator processor>`
       - Automatically converts year, month, day, hour, minunte, second keys into an ISO 8601 date.
-    * - :ref:`stac_bbox <item_generator/processors/processors:stac bbox processor>`
+    * - :ref:`stac_bbox <asset_scanner/processors:stac bbox processor>`
       - Converts coordinates from a dictionary into `RFC 7946, section 5 <https://tools.ietf.org/html/rfc7946#section-5>`_
         formatted coordinates
-    * - :ref:`string_join <item_generator/processors/processors:string join processor>`
+    * - :ref:`string_join <asset_scanner/processors:string join processor>`
       - Join facets together to create a new value.
 
 Facet Map Processor
 -------------------
 
-.. autoclass:: item_generator.extraction_methods.postprocessors.FacetMapProcessor
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.FacetMapProcessor
 
 ISO Date Processor
 -------------------
-.. autoclass:: item_generator.extraction_methods.postprocessors.ISODateProcessor
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.ISODateProcessor
 
 Date Combinator Processor
 --------------------------
 
-.. autoclass:: item_generator.extraction_methods.postprocessors.DateCombinatorProcessor
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.DateCombinatorProcessor
 
 STAC BBOX Processor
 -------------------
-.. autoclass:: item_generator.extraction_methods.postprocessors.BBOXProcessor
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.BBOXProcessor
 
 String Join Processor
 ---------------------
-.. autoclass:: item_generator.extraction_methods.postprocessors.StringJoinProcessor
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.StringJoinProcessor
 
 Third-Party Post-processors
 ---------------------------

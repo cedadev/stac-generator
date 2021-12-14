@@ -83,8 +83,12 @@ Plugins
 =======
 
 Plugins are used to add modular components and allow extension of the base
-capabilities to fit your needs. The Asset Scanner holds the Input/Output plugins
-as well as filters to modify these plugins.
+capabilities to fit your needs. The Asset Scanner holds the Input/Output plugins,
+filters to modify these plugins and "processors" which are used to extract values
+from the files.
+
+The processors are used to either extract content from the filename/path, headers
+or third-party sources.
 
 
 .. toctree::
@@ -93,3 +97,4 @@ as well as filters to modify these plugins.
    input_plugins
    output_plugins
    plugin_filters
+   processors

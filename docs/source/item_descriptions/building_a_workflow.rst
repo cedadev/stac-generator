@@ -42,7 +42,7 @@ This will define an input path and output to standard out.
 Example configuration
 ---------------------
 
-.. include:: ../shared/example_config.rst
+.. include:: ../item_generator/shared/example_config.rst
 
 You should choose a filepath with a relatively small number of files to
 make iteration quick and allow you to make tweaks.

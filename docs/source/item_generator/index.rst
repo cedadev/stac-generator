@@ -9,7 +9,7 @@ Item Generator
    :hidden:
 
    user_guide/orientation
-   processors/processors
+   /asset_scanner/processors
 
 
 This library aims to be a generic tool for generating JSON documents which are `STAC <https://github.com/radiantearth/stac-spec/>`_-like.
@@ -68,7 +68,7 @@ Configuration for the extraction pipelines is done separately. This could be sto
 repository to manage versions and additions from multiple sources. You could then clone or download
 this repository and reference it using the ``item_descriptions.root_directory``.
 These pipeline files are in the form of `item description files <https://cedadev.github.io/asset-scanner/item_descriptions.html>`_.
-These YAML files specify the :ref:`processors <item_generator/processors/processors:processors>` to use to extract your desired facets.
+These YAML files specify the :ref:`processors <asset_scanner/processors:processors>` to use to extract your desired facets.
 
 .. note::
    The item-generator outputs two things:

@@ -55,6 +55,7 @@ class Facets(Processor):
     """Facets processor description model."""
 
     aggregation_facets: Optional[List] = []
+    search_facets: Optional[List] = []
 
 
 class ItemDescription(BaseModel):
