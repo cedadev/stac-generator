@@ -147,3 +147,7 @@ By default, all files are given the category data.
     categories:
         label: metadata
         regex: 00README
+
+Schema
+
+.. program-output:: python -c "from asset_scanner.core.item_describer import ItemDescription; import json; print(json.dumps(ItemDescription.schema(), indent=4))"
