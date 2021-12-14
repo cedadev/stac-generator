@@ -140,7 +140,7 @@ class BaseExtractor(ABC):
         categories = set()
 
         for conf in description.categories:
-            label = self._get_category(filepath, **conf)
+            label = self._get_category(filepath, **conf.dict())
             if label:
                 categories.add(label)
 

@@ -23,6 +23,7 @@ setup(
         'pyyaml',
         'ceda-directory-tree',
         'tqdm'
+        'pydantic'
     ],
     extras_require={
         'docs': [
