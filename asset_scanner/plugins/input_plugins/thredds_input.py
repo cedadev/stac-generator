@@ -50,10 +50,11 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 # Thirdparty imports
-from siphon.catalog import TDSCatalog, CaseInsensitiveDict
+from siphon.catalog import CaseInsensitiveDict, TDSCatalog
 
 # Framework imports
 from asset_scanner.types.source_media import StorageType
+
 # Package imports
 from .base import BaseInputPlugin
 
