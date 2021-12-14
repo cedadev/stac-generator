@@ -5,11 +5,11 @@ Pre processors operate on the input arguments for the main processor.
 They can be used to manipuate the input arguments for a given processor to
 modify its behaviour.
 """
-__author__ = 'Richard Smith'
-__date__ = '11 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "11 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 import abc
 import logging
@@ -26,9 +26,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class BasePreProcessor(BaseProcessor):
-
     @abc.abstractmethod
-    def run(self, filepath: str, source_media: str = 'POSIX', **kwargs) -> dict:
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
         pass
 
 
@@ -49,11 +48,11 @@ class ReducePathtoName(BasePreProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', **kwargs):
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs):
 
         filepath = os.path.basename(filepath)
 
-        LOGGER.info(f'Identified file name: {filepath}')
+        LOGGER.info(f"Identified file name: {filepath}")
 
         return (filepath, source_media), kwargs
 
@@ -81,7 +80,7 @@ class CEDAObservation(BasePreProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', **kwargs):
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs):
 
         url = Template(self.url_template).substitute(filepath=filepath)
 
@@ -89,11 +88,11 @@ class CEDAObservation(BasePreProcessor):
 
         if r.status_code == 200:
             response = r.json()
-            record_type = response.get('record_type')
-            url = response.get('url')
+            record_type = response.get("record_type")
+            url = response.get("url")
 
-            if record_type == 'Dataset' and url:
-                uuid = url.split('/')[-1]
-                kwargs['uuid'] = uuid
+            if record_type == "Dataset" and url:
+                uuid = url.split("/")[-1]
+                kwargs["uuid"] = uuid
 
         return (filepath, source_media), kwargs

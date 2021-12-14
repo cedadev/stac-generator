@@ -4,29 +4,36 @@ Post processors operate on the output from a main processor.
 They are used using the same interface as a main processor ``process``
 but they accept the result of the previous step as part of the ``process`` signature.
 """
-__author__ = 'Richard Smith'
-__date__ = '28 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "28 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
+
+import logging
 
 # Python imports
 from abc import abstractmethod
-import logging
+from typing import Dict, Optional
 
 # Package imports
 from asset_scanner.core.processor import BaseProcessor
-from .utils import DATE_TEMPLATE, isoformat_date
 
+from .utils import DATE_TEMPLATE, isoformat_date
 
 LOGGER = logging.getLogger(__name__)
 
 
 class BasePostProcessor(BaseProcessor):
-
     @abstractmethod
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict: dict = {}, **kwargs) -> dict:
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: Optional[Dict] = None,
+        **kwargs,
+    ) -> Dict:
         pass
 
 
@@ -55,7 +62,13 @@ class FacetMapProcessor(BasePostProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict: dict = {}, **kwargs ):
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: Optional[Dict] = None,
+        **kwargs,
+    ) -> Dict:
         output = {}
         if source_dict:
 
@@ -105,7 +118,13 @@ class ISODateProcessor(BasePostProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict={}, **kwargs) -> dict:
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: Optional[Dict] = None,
+        **kwargs,
+    ) -> Dict:
         """
         :param filepath: file currently being processed
         :param source_media: media source of the file being processed
@@ -119,22 +138,24 @@ class ISODateProcessor(BasePostProcessor):
                 if source_dict.get(key):
                     date = source_dict[key]
 
-                    date_format = getattr(self, 'format', None)
+                    date_format = getattr(self, "format", None)
 
                     date, format_errors = isoformat_date(date, date_format)
 
                     if format_errors:
-                        LOGGER.warning(f'Could not use format string {date_format} with date from: {filepath}')
+                        LOGGER.warning(
+                            f"Could not use format string {date_format} with date from: {filepath}"
+                        )
 
                     if not date:
-                        LOGGER.error(f'Could not extract date from {filepath}')
+                        LOGGER.error(f"Could not extract date from {filepath}")
                         source_dict.pop(key)
                     else:
                         source_dict[key] = date
 
                 else:
                     # Clean up empty strings and non-matches
-                    source_dict.pop(d.key, None)
+                    source_dict.pop(key, None)
 
         return source_dict
 
@@ -166,7 +187,13 @@ class BBOXProcessor(BasePostProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict: dict = {}, **kwargs ):
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: dict = {},
+        **kwargs,
+    ):
 
         if source_dict:
 
@@ -174,7 +201,7 @@ class BBOXProcessor(BasePostProcessor):
                 rfc_bbox = [float(source_dict[key]) for key in self.key_list]
                 source_dict = rfc_bbox
             except KeyError:
-                LOGGER.warning(f'Unable to convert bbox.', exc_info=True)
+                LOGGER.warning("Unable to convert bbox.", exc_info=True)
 
         return source_dict
 
@@ -210,14 +237,20 @@ class StringJoinProcessor(BasePostProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict: dict = {}, **kwargs ):
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: dict = {},
+        **kwargs,
+    ):
         if source_dict:
 
             try:
                 string_elements = [str(source_dict.pop(key)) for key in self.key_list]
                 source_dict[self.output_key] = self.delimiter.join(string_elements)
             except KeyError:
-                LOGGER.warning(f'Unable merge strings. file: {filepath}', exc_info=True)
+                LOGGER.warning(f"Unable merge strings. file: {filepath}", exc_info=True)
 
         return source_dict
 
@@ -263,19 +296,29 @@ class DateCombinatorProcessor(BasePostProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = 'POSIX', source_dict: dict = {}, **kwargs ):
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: Optional[Dict] = None,
+        **kwargs,
+    ):
         if source_dict:
 
-            if not source_dict.get('year'):
-                LOGGER.error(f'Unable to use date combinator for file: {filepath}. Requires at least "year"')
+            if not source_dict.get("year"):
+                LOGGER.error(
+                    f'Unable to use date combinator for file: {filepath}. Requires at least "year"'
+                )
                 return source_dict
 
-            date_format = getattr(self, 'format', None)
+            date_format = getattr(self, "format", None)
 
-            if not all(k in source_dict for k in ['year', 'month', 'day']):
+            if not all(k in source_dict for k in ["year", "month", "day"]):
                 if not date_format:
-                    LOGGER.error(f'Dateutil does not perform as expected without a day. It will use the current day instead of 01.'
-                                 f'Make sure to use a format string if only providing %Y-%m')
+                    LOGGER.error(
+                        "Dateutil does not perform as expected without a day. It will use the current day instead of 01."
+                        "Make sure to use a format string if only providing %Y-%m"
+                    )
                     return source_dict
 
             # Template the date. safe_substitute allows missing and extra keys.
@@ -283,8 +326,8 @@ class DateCombinatorProcessor(BasePostProcessor):
 
             # Trim the resulting string to remove un-filled template parameters
             try:
-                trim_index = date.index('$')
-                date = date[0:trim_index-1]
+                trim_index = date.index("$")
+                date = date[0 : trim_index - 1]
             except ValueError:
                 # $ not found in date string so fully templated
                 ...
@@ -293,17 +336,21 @@ class DateCombinatorProcessor(BasePostProcessor):
             isodate, format_errors = isoformat_date(date, date_format)
 
             if format_errors:
-                LOGGER.warning(f'Error parsing date from file: {filepath} with format: {self.format}.'
-                               f'With error {e}. Trying dateutil...')
+                LOGGER.warning(
+                    f"Error parsing date from file: {filepath} with format: {self.format}."
+                    "Trying dateutil..."
+                )
             if not isodate:
-                LOGGER.error(f'Error parsing date from file: {filepath} on media: {source_media} - {e}')
+                LOGGER.error(
+                    f"Error parsing date from file: {filepath} on media: {source_media}"
+                )
 
-            output_key = getattr(self, 'output_key', 'datetime')
+            output_key = getattr(self, "output_key", "datetime")
             source_dict[output_key] = isodate or date
 
             # Clear out keys if destructive
-            if getattr(self, 'destructive', True):
-                for key in ['year', 'month', 'day', 'hour','minute','second']:
+            if getattr(self, "destructive", True):
+                for key in ["year", "month", "day", "hour", "minute", "second"]:
                     source_dict.pop(key, None)
 
         return source_dict

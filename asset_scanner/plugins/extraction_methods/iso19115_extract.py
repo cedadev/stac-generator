@@ -5,37 +5,36 @@
 ISO 19115 Extract
 ------------------
 """
-__author__ = 'Richard Smith'
-__date__ = '28 Jul 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "28 Jul 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
 from string import Template
 from xml.etree import ElementTree as ET
 
-
 # Third party imports
 import requests
 
+from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
+
 # Package imports
 from asset_scanner.core.processor import BaseProcessor
-from asset_scanner.core.decorators import (accepts_postprocessors,
-                                            accepts_preprocessors)
+
 from .mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
 
 iso19115_ns = {
-    'gmd': 'http://www.isotc211.org/2005/gmd',
-    'gml': 'http://www.opengis.net/gml/3.2',
-    'gco': 'http://www.isotc211.org/2005/gco',
-    'gmx': 'http://www.isotc211.org/2005/gmx',
-    'srv': 'http://www.isotc211.org/2005/srv',
-    'xlink': 'http://www.w3.org/1999/xlink'
-
+    "gmd": "http://www.isotc211.org/2005/gmd",
+    "gml": "http://www.opengis.net/gml/3.2",
+    "gco": "http://www.isotc211.org/2005/gco",
+    "gmx": "http://www.isotc211.org/2005/gmx",
+    "srv": "http://www.isotc211.org/2005/srv",
+    "xlink": "http://www.w3.org/1999/xlink",
 }
 
 
@@ -105,21 +104,23 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str = 'POSIX', **kwargs) -> dict:
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
 
         # Build the template
         url = Template(self.url_template)
         try:
             url = url.substitute(kwargs)
-        except KeyError as e:
-            LOGGER.warning(f'URL templating failed. Template: {self.url_template} key not found in kwargs: {kwargs}')
+        except KeyError:
+            LOGGER.warning(
+                f"URL templating failed. Template: {self.url_template} key not found in kwargs: {kwargs}"
+            )
             return {}
 
         # Retrieve the ISO 19115 record
         response = requests.get(url)
 
         if not response.status_code == 200:
-            LOGGER.debug(f'Request {url} failed with response: {response.error}')
+            LOGGER.debug(f"Request {url} failed with response: {response.error}")
             return {}
 
         iso_record = ET.fromstring(response.text)
@@ -128,8 +129,8 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
         metadata = {}
 
         for key in self.extraction_keys:
-            name = key['name']
-            location = key['key']
+            name = key["name"]
+            location = key["key"]
 
             value = iso_record.find(location, iso19115_ns)
 

@@ -5,29 +5,21 @@
 XML Extract
 ------------
 """
-__author__ = 'Richard Smith'
-__date__ = '19 Aug 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "19 Aug 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
-import os
-import re
-from functools import lru_cache
-from string import Template
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ParseError
 
+# Package imports
+from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
 from asset_scanner.core.processor import BaseProcessor
 
-# Third party imports
-import requests
-
-# Package imports
-from asset_scanner.core.decorators import (accepts_postprocessors,
-                                           accepts_preprocessors)
 from .mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
@@ -94,7 +86,7 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str = 'POSIX', **kwargs) -> dict:
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
 
         # Extract the keys
         metadata = {}
@@ -105,14 +97,14 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
             return {}
 
         for key in self.extraction_keys:
-            name = key['name']
-            location = key['key']
-            attribute = key.get('attribute')
+            name = key["name"]
+            location = key["key"]
+            attribute = key.get("attribute")
 
             value = xml_file.find(location, self.namespaces)
             if value is not None:
                 if attribute:
-                    v = value.get(attribute, '')
+                    v = value.get(attribute, "")
                 else:
                     v = value.text
                 metadata[name] = v
@@ -120,29 +112,34 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
         return metadata
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     kwargs = {
-        'filter_expr': '\.manifest$',
-        'extraction_keys': [
-            {'name': 'instrument', 'key': './/safe:instrument/safe:familyName'},
-            {'name': 'short_instrument', 'key': './/safe:instrument/safe:familyName', 'attribute': 'abbreviation'},
+        "filter_expr": "\.manifest$",
+        "extraction_keys": [
+            {"name": "instrument", "key": ".//safe:instrument/safe:familyName"},
+            {
+                "name": "short_instrument",
+                "key": ".//safe:instrument/safe:familyName",
+                "attribute": "abbreviation",
+            },
         ],
-        'namespaces': {
-            'ns0': "http://www.w3.org/2001/XMLSchema-instance",
-            'gml': "http://www.opengis.net/gml",
-            'xfdu': "urn:ccsds:schema:xfdu:1",
-            'safe': "http://www.esa.int/safe/sentinel-1.0",
-            's1': "http://www.esa.int/safe/sentinel-1.0/sentinel-1",
-            's1sar': "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar",
-            's1sarl1': "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar/level-1",
-            's1sarl2': "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar/level-2",
-            'gx': "http://www.google.com/kml/ext/2.2",
-        }
+        "namespaces": {
+            "ns0": "http://www.w3.org/2001/XMLSchema-instance",
+            "gml": "http://www.opengis.net/gml",
+            "xfdu": "urn:ccsds:schema:xfdu:1",
+            "safe": "http://www.esa.int/safe/sentinel-1.0",
+            "s1": "http://www.esa.int/safe/sentinel-1.0/sentinel-1",
+            "s1sar": "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar",
+            "s1sarl1": "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar/level-1",
+            "s1sarl2": "http://www.esa.int/safe/sentinel-1.0/sentinel-1/sar/level-2",
+            "gx": "http://www.google.com/kml/ext/2.2",
+        },
     }
 
     xe = XMLExtract(**kwargs)
     metadata = xe.run(
-        '/neodc/sentinel1a/data/IW/L1_SLC/IPF_v2/2014/10/03/S1A_IW_SLC__1SDV_20141003T165117_20141003T165146_002668_002F8B_79FE.manifest')
+        "/neodc/sentinel1a/data/IW/L1_SLC/IPF_v2/2014/10/03/S1A_IW_SLC__1SDV_20141003T165117_20141003T165146_002668_002F8B_79FE.manifest"
+    )
     print(metadata)
     # metadata = xe.run('/neodc/sentinel1a/data/IW/L1_SLC/IPF_v2/2014/10/03/S1A_IW_SLC__1SDV_20141003T165117_20141003T165146_002668_002F8B_79FE_checksum')
     # print(metadata)

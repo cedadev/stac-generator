@@ -5,24 +5,22 @@
 Regex
 ------
 """
-__author__ = 'Richard Smith'
-__date__ = '27 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "27 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 # Python imports
 import logging
 import re
 
-from asset_scanner.core.decorators import (accepts_postprocessors,
-                                            accepts_preprocessors)
+from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
 from asset_scanner.core.processor import BaseProcessor
 
 # Package imports
 from .mixins import PropertiesOutputKeyMixin
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -72,7 +70,7 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str ='POSIX', **kwargs) -> dict:
+    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
 
         m = re.match(self.regex, filepath)
 

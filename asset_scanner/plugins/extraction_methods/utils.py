@@ -2,30 +2,31 @@
 """
 
 """
-__author__ = 'Richard Smith'
-__date__ = '03 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "03 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Package imports
 
-# Framework imports
-from asset_scanner.core.utils import generate_id
+import logging
+import re
+
+# Python imports
+from datetime import datetime
+from string import Template
+from typing import Optional, Tuple
 
 # 3rd party imports
 from dateutil.parser import parse
 
-# Python imports
-from datetime import datetime
-import re
-from typing import Optional, Tuple
-from string import Template
-import logging
+# Framework imports
+from asset_scanner.core.utils import generate_id
 
 LOGGER = logging.getLogger(__name__)
 
-DATE_TEMPLATE = Template('${year}-${month}-${day}T${hour}:${minute}:${second}')
+DATE_TEMPLATE = Template("${year}-${month}-${day}T${hour}:${minute}:${second}")
 
 
 def is_remote_uri(path: str) -> bool:
@@ -38,19 +39,21 @@ def is_remote_uri(path: str) -> bool:
 
 def generate_item_id_from_properties(filepath, collection_id, tags, description):
 
-    has_all_facets = all([facet in tags for facet in description.facets.aggregation_facets])
+    has_all_facets = all(
+        [facet in tags for facet in description.facets.aggregation_facets]
+    )
 
     if has_all_facets:
         id_string = collection_id
         for facet in description.facets.aggregation_facets:
             vals = tags.get(facet)
             if isinstance(vals, (str, int)):
-                id_string = '.'.join((id_string, vals))
+                id_string = ".".join((id_string, vals))
             if isinstance(vals, (list)):
-                id_string = '.'.join((id_string, f'multi_{facet}'))
+                id_string = ".".join((id_string, f"multi_{facet}"))
         return generate_id(id_string)
 
-    return generate_id(f'{collection_id}.{filepath}')
+    return generate_id(f"{collection_id}.{filepath}")
 
 
 def isoformat_date(date_string: str, format=None) -> Tuple[Optional[str], bool]:
@@ -80,16 +83,18 @@ def isoformat_date(date_string: str, format=None) -> Tuple[Optional[str], bool]:
     except ValueError as e:
         if format:
             format_errors = True
-            LOGGER.warning(f'Could not parse {date_string} with format {format}. {e}\n'
-                           f'Trying dateutil...')
+            LOGGER.warning(
+                f"Could not parse {date_string} with format {format}. {e}\n"
+                f"Trying dateutil..."
+            )
         else:
-            LOGGER.error(f'Error parsing {date_string} with dateutil. {e}')
+            LOGGER.error(f"Error parsing {date_string} with dateutil. {e}")
 
     # Tried specific format but this failed. Try generic parser.
     if format_errors:
         try:
             output_date = parse(date_string).isoformat()
         except ValueError as e:
-            LOGGER.error(f'Error parsing {date_string} with dateutil. {e}')
+            LOGGER.error(f"Error parsing {date_string} with dateutil. {e}")
 
     return output_date, format_errors

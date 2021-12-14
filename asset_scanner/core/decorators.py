@@ -10,11 +10,11 @@ Decorators allow the user to modify the input and out from the processors.
 :py:mod:`item_generator.extraction_methods.postprocessors` modify the output dictionary.
 
 """
-__author__ = 'Richard Smith'
-__date__ = '28 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "28 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 from functools import wraps
 
@@ -33,7 +33,7 @@ def accepts_preprocessors(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        pre_processors = kwargs.get('pre_processors', [])
+        pre_processors = kwargs.get("pre_processors", [])
 
         # Remove the reference to self
         self = args[0]
@@ -45,6 +45,7 @@ def accepts_preprocessors(func):
 
         response = func(self, *args, **kwargs)
         return response
+
     return wrapper
 
 
@@ -60,12 +61,13 @@ def accepts_postprocessors(func):
     :param kwargs: Additional kwargs passed to post processor
 
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         # Call the main processor
         response = func(*args, **kwargs)
 
-        post_processors = kwargs.get('post_processors', [])
+        post_processors = kwargs.get("post_processors", [])
 
         # Remove the reference to self from the first processor.
         args = args[1:]

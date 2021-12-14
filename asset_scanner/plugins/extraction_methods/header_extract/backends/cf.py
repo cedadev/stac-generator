@@ -2,11 +2,11 @@
 """
 Collection of functions which can be used to extract metadata from file headers
 """
-__author__ = 'Richard Smith'
-__date__ = '27 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "27 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 from typing import List
 
@@ -25,6 +25,7 @@ class CfBackend:
         Takes an input string and returns a boolean on whether this
         backend can open that file.
     """
+
     def guess_can_open(self, filepath: str) -> bool:
         try:
             file_type(filepath)
@@ -32,11 +33,7 @@ class CfBackend:
         except IOError:
             return False
 
-    def attr_extraction(
-            self,
-            file: str,
-            attributes: List,
-            **kwargs) -> dict:
+    def attr_extraction(self, file: str, attributes: List, **kwargs) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 
@@ -48,17 +45,20 @@ class CfBackend:
         """
 
         field_list = cf.read(file, **kwargs)
-        
+
         properties = {}
         for field in field_list:
             properties.update(field.properties())
             if field.nc_global_attributes():
-                properties['global_attributes'] = field.nc_global_attributes()
-            
+                properties["global_attributes"] = field.nc_global_attributes()
+
         extracted_metadata = {}
         for attr in attributes:
-            if 'global_attributes' in properties and properties['global_attributes'][attr]:
-                extracted_metadata[attr] = properties['global_attributes'][attr]
+            if (
+                "global_attributes" in properties
+                and properties["global_attributes"][attr]
+            ):
+                extracted_metadata[attr] = properties["global_attributes"][attr]
             elif attr in properties:
                 extracted_metadata[attr] = properties[attr]
 
