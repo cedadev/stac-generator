@@ -19,7 +19,8 @@ ROOT_DESCRIPTIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'te
 default_description = {
     'paths': [],
     'collections': {},
-    'facets': {}
+    'facets': {},
+    'categories': []
 }
 
 
@@ -33,6 +34,9 @@ def test_retrieve_posix_description(item_descriptions):
     expected = {**default_description,**{'paths': ['/a/b/c']}}
 
     description = item_descriptions.get_description('/a/b/c/d/e')
+
+    print(expected)
+    print(description.dict())
     assert description.dict() == expected
 
 
