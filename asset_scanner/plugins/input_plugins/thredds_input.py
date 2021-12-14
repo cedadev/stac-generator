@@ -54,6 +54,7 @@ from siphon.catalog import TDSCatalog, CaseInsensitiveDict
 
 # Framework imports
 from asset_scanner.types.source_media import StorageType
+
 # Package imports
 from .base import BaseInputPlugin
 
