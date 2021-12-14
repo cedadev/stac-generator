@@ -1,0 +1,25 @@
+name: Formatting
+
+on:
+  - push
+  - pull_request
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Python Blacken
+      uses: psf/black@stable
+      with:
+        options: "--check --verbose"
+        version: "21.5b1"
+    - name: python-isort
+      uses: isort/isort-action@v0.1.0
+    - name: Flake8 with annotations
+      uses: TrueBrain/actions-flake8@v2.1
+      with:
+        path: asset_scanner

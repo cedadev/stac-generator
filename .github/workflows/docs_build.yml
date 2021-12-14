@@ -1,12 +1,12 @@
 name: Docs
 
 on:
-  push:
-    branches:
-      - master
+  release:
+    types:
+      - published
   workflow_dispatch:
     inputs: {}
-  
+
 
 jobs:
   sphinx_docs_to_gh-pages:

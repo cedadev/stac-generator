@@ -38,17 +38,19 @@ Example Configuration:
                 name: 'assets-2021-06-02'
               namespace: assets
 """
-__author__ = 'Richard Smith'
-__date__ = '01 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
-
-from .base import OutputBackend
-from elasticsearch import Elasticsearch
-from asset_scanner.core.utils import load_yaml, Coordinates
+__author__ = "Richard Smith"
+__date__ = "01 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 from typing import Dict
+
+from elasticsearch import Elasticsearch
+
+from asset_scanner.core.utils import Coordinates, load_yaml
+
+from .base import OutputBackend
 
 
 class ElasticsearchOutputBackend(OutputBackend):
@@ -58,24 +60,21 @@ class ElasticsearchOutputBackend(OutputBackend):
 
     """
 
-    CLEAN_METHODS = [
-            '_format_bbox',
-            '_format_temporal_extent'
-        ]
+    CLEAN_METHODS = ["_format_bbox", "_format_temporal_extent"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        index_conf = kwargs['index']
+        index_conf = kwargs["index"]
 
-        self.es = Elasticsearch(**kwargs['connection_kwargs'])
-        self.index_name = index_conf['name']
-        self.pipeline_conf = kwargs.get('pipeline', None)
+        self.es = Elasticsearch(**kwargs["connection_kwargs"])
+        self.index_name = index_conf["name"]
+        self.pipeline_conf = kwargs.get("pipeline", None)
 
         # Create the index, if it doesn't already exist
-        if index_conf.get('mapping'):
+        if index_conf.get("mapping"):
             if not self.es.indices.exists(self.index_name):
-                mapping = load_yaml(index_conf.get('mapping'))
+                mapping = load_yaml(index_conf.get("mapping"))
                 self.es.indices.create(self.index_name, body=mapping)
 
     @staticmethod
@@ -86,18 +85,17 @@ class ElasticsearchOutputBackend(OutputBackend):
 
         :param data: Input data dictionary
         """
-        body = data['body']
+        body = data["body"]
 
-        if body.get('bbox'):
-            bbox = body.pop('bbox')
+        if body.get("bbox"):
+            bbox = body.pop("bbox")
 
-            body['spatial'] = {
-                    "bbox": {
-                        "type": "envelope",
-                        "coordinates": Coordinates.from_wgs84(
-                            bbox).to_geojson()
-                    }
+            body["spatial"] = {
+                "bbox": {
+                    "type": "envelope",
+                    "coordinates": Coordinates.from_wgs84(bbox).to_geojson(),
                 }
+            }
 
         return data
 
@@ -108,17 +106,17 @@ class ElasticsearchOutputBackend(OutputBackend):
 
         :param data: Input data dictionary
         """
-        body = data['body']
+        body = data["body"]
 
-        if body.get('extent', {}).get('temporal'):
-            temporal_extent = body['extent'].pop('temporal')
+        if body.get("extent", {}).get("temporal"):
+            temporal_extent = body["extent"].pop("temporal")
 
             if temporal_extent[0][0]:
-                body['extent']['temporal'] = {'gte': temporal_extent[0][0]}
+                body["extent"]["temporal"] = {"gte": temporal_extent[0][0]}
             if temporal_extent[0][1]:
-                temporal = body['extent'].get('temporal',{})
-                temporal['lte'] = temporal_extent[0][1]
-                body['extent']['temporal'] = temporal
+                temporal = body["extent"].get("temporal", {})
+                temporal["lte"] = temporal_extent[0][1]
+                body["extent"]["temporal"] = temporal
 
         return data
 
@@ -140,12 +138,9 @@ class ElasticsearchOutputBackend(OutputBackend):
         data = self.clean(data)
 
         index_kwargs = {
-            'index': self.index_name,
-            'id': data['id'],
-            'body': {
-                'doc': data['body'],
-                'doc_as_upsert': True
-            }
+            "index": self.index_name,
+            "id": data["id"],
+            "body": {"doc": data["body"], "doc_as_upsert": True},
         }
 
         self.es.update(**index_kwargs)

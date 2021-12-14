@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'asset_scanner'
-copyright = '2021, Richard Smith'
-author = 'Richard Smith'
+project = "asset_scanner"
+copyright = "2021, Richard Smith"
+author = "Richard Smith"
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,7 +40,7 @@ extensions = [
 autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -53,16 +53,19 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 html_css_files = [
-    'styles.css',
+    "styles.css",
 ]
 
-html_favicon = '_static/favicon.ico'
-html_logo = 'https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png'
+html_favicon = "_static/favicon.ico"
+html_logo = (
+    "https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div"
+    "/0.3.2/_assets/img/ceda_logo_transp_white_h80.png"
+)

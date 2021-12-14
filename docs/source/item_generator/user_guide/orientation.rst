@@ -88,5 +88,3 @@ This works in Elasticsearch because each individual elasticsearch document has t
 merged in an upsert. If you are using another storage system, it will require an aggregation step
 to join these together. Even with elasticsearch, lists are not merged in an upsert, but we have
 not had to deal with this yet.
-
-

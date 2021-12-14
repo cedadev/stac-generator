@@ -2,26 +2,27 @@
 """
 
 """
-__author__ = 'Richard Smith'
-__date__ = '08 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "08 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
-from asset_scanner.core.exceptions import NoPluginsError
-from asset_scanner.core.handler_picker import HandlerPicker
+import collections
+import hashlib
+
+# Python imports
+import logging
+from pathlib import Path
+
+# Typing imports
+from typing import Any, Dict, List, Optional, Union
 
 # Third party imports
 import yaml
 
-# Python imports
-import logging
-import hashlib
-import collections
-from pathlib import Path
-
-# Typing imports
-from typing import List, Any, Dict, Optional, Union
+from asset_scanner.core.exceptions import NoPluginsError
+from asset_scanner.core.handler_picker import HandlerPicker
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class Coordinates:
         self.maxlat = maxlat
 
     @classmethod
-    def from_geojson(cls, coordinates: List[List[NumType]]) -> 'Coordinates':
+    def from_geojson(cls, coordinates: List[List[NumType]]) -> "Coordinates":
         """
         GeoJSON formatted coordinates are in the form:
 
@@ -57,7 +58,7 @@ class Coordinates:
         return cls(minlon, maxlon, minlat, maxlat)
 
     @classmethod
-    def from_wgs84(cls, coordinates: List) -> 'Coordinates':
+    def from_wgs84(cls, coordinates: List) -> "Coordinates":
         """
         WGS84 formatted coordinates are in the form:
 
@@ -89,7 +90,7 @@ class Coordinates:
         [[minLon, maxLat],[maxLon, minLat]]
         """
 
-        return [[self.minlon, self.maxlat],[self.maxlon, self.minlat]]
+        return [[self.minlon, self.maxlat], [self.maxlon, self.minlat]]
 
 
 def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
@@ -115,17 +116,17 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
         try:
             loaded_plugin = plugins.get_processor(**plugin_conf)
             loaded_plugins.append(loaded_plugin)
-        except Exception as e:
+        except Exception:
             LOGGER.error(f'Failed to load plugin: {plugin_conf["name"]}', exc_info=True)
 
     if not loaded_plugins:
-        raise NoPluginsError(f'No plugins were successfully loaded from {conf_section}')
+        raise NoPluginsError(f"No plugins were successfully loaded from {conf_section}")
 
     return loaded_plugins
 
 
 def generate_id(path):
-    return hashlib.md5(path.encode('utf-8')).hexdigest()
+    return hashlib.md5(path.encode("utf-8")).hexdigest()
 
 
 def load_yaml(path):
@@ -144,7 +145,9 @@ def dict_merge(*args, add_keys=True) -> dict:
     for merge_dct in merge_dicts:
 
         if add_keys is False:
-            merge_dct = {key: merge_dct[key] for key in set(rtn_dct).intersection(set(merge_dct))}
+            merge_dct = {
+                key: merge_dct[key] for key in set(rtn_dct).intersection(set(merge_dct))
+            }
 
         for k, v in merge_dct.items():
 
@@ -153,11 +156,15 @@ def dict_merge(*args, add_keys=True) -> dict:
                 rtn_dct[k] = v
 
             # This is an existing key with mismatched types
-            elif k in rtn_dct and type(v) != type(rtn_dct[k]):
-                raise TypeError(f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}")
+            elif k in rtn_dct and not isinstance(v, type(rtn_dct[k])):
+                raise TypeError(
+                    f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}"
+                )
 
             # Recursive merge the next level
-            elif isinstance(rtn_dct[k], dict) and isinstance(merge_dct[k], collections.abc.Mapping):
+            elif isinstance(rtn_dct[k], dict) and isinstance(
+                merge_dct[k], collections.abc.Mapping
+            ):
                 rtn_dct[k] = dict_merge(rtn_dct[k], merge_dct[k], add_keys=add_keys)
 
             # If the item is a list, append items avoiding duplictes
@@ -189,11 +196,11 @@ def dot2dict(key: str, val: Any) -> Dict[str, Any]:
         return val
 
     # Split on .
-    parts = key.split('.')
+    parts = key.split(".")
     tail = parts.pop()
 
     # Create the new key
-    key = '.'.join(parts)
+    key = ".".join(parts)
 
     val = {tail: val}
     return dot2dict(key, val)
@@ -225,5 +232,5 @@ def load_description_files(path: str) -> List[str]:
     :param path: Root path for the description files
     """
 
-    exts = ['.yml', '.yaml']
-    return [p for p in Path(path).rglob('*') if p.suffix in exts]
+    exts = [".yml", ".yaml"]
+    return [p for p in Path(path).rglob("*") if p.suffix in exts]

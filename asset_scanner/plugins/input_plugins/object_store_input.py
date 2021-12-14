@@ -46,19 +46,19 @@ Example Configuration:
                 delimiter: .zarr/
 
 """
-__author__ = 'Rhys Evans'
-__date__ = '02 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'rhys.r.evans@stfc.ac.uk'
+__author__ = "Rhys Evans"
+__date__ = "02 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "rhys.r.evans@stfc.ac.uk"
 
 
-from .base import BaseInputPlugin
+import logging
+from typing import TYPE_CHECKING
 
 import boto3
 
-from typing import TYPE_CHECKING
-import logging
+from .base import BaseInputPlugin
 
 LOGGER = logging.getLogger(__name__)
 
@@ -67,29 +67,36 @@ if TYPE_CHECKING:
 
 
 class ObjectStoreInputPlugin(BaseInputPlugin):
-    """
-    """
+    """ """
 
     def __init__(self, **kwargs):
 
-        self.endpoint_url = kwargs.get('endpoint_url')
-        session = boto3.session.Session(**kwargs['session_kwargs'])
+        self.endpoint_url = kwargs.get("endpoint_url")
+        session = boto3.session.Session(**kwargs["session_kwargs"])
         s3 = session.resource(
-            's3',
+            "s3",
             endpoint_url=self.endpoint_url,
         )
 
         self.client = s3.meta.client
-        self.buckets = [s3.Bucket(kwargs['bucket'])] if 'bucket' in kwargs else s3.buckets.all()
-        self.prefix = kwargs.get('prefix', '')
-        self.delimiter = kwargs.get('delimiter', '')
+        self.buckets = (
+            [s3.Bucket(kwargs["bucket"])] if "bucket" in kwargs else s3.buckets.all()
+        )
+        self.prefix = kwargs.get("prefix", "")
+        self.delimiter = kwargs.get("delimiter", "")
 
-    def run(self, extractor: 'BaseExtractor' ):
+    def run(self, extractor: "BaseExtractor"):
 
         for bucket in self.buckets:
             total_files = 0
-            for obj in bucket.objects.filter(Prefix=self.prefix, Delimiter=self.delimiter):
-                extractor.process_file(f'{self.endpoint_url}/{bucket.name}/{obj.key}', 'object_store', client=self.client)
+            for obj in bucket.objects.filter(
+                Prefix=self.prefix, Delimiter=self.delimiter
+            ):
+                extractor.process_file(
+                    f"{self.endpoint_url}/{bucket.name}/{obj.key}",
+                    "object_store",
+                    client=self.client,
+                )
                 total_files += 1
 
-            LOGGER.info(f'Processed {total_files} files from {bucket}')
+            LOGGER.info(f"Processed {total_files} files from {bucket}")

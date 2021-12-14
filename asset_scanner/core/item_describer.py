@@ -3,33 +3,35 @@
 Item Description
 ================
 """
-__author__ = 'Richard Smith'
-__date__ = '27 May 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "27 May 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
-# Package imports
-from asset_scanner.core.utils import dict_merge, load_description_files
+
+import logging
+
+# Python imports
+from functools import lru_cache
+from pathlib import Path
+from typing import Dict, List, Optional
+
+import yaml
 
 # 3rd Party Imports
 from directory_tree import DatasetNode
 from pydantic import BaseModel
 
-# Python imports
-import yaml
-from functools import lru_cache
-import logging
-from pathlib import Path
-
-# Typing imports
-from typing import Dict, List, Optional
+# Package imports
+from asset_scanner.core.utils import dict_merge, load_description_files
 
 LOGGER = logging.getLogger(__name__)
 
 
 class Processor(BaseModel):
     """Common model for processor."""
+
     defaults: Optional[Dict] = {}
     mappings: Optional[Dict] = {}
     overrides: Optional[Dict] = {}
@@ -38,22 +40,26 @@ class Processor(BaseModel):
 
 class Category(BaseModel):
     """Category label model."""
+
     label: str
     regex: str
 
 
 class Collections(Processor):
     """Collections processor description model."""
+
     id: Optional[str]
 
 
 class Facets(Processor):
     """Facets processor description model."""
+
     aggregation_facets: Optional[List] = []
 
 
 class ItemDescription(BaseModel):
     """Top level container for ItemDescriptions."""
+
     paths: List
     collections: Optional[Collections] = {}
     facets: Optional[Facets] = {}
@@ -69,7 +75,9 @@ class ItemDescriptions:
     and returning an :py:obj:`ItemDescription`
     """
 
-    def __init__(self, root_path: Optional[str] = None, filelist: Optional[List] = None):
+    def __init__(
+        self, root_path: Optional[str] = None, filelist: Optional[List] = None
+    ):
         """
 
         :param root_path: Path to the root of the yaml store
@@ -93,16 +101,19 @@ class ItemDescriptions:
             files = load_description_files(root_path)
 
         if not files:
-            LOGGER.error("No description files found. Check the path in your configuration. Exiting...")
+            LOGGER.error(
+                "No description files found. "
+                "Check the path in your configuration. Exiting..."
+            )
             exit()
 
         for file in files:
             with open(file) as reader:
                 data = yaml.safe_load(reader)
 
-                for dataset in data.get('paths', []):
+                for dataset in data.get("paths", []):
                     # Strip trailing slash. Needed to make sure tree search works
-                    dataset = dataset.rstrip('/')
+                    dataset = dataset.rstrip("/")
 
                     self.tree.add_child(dataset, description_file=file.as_posix())
 
@@ -128,8 +139,8 @@ class ItemDescriptions:
         :param filepath: Path for which to retrieve the description
         """
 
-        if not filepath[0] == '/':
-            filepath = f'/{filepath}'
+        if not filepath[0] == "/":
+            filepath = f"/{filepath}"
 
         nodes = self.tree.search_all(filepath)
         description_files = [node.description_file for node in nodes]
@@ -153,12 +164,15 @@ class ItemDescriptions:
         return base_dict
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('root', help='root from which to load all the yaml description files')
-    parser.add_argument('path', help='path to retrieve description for')
+    parser.add_argument(
+        "root", help="root from which to load all the yaml description files"
+    )
+    parser.add_argument("path", help="path to retrieve description for")
+
     args = parser.parse_args()
 
     descriptions = ItemDescriptions(args.root)

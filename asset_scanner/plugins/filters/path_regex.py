@@ -25,26 +25,28 @@ paths for processing. Can use the ``exclude`` flag to flip the regex match.
 Example Configuration:
     .. code-block:: yaml
 
-        filters:
-            - name: path_regex
-              regex: ^\/badc\/cmip[56]\/.*files
-              exclude: 1
+        inputs:
+            - name: file_system
+              path: /badc/cmip5
+              filters:
+                - name: path_regex
+                  regex: ^\/badc\/cmip[56]\/.*files
+                  exclude: 1
 
 """
-__author__ = 'Richard Smith'
-__date__ = '20 Sep 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "20 Sep 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 import re
 
 
 class PathRegexFilter:
-
     def __init__(self, **kwargs):
-        self.regex = kwargs['regex']
-        self.exclude = kwargs.get('exclude', 0)
+        self.regex = kwargs["regex"]
+        self.exclude = kwargs.get("exclude", 0)
 
     def run(self, filepath: str, source_media: str) -> bool:
         if self.exclude:
