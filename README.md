@@ -2,11 +2,13 @@
 
 [![Test](https://github.com/cedadev/asset-scanner/actions/workflows/tests.yml/badge.svg)](https://github.com/cedadev/asset-scanner/actions/workflows/tests.yml)
 [![Docs](https://github.com/cedadev/asset-scanner/actions/workflows/docs_build.yml/badge.svg)](https://github.com/cedadev/asset-scanner/actions/workflows/docs_build.yml)
+[![Documentation Status](https://readthedocs.org/projects/pip/badge/?version=stable)](https://pip.pypa.io/en/stable/?badge=stable)
 [![Upload Python Package](https://github.com/cedadev/asset-scanner/actions/workflows/release.yml/badge.svg)](https://pypi.org/project/asset-scanner/)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
-Documentation: https://cedadev.github.io/asset-scanner/
-Read the Docs: https://asset-scanner.readthedocs.io/en/latest/index.html
+Legacy Documentation: https://cedadev.github.io/asset-scanner/
+
+Documentation: https://asset-scanner.readthedocs.io/en/latest/index.html
 
 The asset scanner provides the framework and access to shared tools.
 The framework allows you to build extractors to get metadata from file objects using plugins to change the source of the
