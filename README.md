@@ -6,6 +6,7 @@
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 Documentation: https://cedadev.github.io/asset-scanner/
+Read the Docs: https://asset-scanner.readthedocs.io/en/latest/index.html
 
 The asset scanner provides the framework and access to shared tools.
 The framework allows you to build extractors to get metadata from file objects using plugins to change the source of the
