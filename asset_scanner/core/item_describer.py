@@ -29,6 +29,13 @@ from asset_scanner.core.utils import dict_merge, load_description_files
 LOGGER = logging.getLogger(__name__)
 
 
+class Templates(BaseModel):
+    """Templates description model."""
+
+    title: Optional[str]
+    description: Optional[str]
+
+
 class Processor(BaseModel):
     """Common model for processor."""
 
@@ -36,6 +43,7 @@ class Processor(BaseModel):
     mappings: Optional[Dict] = {}
     overrides: Optional[Dict] = {}
     extraction_methods: List[Dict] = []
+    templates: Optional[Templates] = {}
 
 
 class Category(BaseModel):

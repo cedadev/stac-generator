@@ -111,6 +111,10 @@ Collections
      - string
      - ID for the defined collection
      - `sentinel3`
+   * - ``templates``
+     - :ref:
+     - ID for the defined collection
+     - `sentinel3`
    * -
      - :ref:`Processor <item_descriptions/item_descriptions:processor>`
      - Defines the keys for the processor workflow.
@@ -242,6 +246,14 @@ Processor
                 - name: regex
                   inputs:
                     regex: '^\/(?:[^/]*/)(?P<platform>\w*)\/(?:[^/]*/){2}(?P<flight_number>\w\d{3})'
+  * - ``templates``
+     - mapping
+     - Used to generate title and description properties from facets using python `string templates <https://docs.python.org/3/library/string.html#template-strings>`_
+     - .. code-block:: yaml
+
+            templates:
+                title: $platform flight no. $flight_number
+                description: Data recorded as part of the $platform project during flight number $flight_number which took place on $datetime.
 
 Schema
 -------
