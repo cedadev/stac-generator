@@ -31,6 +31,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from .base import OutputBackend
+import json
 
 
 class StdoutOutputBackend(OutputBackend):
@@ -46,4 +47,4 @@ class StdoutOutputBackend(OutputBackend):
         :param data: Data from extraction process
         :param kwargs: Not used
         """
-        print(data)
+        print(json.dumps(data, indent=4))
