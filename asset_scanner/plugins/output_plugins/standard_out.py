@@ -30,6 +30,8 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
+import json
+
 from .base import OutputBackend
 
 
@@ -46,4 +48,4 @@ class StdoutOutputBackend(OutputBackend):
         :param data: Data from extraction process
         :param kwargs: Not used
         """
-        print(data)
+        print(json.dumps(data, indent=4))
