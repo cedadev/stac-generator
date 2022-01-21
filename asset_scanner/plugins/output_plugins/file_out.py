@@ -59,4 +59,3 @@ class FileoutOutputBackend(OutputBackend):
         file = open(f"{filepath}.txt", "w+")
         file.write(json.dumps(data))
         file.close()
-        print(filepath)
