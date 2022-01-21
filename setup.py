@@ -40,10 +40,12 @@ setup(
             "intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin",
             "rabbit_mq = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin",
             "thredds = asset_scanner.plugins.input_plugins.thredds_input:ThreddsInputPlugin",
+            "file_input = asset_scanner.plugins.input_plugins.file_input:FileInputPlugin",
         ],
         "asset_scanner.output_plugins": [
             "standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend",
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
+            "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
         ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
