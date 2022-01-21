@@ -46,8 +46,8 @@ class FileoutOutputBackend(OutputBackend):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.filepath: str = kwargs['filepath']
-        self.filepath = self.filepath.rstrip('/')
+        self.filepath: str = kwargs["filepath"]
+        self.filepath = self.filepath.rstrip("/")
 
     def export(self, data: dict, **kwargs) -> None:
 

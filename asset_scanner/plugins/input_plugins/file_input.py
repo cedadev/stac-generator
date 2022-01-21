@@ -44,20 +44,23 @@ class FileInputPlugin(BaseInputPlugin):
     """
 
     def __init__(self, **kwargs):
-        self.filepath = kwargs['filepath']
-        
+        self.filepath = kwargs["filepath"]
+
         if isdir(self.filepath):
-            self.file_list = [join(self.filepath, file) for file in listdir(self.filepath)
-            if isfile(join(self.filepath, file))]
+            self.file_list = [
+                join(self.filepath, file)
+                for file in listdir(self.filepath)
+                if isfile(join(self.filepath, file))
+            ]
         else:
             self.file_list = [self.filepath]
 
     def run(self, extractor: BaseExtractor):
 
         for file in self.file_list:
-            
+
             with open(file) as f:
                 data = f.read()
                 data = json.loads(data)
-            
+
             extractor.process_file(**data)
