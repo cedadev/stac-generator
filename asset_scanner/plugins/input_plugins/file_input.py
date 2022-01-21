@@ -28,7 +28,6 @@ Example Configuration:
 
 
 import json
-import os
 from os import listdir
 from os.path import isdir, isfile, join
 
