@@ -52,10 +52,9 @@ class FileoutOutputBackend(OutputBackend):
     def export(self, data: dict, **kwargs) -> None:
 
         if os.path.isdir(self.filepath):
-            filepath = f"{self.filepath}/{data['item_id']}.txt"
+            filepath = f"{self.filepath}/file_out.txt"
         else:
             filepath = self.filepath
 
-        file = open(f"{filepath}.txt", "w+")
-        file.write(json.dumps(data))
-        file.close()
+        with open(f"{filepath}", "a") as file:
+            file.write(f"{json.dumps(data)}\n")

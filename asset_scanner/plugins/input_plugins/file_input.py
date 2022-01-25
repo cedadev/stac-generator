@@ -57,9 +57,7 @@ class FileInputPlugin(BaseInputPlugin):
     def run(self, extractor: BaseExtractor):
 
         for file in self.file_list:
-
             with open(file) as f:
-                data = f.read()
-                data = json.loads(data)
-
-            extractor.process_file(**data)
+                for line in f:
+                    data = json.loads(line)
+                    extractor.process_file(**data)
