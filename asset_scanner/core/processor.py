@@ -36,3 +36,13 @@ class BaseProcessor(ABC):
         :return: dict
         """
         pass
+
+class BaseAggregationProcessor(BaseProcessor):
+    """
+    Modify the run method signature as the aggregation processor requires
+    different information.
+    """
+
+    @abstractmethod
+    def run(self, id: str, description: 'ItemDescription') -> dict:
+        ...
