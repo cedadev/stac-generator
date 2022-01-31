@@ -47,9 +47,6 @@ setup(
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
             "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
         ],
-        "asset_scanner.processors": [
-            "elasticsearch_aggregator = asset_scanner.plugins.processors.elasticsearch_aggregator:ElasticsearchAggregator",
-        ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
         ],
