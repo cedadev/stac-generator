@@ -44,6 +44,7 @@ setup(
         "asset_scanner.output_plugins": [
             "standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend",
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
+            "rabbit_mq = asset_scanner_plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
         ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
