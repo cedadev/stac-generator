@@ -61,7 +61,7 @@ from .base import BaseInputPlugin
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from asset_scanner.core import BaseExtractor
+    from asset_scanner.core.extractor import BaseExtractor
 
 
 def walk_tds(cat: TDSCatalog, depth: int = 1):

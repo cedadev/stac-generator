@@ -130,7 +130,7 @@ from collections import namedtuple
 # Third-party imports
 import pika
 
-from asset_scanner.core import BaseExtractor
+from asset_scanner.core.extractor import BaseExtractor
 from asset_scanner.types.source_media import StorageType
 
 from .base import BaseInputPlugin

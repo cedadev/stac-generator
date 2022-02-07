@@ -39,6 +39,14 @@ class BaseExtractor(ABC):
 
     PROCESSOR_ENTRY_POINT = None
 
+    def _load_processor(self) -> "BaseProcessor":
+
+        aggregator_conf = self.conf["aggregator"]
+        name = aggregator_conf["name"]
+        processor_kwargs = aggregator_conf["inputs"]
+
+        return self.processors.get_processor(name, **processor_kwargs)
+
     def __init__(self, conf: dict):
         self.conf = conf
         self.processors = self.load_processors()
