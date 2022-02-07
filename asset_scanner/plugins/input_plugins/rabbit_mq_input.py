@@ -316,13 +316,13 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             return
 
         # Extract filename and storage class
-        filename = message['filepath']
+        filename = message["filepath"]
 
         try:
             # TODO: How to get this from message? CEDA message.message is str
             # storage_class = message.message.get('storage_type', StorageType.POSIX)
 
-            storage_class = message['source_media']
+            storage_class = message["source_media"]
             if isinstance(storage_class, str):
                 storage_class = StorageType[storage_class]
 
