@@ -132,7 +132,7 @@ import json
 from typing import Dict
 
 import pika
- 
+
 from .base import OutputBackend
 
 
