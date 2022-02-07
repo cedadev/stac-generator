@@ -129,11 +129,11 @@ Example Configuration:
 """
 
 import json
-
-from .base import OutputBackend
+from typing import Dict
 
 import pika
-from typing import Dict
+ 
+from .base import OutputBackend
 
 
 class RabbitMQOutBackend(OutputBackend):
