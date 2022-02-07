@@ -10,6 +10,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
+from .item_describer import ItemDescription
+
 
 class BaseProcessor(ABC):
     """
