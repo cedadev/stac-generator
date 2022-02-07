@@ -1,7 +1,7 @@
 alabaster==0.7.12
 anytree==2.8.0
 appdirs==1.4.4
-git+https://github.com/cedadev/asset-generator#egg=asset_generator
+git+https://github.com/cedadev/asset-generator@v1.0.0#egg=asset_generator
 git+https://github.com/cedadev/asset-scanner.git#egg=asset_scanner
 Babel==2.9.1
 boto3==1.18.53
@@ -18,7 +18,7 @@ fsspec==2021.10.0
 idna==3.2
 imagesize==1.2.0
 intake==0.6.3
-git+https://github.com/cedadev/item-generator.git#egg=item_generator
+git+https://github.com/cedadev/item-generator.git@v1.0.0#egg=item_generator
 Jinja2==3.0.1
 jmespath==0.10.0
 locket==0.2.1
