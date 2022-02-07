@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset Scanner &mdash; asset_scanner  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Input Plugins" href="input_plugins.html" />
+    <link rel="prev" title="Asset Scanner" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> asset_scanner
+            <img src="https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Asset Scanner</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-configuration-options">Base configuration options:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#plugins">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input_plugins.html">Input Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="output_plugins.html">Output Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugin_filters.html">Plugin Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html">Processors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../asset_generator/index.html">Asset Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../item_generator/index.html">Item Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../item_descriptions/item_descriptions.html">Item Descriptions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_scanner/asset_scanner_api.html">Asset Scanner API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_generator/api.html">Asset Generator API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/item_generator/item_generator_api.html">Item Generator API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">asset_scanner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Asset Scanner</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/asset_scanner/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="asset-scanner">
+<h1>Asset Scanner<a class="headerlink" href="#asset-scanner" title="Permalink to this headline"></a></h1>
+<p><em class="fa fa-github"></em> <a class="reference external" href="https://github.com/cedadev/asset-scanner">View on Github</a></p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install asset-scanner</span>
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p>There is a console script defined by this package which can be used to run the
+extractors <code class="docutils literal notranslate"><span class="pre">asset_generator</span></code>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: asset_scanner [-h] conf</span>
+
+<span class="go">Run the asset scanner as configured</span>
+
+<span class="go">positional arguments:</span>
+<span class="go">  conf        Path to a yaml configuration file</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help  show this help message and exit</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
+<p>The configuration file feeds this top level script and configures the input/output
+plugins as well as the extractor class. You will need to see the extractor documentation
+to get additional configuration options.</p>
+<section id="base-configuration-options">
+<h3>Base configuration options:<a class="headerlink" href="#base-configuration-options" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extractor</span></code></p></td>
+<td><p>The python import path to the extractor class. If not specified, it picks up the class installed with the entry point <code class="docutils literal notranslate"><span class="pre">asset_scanner.extractors</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">item_descriptions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Path to the root directory for the item descriptions. Used to describe workflows.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">inputs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Must have at least one <a class="reference external" href="https://cedadev.github.io/asset-scanner/input_plugins.html">input plugin</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outputs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> Must have at least one <a class="reference external" href="https://cedadev.github.io/asset-scanner/output_plugins.html">output plugin</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">logging</span></code></p></td>
+<td><p>Kwargs passed to the <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.basicConfig">logging.basicConfig</a> setup method</p></td>
+</tr>
+</tbody>
+</table>
+<p>The extractor can be specified in the configuration file or can be loaded from
+an entry point. The configuration value takes precedence over entry points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Only the first extractor will be loaded from entry points.</p>
+</div>
+</section>
+<section id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">extractor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">item_generator.FacetExtractor</span>
+<span class="nt">item_descriptions</span><span class="p">:</span>
+   <span class="nt">root_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/users/rsmith013/search_futures/item-descriptions/descriptions</span>
+<span class="nt">inputs</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file_system</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/badc/faam/data/2005/b069-jan-05</span>
+<span class="nt">outputs</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard_out</span>
+<span class="nt">logging</span><span class="p">:</span>
+   <span class="nt">level</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">INFO</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="plugins">
+<h2>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline"></a></h2>
+<p>Plugins are used to add modular components and allow extension of the base
+capabilities to fit your needs. The Asset Scanner holds the Input/Output plugins,
+filters to modify these plugins and “processors” which are used to extract values
+from the files.</p>
+<p>The processors are used to either extract content from the filename/path, headers
+or third-party sources.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="input_plugins.html">Input Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="input_plugins.html#file-system-input">File System Input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_plugins.html#object-store-input">Object Store Input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_plugins.html#intake-input">Intake Input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_plugins.html#rabbitmq-input">RabbitMQ Input</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input_plugins.html#exchange">exchange</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_plugins.html#queues">queues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input_plugins.html#thredds-input">Thredds Input</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output_plugins.html">Output Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="output_plugins.html#standard-out">Standard Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_plugins.html#elasticsearch">Elasticsearch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_filters.html">Plugin Filters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugin_filters.html#path-regex-filter">Path Regex Filter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="processors.html">Processors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="processors.html#core-processors">Core Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#header-extract">Header Extract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#regex">Regex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#iso-19115-extract">ISO 19115 Extract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#xml-extract">XML Extract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#third-party-processors">Third-Party Processors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="processors.html#module-asset_scanner.plugins.extraction_methods.preprocessors">Pre Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#filename-reducer">Filename Reducer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#ceda-observation">CEDA Observation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#third-party-pre-processors">Third-Party Pre-processors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="processors.html#module-asset_scanner.plugins.extraction_methods.postprocessors">Post Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#facet-map-processor">Facet Map Processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#iso-date-processor">ISO Date Processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#date-combinator-processor">Date Combinator Processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#stac-bbox-processor">STAC BBOX Processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#string-join-processor">String Join Processor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html#third-party-post-processors">Third-Party Post-processors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Asset Scanner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="input_plugins.html" class="btn btn-neutral float-right" title="Input Plugins" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Richard Smith.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

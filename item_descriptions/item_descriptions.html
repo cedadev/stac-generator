@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Descriptions &mdash; asset_scanner  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Building an Item Description" href="building_a_workflow.html" />
+    <link rel="prev" title="Orientation" href="../item_generator/user_guide/orientation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> asset_scanner
+            <img src="https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../asset_scanner/index.html">Asset Scanner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asset_generator/index.html">Asset Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../item_generator/index.html">Item Generator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Item Descriptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="building_a_workflow.html">Building an Item Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-description-file">Example Description File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#description-file-sections">Description file sections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#paths">Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collections">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facets">Facets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#categories">Categories</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#processor">Processor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#schema">Schema</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_scanner/asset_scanner_api.html">Asset Scanner API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_generator/api.html">Asset Generator API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/item_generator/item_generator_api.html">Item Generator API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">asset_scanner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Item Descriptions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/item_descriptions/item_descriptions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="item-descriptions">
+<h1>Item Descriptions<a class="headerlink" href="#item-descriptions" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>These documents describe how to process the files within a dataset and extract facets.
+These documents are aggregated along the branch with the information lower in the tree taking
+precendence.
+Having multiple files at different points in the tree allow for a narrowing of information.
+i.e. A default set at a higher level, if not overwritten, will exist at all points down the tree.</p>
+<section id="example-description-file">
+<h2>Example Description File<a class="headerlink" href="#example-description-file" title="Permalink to this headline"></a></h2>
+<p>This file applies to all files listed under: <code class="docutils literal notranslate"><span class="pre">/badc/faam/data</span></code>.</p>
+<p>It uses the regex processor in two forms. The first, uses a pre-processor
+to reduce the filepath to just the filename and then matches a regex pattern to
+extract a date. This is then passed to the ISO Date post-processor which converts
+the date into the ISO8601 format.</p>
+<p>The second, extracts platform and flight number from the filepath.
+No pre or post processing is done in this case.</p>
+<p>Finally the platform and flight number are used to generate a string which will
+identify all files in this dataset as belonging together.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">paths</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/badc/faam/data</span>
+<span class="nt">facets</span><span class="p">:</span>
+  <span class="nt">extraction_methods</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^(?:[^_]*_){2}(?P&lt;datetime&gt;\d*)&#39;</span>
+      <span class="nt">pre_processors</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">filename_reducer</span>
+      <span class="nt">post_processors</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+          <span class="nt">inputs</span><span class="p">:</span>
+            <span class="nt">date_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^\/(?:[^/]*/)(?P&lt;platform&gt;\w*)\/(?:[^/]*/){2}(?P&lt;flight_number&gt;\w\d{3})&#39;</span>
+  <span class="nt">aggregation_facets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">flight_number</span>
+</pre></div>
+</div>
+</section>
+<section id="description-file-sections">
+<h2>Description file sections<a class="headerlink" href="#description-file-sections" title="Permalink to this headline"></a></h2>
+<p>The description file consists of 4 top level keys:</p>
+<p>A <a class="reference internal" href="#schema"><span class="std std-ref">Full JSON Schema</span></a> references below.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">paths</span></code></p></td>
+<td><p>list</p></td>
+<td><p>List of paths this workflow applies to.</p></td>
+<td><p><a class="reference internal" href="#paths"><span class="std std-ref">Paths</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Collections</span></code></p></td>
+<td><p><a class="reference internal" href="#collections"><span class="std std-ref">Collections</span></a></p></td>
+<td><p>Defines the workflow and ID to create a collection for the applicable files.</p></td>
+<td><p><a class="reference internal" href="#collections"><span class="std std-ref">Collections</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Facets</span></code></p></td>
+<td><p><a class="reference internal" href="#facets"><span class="std std-ref">Facets</span></a></p></td>
+<td><p>Defines the workflow to create items.</p></td>
+<td><p><a class="reference internal" href="#facets"><span class="std std-ref">Facets</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Categories</span></code></p></td>
+<td><p>list</p></td>
+<td><p>Used by the asset extractor to assign categories to files.
+By default, all files are given the category data.</p></td>
+<td><p><a class="reference internal" href="#categories"><span class="std std-ref">Categories</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<section id="paths">
+<h3>Paths<a class="headerlink" href="#paths" title="Permalink to this headline"></a></h3>
+<p>Describes the paths where this file applies. Can be multiple locations.
+The path references all points below it in the hierarchy.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">paths</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/badc/faam/data</span>
+</pre></div>
+</div>
+</section>
+<section id="collections">
+<h3>Collections<a class="headerlink" href="#collections" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p>string</p></td>
+<td><p>ID for the defined collection</p></td>
+<td><p><cite>sentinel3</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">templates</span></code></p></td>
+<td><dl class="field-list simple">
+<dt class="field-odd">ref</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</td>
+<td><p>ID for the defined collection</p></td>
+<td><p><cite>sentinel3</cite></p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><a class="reference internal" href="#processor"><span class="std std-ref">Processor</span></a></p></td>
+<td><p>Defines the keys for the processor workflow.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">collections</span><span class="p">:</span>
+    <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sentinel3</span>
+    <span class="nt">extraction_methods</span><span class="p">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</section>
+<section id="facets">
+<h3>Facets<a class="headerlink" href="#facets" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">aggregation_facets</span></code></p></td>
+<td><p>list</p></td>
+<td><p>List of facets which define files which should be grouped together. e.g.
+All files which have the same value for the facets listed here, should become
+a single item.</p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">aggregation_facets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">flight_number</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">search_facets</span></code></p></td>
+<td><p>list</p></td>
+<td><p>List of facets additonal facets which are useful for searching.
+This list will be added to the aggregation facets list to generate a summary
+at the collection level. This is used to feed faceted search.</p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">search_facets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">flight_number</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><a class="reference internal" href="#processor"><span class="std std-ref">Processor</span></a></p></td>
+<td><p>Defines the keys for the processor workflow.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">facets</span><span class="p">:</span>
+    <span class="nt">extraction_methods</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^(?:[^_]*_){2}(?P&lt;datetime&gt;\d*)&#39;</span>
+      <span class="nt">pre_processors</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">filename_reducer</span>
+      <span class="nt">post_processors</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+          <span class="nt">inputs</span><span class="p">:</span>
+            <span class="nt">date_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^\/(?:[^/]*/)(?P&lt;platform&gt;\w*)\/(?:[^/]*/){2}(?P&lt;flight_number&gt;\w\d{3})&#39;</span>
+<span class=" -Error">  </span><span class="nt">aggregation_facets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">flight_number</span>
+  <span class="nt">search_facets</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span>
+</pre></div>
+</div>
+</section>
+<section id="categories">
+<h3>Categories<a class="headerlink" href="#categories" title="Permalink to this headline"></a></h3>
+<p>Used by the asset extractor to assign categories to files.
+By default, all files are given the category data.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">categories</span><span class="p">:</span>
+    <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">metadata</span>
+    <span class="nt">regex</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">00README</span>
+</pre></div>
+</div>
+<section id="processor">
+<h4>Processor<a class="headerlink" href="#processor" title="Permalink to this headline"></a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">defaults</span></code></p></td>
+<td><p>mapping</p></td>
+<td><p>Default facet values to apply for all files in the absence of any other information.</p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">defaults</span><span class="p">:</span>
+    <span class="nt">datetime</span><span class="p">:</span> <span class="s">&quot;2020-05-01T10:03:00&quot;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mappings</span></code></p></td>
+<td><p>mapping</p></td>
+<td><p>Allows you to map one term to another. This can be used to map multi-values or
+correct values where they are known to be incorrect.</p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">mappings</span><span class="p">:</span>
+    <span class="nt">term1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value1</span>
+    <span class="nt">term2</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value2</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overrides</span></code></p></td>
+<td><p>mapping</p></td>
+<td><p>No matter what comes from the file, this is the value to be used</p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">overrides</span><span class="p">:</span>
+    <span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sentinel3</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extraction_methods</span></code></p></td>
+<td><p>mapping</p></td>
+<td><p>A list of functions to run, and their arguments. A full list of functions and their
+expected parameters can be found <a class="reference external" href="https://cedadev.github.io/item-generator/processors.html">here</a>.</p>
+<p>Extraction methods can use the <code class="docutils literal notranslate"><span class="pre">description</span></code> key to allow you to write notes to your future self
+about what the extractor is for. This is not used in running the code.</p>
+</td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">facets</span><span class="p">:</span>
+    <span class="nt">extraction_methods</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^\/(?:[^/]*/)(?P&lt;platform&gt;\w*)\/(?:[^/]*/){2}(?P&lt;flight_number&gt;\w\d{3})&#39;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">templates</span></code></p></td>
+<td><p>mapping</p></td>
+<td><p>Used to generate title and description properties from facets using python <a class="reference external" href="https://docs.python.org/3/library/string.html#template-strings">string templates</a></p></td>
+<td><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">templates</span><span class="p">:</span>
+    <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$platform flight no. $flight_number</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Data recorded as part of the $platform project during flight number $flight_number which took place on $datetime.</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="schema">
+<h3>Schema<a class="headerlink" href="#schema" title="Permalink to this headline"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
+    &quot;title&quot;: &quot;ItemDescription&quot;,
+    &quot;description&quot;: &quot;Top level container for ItemDescriptions.&quot;,
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+        &quot;paths&quot;: {
+            &quot;title&quot;: &quot;Paths&quot;,
+            &quot;type&quot;: &quot;array&quot;,
+            &quot;items&quot;: {}
+        },
+        &quot;collections&quot;: {
+            &quot;title&quot;: &quot;Collections&quot;,
+            &quot;default&quot;: {},
+            &quot;allOf&quot;: [
+                {
+                    &quot;$ref&quot;: &quot;#/definitions/Collections&quot;
+                }
+            ]
+        },
+        &quot;facets&quot;: {
+            &quot;title&quot;: &quot;Facets&quot;,
+            &quot;default&quot;: {},
+            &quot;allOf&quot;: [
+                {
+                    &quot;$ref&quot;: &quot;#/definitions/Facets&quot;
+                }
+            ]
+        },
+        &quot;categories&quot;: {
+            &quot;title&quot;: &quot;Categories&quot;,
+            &quot;default&quot;: [],
+            &quot;type&quot;: &quot;array&quot;,
+            &quot;items&quot;: {
+                &quot;$ref&quot;: &quot;#/definitions/Category&quot;
+            }
+        }
+    },
+    &quot;required&quot;: [
+        &quot;paths&quot;
+    ],
+    &quot;definitions&quot;: {
+        &quot;Templates&quot;: {
+            &quot;title&quot;: &quot;Templates&quot;,
+            &quot;description&quot;: &quot;Templates description model.&quot;,
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: {
+                &quot;title&quot;: {
+                    &quot;title&quot;: &quot;Title&quot;,
+                    &quot;type&quot;: &quot;string&quot;
+                },
+                &quot;description&quot;: {
+                    &quot;title&quot;: &quot;Description&quot;,
+                    &quot;type&quot;: &quot;string&quot;
+                }
+            }
+        },
+        &quot;Collections&quot;: {
+            &quot;title&quot;: &quot;Collections&quot;,
+            &quot;description&quot;: &quot;Collections processor description model.&quot;,
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: {
+                &quot;defaults&quot;: {
+                    &quot;title&quot;: &quot;Defaults&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;mappings&quot;: {
+                    &quot;title&quot;: &quot;Mappings&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;overrides&quot;: {
+                    &quot;title&quot;: &quot;Overrides&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;extraction_methods&quot;: {
+                    &quot;title&quot;: &quot;Extraction Methods&quot;,
+                    &quot;default&quot;: [],
+                    &quot;type&quot;: &quot;array&quot;,
+                    &quot;items&quot;: {
+                        &quot;type&quot;: &quot;object&quot;
+                    }
+                },
+                &quot;templates&quot;: {
+                    &quot;title&quot;: &quot;Templates&quot;,
+                    &quot;default&quot;: {},
+                    &quot;allOf&quot;: [
+                        {
+                            &quot;$ref&quot;: &quot;#/definitions/Templates&quot;
+                        }
+                    ]
+                },
+                &quot;id&quot;: {
+                    &quot;title&quot;: &quot;Id&quot;,
+                    &quot;type&quot;: &quot;string&quot;
+                }
+            }
+        },
+        &quot;Facets&quot;: {
+            &quot;title&quot;: &quot;Facets&quot;,
+            &quot;description&quot;: &quot;Facets processor description model.&quot;,
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: {
+                &quot;defaults&quot;: {
+                    &quot;title&quot;: &quot;Defaults&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;mappings&quot;: {
+                    &quot;title&quot;: &quot;Mappings&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;overrides&quot;: {
+                    &quot;title&quot;: &quot;Overrides&quot;,
+                    &quot;default&quot;: {},
+                    &quot;type&quot;: &quot;object&quot;
+                },
+                &quot;extraction_methods&quot;: {
+                    &quot;title&quot;: &quot;Extraction Methods&quot;,
+                    &quot;default&quot;: [],
+                    &quot;type&quot;: &quot;array&quot;,
+                    &quot;items&quot;: {
+                        &quot;type&quot;: &quot;object&quot;
+                    }
+                },
+                &quot;templates&quot;: {
+                    &quot;title&quot;: &quot;Templates&quot;,
+                    &quot;default&quot;: {},
+                    &quot;allOf&quot;: [
+                        {
+                            &quot;$ref&quot;: &quot;#/definitions/Templates&quot;
+                        }
+                    ]
+                },
+                &quot;aggregation_facets&quot;: {
+                    &quot;title&quot;: &quot;Aggregation Facets&quot;,
+                    &quot;default&quot;: [],
+                    &quot;type&quot;: &quot;array&quot;,
+                    &quot;items&quot;: {}
+                },
+                &quot;search_facets&quot;: {
+                    &quot;title&quot;: &quot;Search Facets&quot;,
+                    &quot;default&quot;: [],
+                    &quot;type&quot;: &quot;array&quot;,
+                    &quot;items&quot;: {}
+                }
+            }
+        },
+        &quot;Category&quot;: {
+            &quot;title&quot;: &quot;Category&quot;,
+            &quot;description&quot;: &quot;Category label model.&quot;,
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: {
+                &quot;label&quot;: {
+                    &quot;title&quot;: &quot;Label&quot;,
+                    &quot;type&quot;: &quot;string&quot;
+                },
+                &quot;regex&quot;: {
+                    &quot;title&quot;: &quot;Regex&quot;,
+                    &quot;type&quot;: &quot;string&quot;
+                }
+            },
+            &quot;required&quot;: [
+                &quot;label&quot;,
+                &quot;regex&quot;
+            ]
+        }
+    }
+}
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../item_generator/user_guide/orientation.html" class="btn btn-neutral float-left" title="Orientation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="building_a_workflow.html" class="btn btn-neutral float-right" title="Building an Item Description" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Richard Smith.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

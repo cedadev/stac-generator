@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orientation &mdash; asset_scanner  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Item Descriptions" href="../../item_descriptions/item_descriptions.html" />
+    <link rel="prev" title="Item Generator" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> asset_scanner
+            <img src="https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../asset_scanner/index.html">Asset Scanner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../asset_generator/index.html">Asset Generator</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Item Generator</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Orientation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../asset_scanner/processors.html">Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../item_descriptions/item_descriptions.html">Item Descriptions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/asset_scanner/asset_scanner_api.html">Asset Scanner API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/asset_generator/api.html">Asset Generator API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/item_generator/item_generator_api.html">Item Generator API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">asset_scanner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Item Generator</a> &raquo;</li>
+      <li>Orientation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/item_generator/user_guide/orientation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="orientation">
+<h1>Orientation<a class="headerlink" href="#orientation" title="Permalink to this headline"></a></h1>
+<p>The Item Generator is part of a framework defined by the <a class="reference internal" href="../../index.html#asset-scanner"><span class="std std-ref">Asset Scanner</span></a>
+and is build to be modular and extensible. This can be confusing for new users
+but this guide aims to act as an orientation to help new users understand what
+this package can do and how the pieces fit together.</p>
+<dl class="simple">
+<dt>There are various pluggable pieces:</dt><dd><ul class="simple">
+<li><p>Input plugins</p></li>
+<li><p>Output plugins</p></li>
+<li><p>Processors</p></li>
+<li><p>Pre/Post processors</p></li>
+</ul>
+</dd>
+</dl>
+<p>These pieces should allow you to construct a workflow which works for your use case and provide
+python entry points to allow you to write your own plugins.
+The Asset Scanner package stores some common <a class="reference internal" href="../../asset_scanner/input_plugins.html#module-asset_scanner.plugins.input_plugins"><span class="std std-ref">input</span></a>
+and <a class="reference internal" href="../../asset_scanner/output_plugins.html#module-asset_scanner.plugins.output_plugins"><span class="std std-ref">output plugins</span></a> (PRs welcome).
+This package, Item Generator, contains some processors which are used to extract attributes from files and
+passes them to the output plugin. You can read more about the processors, and how pre/post processors work
+<span class="xref std std-ref">here</span>.</p>
+<p>The item generator has two levels of configuration. Global configuration, passed at the command line on
+invocation, which defines the input and ouput plugins and things like logging configuration.</p>
+<p>An example can be found <a class="reference internal" href="../index.html#sample-configuration"><span class="std std-ref">here</span></a>.</p>
+<p>The second level of configuration comes in the form of item-descriptions. These YAML files
+describe the workflow for extracting facets and other metadata to build the STAC Item.
+Background for item-descriptions can be found <a class="reference external" href="item_descriptions/item_descriptions:itemdescriptions">here</a>
+and a guide for how to build, and test these files is <a class="reference internal" href="../../item_descriptions/building_a_workflow.html#building-an-item-description"><span class="std std-ref">here</span></a>.</p>
+<p>The different available processors which can construct these workflows are found <span class="xref std std-ref">here</span>.</p>
+<p>The <a class="reference external" href="https://github.com/cedadev/item-descriptions">CEDA repository containing these item-descriptions</a> can
+be used as an example. An example which includes extracting metadata from the NetCDF header is
+<a class="reference external" href="https://github.com/cedadev/item-descriptions/blob/master/descriptions/neodc/sentinel/sentinel5.yml">sentinel5</a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">datasets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/neodc/sentinel5p/data</span>
+<span class="nt">collection</span><span class="p">:</span>
+    <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ic93XnsBhuk7QqVbSFwS</span>
+<span class="nt">facets</span><span class="p">:</span>
+    <span class="nt">extraction_methods</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Extract facets from the file path</span>
+          <span class="nt">inputs</span><span class="p">:</span>
+            <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^\/(?:[^/]*/)(?P&lt;platform&gt;\w*)(?:[^/]*/){3}(?P&lt;product_version&gt;[0-9v.]+)/&#39;</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Extract facets from the filename</span>
+          <span class="nt">inputs</span><span class="p">:</span>
+            <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^(?:[^_]*_){2}(?P&lt;processing_level&gt;[^_]+)__(?P&lt;variable&gt;[^_]+)_{4}(?P&lt;start_datetime&gt;[0-9T]+)_(?P&lt;end_datetime&gt;[0-9T]+)_(?P&lt;orbit&gt;\d+)(?:[^_]*_){3}(?P&lt;datetime&gt;[0-9T]+)&#39;</span>
+          <span class="nt">pre_processors</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">filename_reducer</span>
+          <span class="nt">post_processors</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+              <span class="nt">inputs</span><span class="p">:</span>
+                <span class="nt">date_keys</span><span class="p">:</span>
+                  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">start_datetime</span>
+                  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">end_datetime</span>
+                  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">header_extract</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Extract header metadata</span>
+          <span class="nt">inputs</span><span class="p">:</span>
+           <span class="nt">attributes</span><span class="p">:</span>
+             <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">institution</span>
+             <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sensor</span>
+    <span class="nt">aggregation_facets</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">processing_level</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">variable</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">product_version</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+</pre></div>
+</div>
+<p>The “extraction_methods” are the workflow. In the example above I extract some facets from the file path,
+some from the file name and some from the header.
+To run regex on the filename, I use the <code class="docutils literal notranslate"><span class="pre">filename_reducer</span></code> and to convert my extracted dates to ISO 8601
+format, I run the <code class="docutils literal notranslate"><span class="pre">isodate_processor</span></code>.</p>
+<p>As all of these “assets” are treated individually, we need a way to make sure they end up together.
+The aggregation facets are used to generate a STAC item ID. So for the linked example, all assets
+which return the same value for <code class="docutils literal notranslate"><span class="pre">platform</span></code>, <code class="docutils literal notranslate"><span class="pre">processing_level</span></code>, <code class="docutils literal notranslate"><span class="pre">variable</span></code>, <code class="docutils literal notranslate"><span class="pre">product_version</span></code> and <code class="docutils literal notranslate"><span class="pre">datetime</span></code>,
+will be considered 1 STAC Item and be assigned the same ID.</p>
+<p>This works in Elasticsearch because each individual elasticsearch document has the same id and are
+merged in an upsert. If you are using another storage system, it will require an aggregation step
+to join these together. Even with elasticsearch, lists are not merged in an upsert, but we have
+not had to deal with this yet.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Item Generator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../item_descriptions/item_descriptions.html" class="btn btn-neutral float-right" title="Item Descriptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Richard Smith.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

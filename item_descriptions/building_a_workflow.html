@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building an Item Description &mdash; asset_scanner  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Asset Scanner API" href="../api/asset_scanner/asset_scanner_api.html" />
+    <link rel="prev" title="Item Descriptions" href="item_descriptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> asset_scanner
+            <img src="https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../asset_scanner/index.html">Asset Scanner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asset_generator/index.html">Asset Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../item_generator/index.html">Item Generator</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="item_descriptions.html">Item Descriptions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Building an Item Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#write-a-item-description">1. Write a item-description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-item-description-on-a-subset-of-data">2. Running the item-description on a subset of data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-configuration">Example configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#indexing-the-data">3. Indexing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indexing-the-full-dataset">4. Indexing the full dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="item_descriptions.html#example-description-file">Example Description File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_descriptions.html#description-file-sections">Description file sections</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_scanner/asset_scanner_api.html">Asset Scanner API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_generator/api.html">Asset Generator API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/item_generator/item_generator_api.html">Item Generator API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">asset_scanner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="item_descriptions.html">Item Descriptions</a> &raquo;</li>
+      <li>Building an Item Description</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/item_descriptions/building_a_workflow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="building-an-item-description">
+<h1>Building an Item Description<a class="headerlink" href="#building-an-item-description" title="Permalink to this headline"></a></h1>
+<dl class="simple">
+<dt>Building an item-generation workflow consists of 4 mains steps:</dt><dd><ol class="arabic simple">
+<li><p>Write an <a class="reference internal" href="item_descriptions.html#item-descriptions"><span class="std std-ref">item_description</span></a> file to describe the workflow</p></li>
+<li><p>Test the workflow on a subset of data</p></li>
+<li><p>Index that subset of data to check it works as expected</p></li>
+<li><p>Index full dataset</p></li>
+</ol>
+</dd>
+</dl>
+<p>Parts 1 and 2 will likely go round in a loop, whilst you are developing the
+workflow file, with several iterations until you are happy.</p>
+<section id="write-a-item-description">
+<h2>1. Write a item-description<a class="headerlink" href="#write-a-item-description" title="Permalink to this headline"></a></h2>
+<dl class="simple">
+<dt>A basic item-description consists of 3 sections:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">datasets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">collection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">facets</span></code></p></li>
+</ol>
+</dd>
+</dl>
+<p>An example item-description can be found <a class="reference internal" href="item_descriptions.html#example-description-file"><span class="std std-ref">here</span></a></p>
+<p>The extraction methods section describes how the facets are extracted from the data.</p>
+<p>Files are aggregated into items based on the <span class="xref std std-ref">aggregation facets</span></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All files you want to end up together, should have the same aggregation facets.
+If you get your aggregation facets from the filename, and not all files you want to group
+together have the same filename convention (e.g. metadata files) then they will end up independent.</p>
+</div>
+<p>To check your item-description works as expected, you will need to run it.</p>
+</section>
+<section id="running-the-item-description-on-a-subset-of-data">
+<h2>2. Running the item-description on a subset of data<a class="headerlink" href="#running-the-item-description-on-a-subset-of-data" title="Permalink to this headline"></a></h2>
+<p>To run your workflow, you will need to create a config file.
+This will define an input path and output to standard out.</p>
+<section id="example-configuration">
+<h3>Example configuration<a class="headerlink" href="#example-configuration" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item_descriptions</span><span class="p">:</span>
+  <span class="nt">root_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/item-generator/item_descriptions/descriptions</span>
+<span class="nt">inputs</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file_system</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/badc/faam/data/2005/b069-jan-05</span>
+<span class="nt">outputs</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard_out</span>
+    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">assets</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard_out</span>
+    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">facets</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>You should choose a filepath with a relatively small number of files to
+make iteration quick and allow you to make tweaks.</p>
+<dl class="simple">
+<dt>The item-generator outputs two things:</dt><dd><ol class="arabic simple">
+<li><p>item content with the result of the extraction_methods</p></li>
+<li><p>An ID for the asset. This is the item id to be assigned to the asset so that they can
+be linked.</p></li>
+</ol>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you wish to hide the asset output while testing, including just the namespace
+<code class="docutils literal notranslate"><span class="pre">facets</span></code> will ignore the asset output.</p>
+</div>
+<p>You can then run your workflow using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">asset_scanner</span> <span class="pre">&lt;path_to_config_file&gt;</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: asset_scanner [-h] conf
+
+Run the asset scanner as configured
+
+positional arguments:
+  conf        Path to a yaml configuration file
+
+optional arguments:
+  -h, --help  show this help message and exit
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is likely that this will be an iterative process to make sure that the correct
+assets end up together and that all the facets are extracted as desired.</p>
+</div>
+</section>
+</section>
+<section id="indexing-the-data">
+<h2>3. Indexing the data<a class="headerlink" href="#indexing-the-data" title="Permalink to this headline"></a></h2>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Have you indexed the assets? Things may not work fully if the assets have
+not been indexed as well.</p>
+</div>
+<p>This step is as simple as changing your output plugin to point to the final destination.
+If you had ignored the asset output, make sure to add it back in at this stage.</p>
+<p>Here is an example for the elasticsearch output making use of additional kwargs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">elasticsearch</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">facets</span>
+  <span class="n">connection_kwargs</span><span class="p">:</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="p">[</span><span class="n">host1</span><span class="p">]</span>
+    <span class="n">headers</span><span class="p">:</span>
+      <span class="n">x</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">key</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span>
+    <span class="n">use_ssl</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">verify_certs</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">ssl_show_warn</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">index</span><span class="p">:</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">ceda</span><span class="o">-</span><span class="n">items</span><span class="o">-</span><span class="mi">2021</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">09</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">elasticsearch</span>
+  <span class="n">namespace</span><span class="p">:</span> <span class="n">assets</span>
+  <span class="n">connection_kwargs</span><span class="p">:</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="p">[</span><span class="n">host1</span><span class="p">]</span>
+    <span class="n">headers</span><span class="p">:</span>
+      <span class="n">x</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">key</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span>
+    <span class="n">use_ssl</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">verify_certs</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">ssl_show_warn</span><span class="p">:</span> <span class="n">false</span>
+  <span class="n">index</span><span class="p">:</span>
+      <span class="n">name</span><span class="p">:</span> <span class="n">ceda</span><span class="o">-</span><span class="n">assets</span><span class="o">-</span><span class="mi">2021</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">09</span>
+</pre></div>
+</div>
+<p>Once this works as expected…</p>
+</section>
+<section id="indexing-the-full-dataset">
+<h2>4. Indexing the full dataset<a class="headerlink" href="#indexing-the-full-dataset" title="Permalink to this headline"></a></h2>
+<p>This is done by increasing the scope of the input plugin.
+In the example we used the path <code class="docutils literal notranslate"><span class="pre">/badc/faam/data/2005/b069-jan-05</span></code>. If our
+description file covered <code class="docutils literal notranslate"><span class="pre">/badc/faam/data</span></code> we could now expand our input to cover
+<code class="docutils literal notranslate"><span class="pre">/badc/faam/data</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The higher up the tree you put the input, the longer it will take. You might
+wish to consider splitting the run into smaller segments and running in parallel.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="item_descriptions.html" class="btn btn-neutral float-left" title="Item Descriptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/asset_scanner/asset_scanner_api.html" class="btn btn-neutral float-right" title="Asset Scanner API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Richard Smith.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

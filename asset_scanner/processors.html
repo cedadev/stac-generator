@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processors &mdash; asset_scanner  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Asset Generator" href="../asset_generator/index.html" />
+    <link rel="prev" title="Plugin Filters" href="plugin_filters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> asset_scanner
+            <img src="https://artefacts.ceda.ac.uk/themes/orgtheme_ceda_div/0.3.2/_assets/img/ceda_logo_transp_white_h80.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Asset Scanner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asset_generator/index.html">Asset Generator</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../item_generator/index.html">Item Generator</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../item_generator/user_guide/orientation.html">Orientation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-processors">Core Processors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#header-extract">Header Extract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#regex">Regex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iso-19115-extract">ISO 19115 Extract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xml-extract">XML Extract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#third-party-processors">Third-Party Processors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-asset_scanner.plugins.extraction_methods.preprocessors">Pre Processors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#filename-reducer">Filename Reducer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ceda-observation">CEDA Observation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#third-party-pre-processors">Third-Party Pre-processors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-asset_scanner.plugins.extraction_methods.postprocessors">Post Processors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facet-map-processor">Facet Map Processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iso-date-processor">ISO Date Processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#date-combinator-processor">Date Combinator Processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stac-bbox-processor">STAC BBOX Processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#string-join-processor">String Join Processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#third-party-post-processors">Third-Party Post-processors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../item_generator/index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../item_generator/index.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../item_generator/index.html#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../item_descriptions/item_descriptions.html">Item Descriptions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_scanner/asset_scanner_api.html">Asset Scanner API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/asset_generator/api.html">Asset Generator API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/item_generator/item_generator_api.html">Item Generator API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">asset_scanner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Asset Scanner</a> &raquo;</li>
+      <li>Processors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/asset_scanner/processors.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="processors">
+<h1>Processors<a class="headerlink" href="#processors" title="Permalink to this headline"></a></h1>
+<p>Processors take a file and return a dictionary of extracted information. They
+can be chained, one after the other and the results are merged such that arrays
+are appended to and key:value pairs are overwritten by subsequent write operations.</p>
+<p>Some processors can also take <a class="reference internal" href="#pre-processors"><span class="std std-ref">Pre Processors</span></a> and <a class="reference internal" href="#post-processors"><span class="std std-ref">Post Processors</span></a>. Pre-processors modify
+the input arguments whilst post-processors modify the output from the main processor.</p>
+<section id="core-processors">
+<h2>Core Processors<a class="headerlink" href="#core-processors" title="Permalink to this headline"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#header-extract"><span class="std std-ref">header_extract</span></a></p></td>
+<td><p>Takes a filepath string and a list of attributes and returns a dictionary of the values extracted from the file header.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#regex"><span class="std std-ref">regex</span></a></p></td>
+<td><p>Takes an input string and a regex with named capture groups and returns a dictionary of the values extracted using the named capture groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iso19115-extract"><span class="std std-ref">iso19115</span></a></p></td>
+<td><p>Extracts attributes from an xml formatted ISO19115 record at a given URL. Supports URL templating.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xml-extract"><span class="std std-ref">xml_extract</span></a></p></td>
+<td><p>Extracts attributes from an xml formatted ISO19115 record at a given URL. Supports URL templating.</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-asset_scanner.plugins.extraction_methods.header_extract"></span><section id="header-extract">
+<span id="id1"></span><h3>Header Extract<a class="headerlink" href="#header-extract" title="Permalink to this headline"></a></h3>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.header_extract.HeaderExtract">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.header_extract.</span></span><span class="sig-name descname"><span class="pre">HeaderExtract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.header_extract.HeaderExtract" title="Permalink to this definition"></a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Processor Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">header_extract</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Accepts Pre-processors</p></td>
+<td><em class="fa fa-times"></em></td>
+</tr>
+<tr class="row-odd"><td><p>Accepts Post-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Description:</dt><dd><p>Takes a filepath string and a list of attributes
+and returns a dictionary of the values extracted from the
+file header.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">attributes</span></code>: A list of attributes to match for from the file header</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_processors</span></code>: List of post_processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: When the metadata is returned, this key determines
+where the metadata is fit in the response. Dot separated
+strings can be used to created nested attributes.
+<code class="docutils literal notranslate"><span class="pre">default:</span> <span class="pre">'properties'</span></code></p></li>
+</ul>
+</dd>
+<dt>Example configuration:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">header_extract</span>
+  <span class="nt">inputs</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">institution</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sensor</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">platform</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-asset_scanner.plugins.extraction_methods.regex_extract"></span><section id="regex">
+<span id="id2"></span><h3>Regex<a class="headerlink" href="#regex" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.regex_extract.RegexExtract">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.regex_extract.</span></span><span class="sig-name descname"><span class="pre">RegexExtract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.regex_extract.RegexExtract" title="Permalink to this definition"></a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Processor Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">regex</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Accepts Pre-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+<tr class="row-odd"><td><p>Accepts Post-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Description:</dt><dd><p>Takes an input string and a regex with
+named capture groups and returns a dictionary of the values
+extracted using the named capture groups.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">regex</span></code>: The regular expression to match against the filepath</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_processors</span></code>: List of pre-processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_processors</span></code>: List of post_processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: When the metadata is returned, this key determines
+where the metadata is fit in the response. Dot separated
+strings can be used to created nested attributes. An empty string can
+be used to return the output with no prefix.
+<code class="docutils literal notranslate"><span class="pre">default:</span> <span class="pre">'properties'</span></code></p></li>
+</ul>
+</dd>
+<dt>Example configuration:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regex</span>
+  <span class="nt">inputs</span><span class="p">:</span>
+    <span class="nt">regex</span><span class="p">:</span> <span class="s">&#39;^(?:[^_]*_){2}(?P&lt;datetime&gt;\d*)&#39;</span>
+  <span class="nt">pre_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">filename_reducer</span>
+  <span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">date_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.regex_extract.RegexExtract.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_media</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'POSIX'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.regex_extract.RegexExtract.run" title="Permalink to this definition"></a></dt>
+<dd><p>The action of running the processor and returning an output
+:param filepath: Path to object
+:param media_source: Media type for the target object
+:param kwargs: free kwargs passed to the processor.
+:return: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<span class="target" id="module-asset_scanner.plugins.extraction_methods.iso19115_extract"></span><section id="iso-19115-extract">
+<span id="iso19115-extract"></span><h3>ISO 19115 Extract<a class="headerlink" href="#iso-19115-extract" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.iso19115_extract.ISO19115Extract">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.iso19115_extract.</span></span><span class="sig-name descname"><span class="pre">ISO19115Extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.iso19115_extract.ISO19115Extract" title="Permalink to this definition"></a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Processor Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iso19115</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Accepts Pre-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+<tr class="row-odd"><td><p>Accepts Post-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Description:</dt><dd><p>Takes a URL template and calls out to URL to retrieve the
+iso19115 record. Use pre-processors to inject additional kwargs
+which are passed to the URL template.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">url_template</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> String template to build the URL.
+Template uses the <a class="reference external" href="https://docs.python.org/3/library/string.html#template-strings">python string template</a> format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extraction_keys</span></code>: List of keys to retrieve from the response.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_processors</span></code>: List of pre-processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_processors</span></code>: List of post_processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: When the metadata is returned, this key determines
+where the metadata is fit in the response. Dot separated
+strings can be used to created nested attributes.
+<code class="docutils literal notranslate"><span class="pre">default:</span> <span class="pre">'properties'</span></code></p></li>
+</ul>
+</dd>
+<dt>Extraction Keys:</dt><dd><p>Extraction keys should be a map.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Name of the outputted attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p>Access key to extract the required data. Passed to
+<a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html?highlight=find#xml.etree.ElementTree.ElementTree.find">xml.etree.ElementTree.find()</a>
+and also supports <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xpath-support">xpath formatted</a> accessors</p></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Example:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">start_datetime</span>
+  <span class="nt">key</span><span class="p">:</span> <span class="s">&#39;.//gml:beginPosition&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt>Example configuration:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">iso19115</span>
+  <span class="nt">inputs</span><span class="p">:</span>
+    <span class="nt">url_template</span><span class="p">:</span> <span class="s">&#39;api.catalogue.ceda.ac.uk/export/xml/$uuid.xml&#39;</span>
+    <span class="nt">extraction_keys</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">start_datetime</span>
+        <span class="nt">key</span><span class="p">:</span> <span class="s">&#39;.//gml:beginPosition&#39;</span>
+  <span class="nt">pre_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ceda_observation</span>
+  <span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">date_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.iso19115_extract.ISO19115Extract.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_media</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'POSIX'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.iso19115_extract.ISO19115Extract.run" title="Permalink to this definition"></a></dt>
+<dd><p>The action of running the processor and returning an output
+:param filepath: Path to object
+:param media_source: Media type for the target object
+:param kwargs: free kwargs passed to the processor.
+:return: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<span class="target" id="module-asset_scanner.plugins.extraction_methods.xml_extract"></span><section id="xml-extract">
+<span id="id3"></span><h3>XML Extract<a class="headerlink" href="#xml-extract" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.xml_extract.XMLExtract">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.xml_extract.</span></span><span class="sig-name descname"><span class="pre">XMLExtract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.xml_extract.XMLExtract" title="Permalink to this definition"></a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Processor Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xml_extract</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Accepts Pre-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+<tr class="row-odd"><td><p>Accepts Post-processors</p></td>
+<td><em class="fa fa-check"></em></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Description:</dt><dd><p>Processes XML documents to extract metadata</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extraction_keys</span></code>: List of keys to retrieve from the document.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter_expr</span></code>: Regex to match against files to limit the attempts to known files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">namespaces</span></code>: Map of namespaces</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_processors</span></code>: List of pre-processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_processors</span></code>: List of post_processors to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: When the metadata is returned, this key determines
+where the metadata is fit in the response. Dot separated
+strings can be used to created nested attributes.
+<code class="docutils literal notranslate"><span class="pre">default:</span> <span class="pre">'properties'</span></code></p></li>
+</ul>
+</dd>
+<dt>Extraction Keys:</dt><dd><p>Extraction keys should be a map.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Name of the outputted attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p>Access key to extract the required data. Passed to
+<a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html?highlight=find#xml.etree.ElementTree.ElementTree.find">xml.etree.ElementTree.find()</a>
+and also supports <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xpath-support">xpath formatted</a> accessors</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">attribute</span></code></p></td>
+<td><p>Allows you to select from the element attribute. In the absence of this value, the default behaviour is to access the text value of the key.
+In some cases, you might want to access and attribute of the element.</p></td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Example:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">start_datetime</span>
+  <span class="nt">key</span><span class="p">:</span> <span class="s">&#39;.//gml:beginPosition&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt>Example configuration:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xml_extract</span>
+  <span class="nt">inputs</span><span class="p">:</span>
+    <span class="nt">filter_expr</span><span class="p">:</span> <span class="s">&#39;\.manifest$&#39;</span>
+    <span class="nt">extraction_keys</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">start_datetime</span>
+        <span class="nt">key</span><span class="p">:</span> <span class="s">&#39;.//gml:beginPosition&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.xml_extract.XMLExtract.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_media</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'POSIX'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.xml_extract.XMLExtract.run" title="Permalink to this definition"></a></dt>
+<dd><p>The action of running the processor and returning an output
+:param filepath: Path to object
+:param media_source: Media type for the target object
+:param kwargs: free kwargs passed to the processor.
+:return: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="third-party-processors">
+<h3>Third-Party Processors<a class="headerlink" href="#third-party-processors" title="Permalink to this headline"></a></h3>
+<p>The plugin nature lends itself to third-party plugins. If you develop a plugin which might
+be useful for others’ workflows. Please make a pull request to add it to this table.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Vendor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="module-asset_scanner.plugins.extraction_methods.preprocessors">
+<span id="id6"></span><span id="pre-processors"></span><h2>Pre Processors<a class="headerlink" href="#module-asset_scanner.plugins.extraction_methods.preprocessors" title="Permalink to this headline"></a></h2>
+<p>Pre processors operate on the input arguments for the main processor.</p>
+<p>They can be used to manipuate the input arguments for a given processor to
+modify its behaviour.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#filename-reducer"><span class="std std-ref">filename_reducer</span></a></p></td>
+<td><p>Takes a file path and returns the filename using <code class="docutils literal notranslate"><span class="pre">os.path.basename</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ceda-observation"><span class="std std-ref">ceda_observation</span></a></p></td>
+<td><p>Takes a file path and returns the uuid from the <a class="reference external" href="http://catalogue.ceda.ac.uk/">CEDA Catalogue</a>.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="filename-reducer">
+<span id="id7"></span><h3>Filename Reducer<a class="headerlink" href="#filename-reducer" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.preprocessors.ReducePathtoName">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.preprocessors.</span></span><span class="sig-name descname"><span class="pre">ReducePathtoName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.preprocessors.ReducePathtoName" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">filename_reducer</span></code></p>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Takes a file path and returns the filename using <cite>os.path.basename</cite>.</p>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pre_processors</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">filename_reducer</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="ceda-observation">
+<span id="id8"></span><h3>CEDA Observation<a class="headerlink" href="#ceda-observation" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.preprocessors.CEDAObservation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.preprocessors.</span></span><span class="sig-name descname"><span class="pre">CEDAObservation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.preprocessors.CEDAObservation" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">ceda_observation</span></code></p>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Takes a file path and returns the ceda observation record.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">url_template</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> URL string template to build url.
+Template uses the <a class="reference external" href="https://docs.python.org/3/library/string.html#template-strings">python string template</a> format.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pre_processors</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ceda_observation</span>
+    <span class="nt">inputs</span><span class="p">:</span>
+      <span class="nt">url_template</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$filepath</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="third-party-pre-processors">
+<h3>Third-Party Pre-processors<a class="headerlink" href="#third-party-pre-processors" title="Permalink to this headline"></a></h3>
+<p>The plugin nature lends itself to third-party plugins. If you develop a plugin which might
+be useful for others’ workflows. Please make a pull request to add it to this table.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Vendor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="module-asset_scanner.plugins.extraction_methods.postprocessors">
+<span id="id10"></span><span id="post-processors"></span><h2>Post Processors<a class="headerlink" href="#module-asset_scanner.plugins.extraction_methods.postprocessors" title="Permalink to this headline"></a></h2>
+<p>Post processors operate on the output from a main processor.
+They are used using the same interface as a main processor <code class="docutils literal notranslate"><span class="pre">process</span></code>
+but they accept the result of the previous step as part of the <code class="docutils literal notranslate"><span class="pre">process</span></code> signature.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#facet-map-processor"><span class="std std-ref">facet_map</span></a></p></td>
+<td><p>In some cases, you may wish to map the header attributes to different facets. This method takes a map and converts the facet labels into those specified.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iso-date-processor"><span class="std std-ref">isodate_processor</span></a></p></td>
+<td><p>Takes the source dict and the key to access the date and converts the date to ISO 8601 Format.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#date-combinator-processor"><span class="std std-ref">date_combinator</span></a></p></td>
+<td><p>Automatically converts year, month, day, hour, minunte, second keys into an ISO 8601 date.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stac-bbox-processor"><span class="std std-ref">stac_bbox</span></a></p></td>
+<td><p>Converts coordinates from a dictionary into <a class="reference external" href="https://tools.ietf.org/html/rfc7946#section-5">RFC 7946, section 5</a>
+formatted coordinates</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#string-join-processor"><span class="std std-ref">string_join</span></a></p></td>
+<td><p>Join facets together to create a new value.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="facet-map-processor">
+<h3>Facet Map Processor<a class="headerlink" href="#facet-map-processor" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.postprocessors.FacetMapProcessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.postprocessors.</span></span><span class="sig-name descname"><span class="pre">FacetMapProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.postprocessors.FacetMapProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">facet_map</span></code></p>
+<dl class="simple">
+<dt>Description:</dt><dd><p>In some cases, you may wish to map the header attributes to different
+facets. This method takes a map and converts the facet labels into those
+specified.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">term_map</span></code>: Dictionary of terms to map</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">facet_map</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">term_map</span><span class="p">:</span>
+            <span class="nt">time_coverage_start</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">start_time</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="iso-date-processor">
+<h3>ISO Date Processor<a class="headerlink" href="#iso-date-processor" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.postprocessors.ISODateProcessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.postprocessors.</span></span><span class="sig-name descname"><span class="pre">ISODateProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.postprocessors.ISODateProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">isodate_processor</span></code></p>
+<dl>
+<dt>Description:</dt><dd><p>Takes the source dict and the key to access the date and
+converts the date to ISO 8601 Format.</p>
+<p>e.g.</p>
+<p><code class="docutils literal notranslate"><span class="pre">YYYY-MM-DDTHH:MM:SS.ffffff</span></code>, if microsecond is not 0
+<code class="docutils literal notranslate"><span class="pre">YYYY-MM-DDTHH:MM:SS</span></code>, if microsecond is 0</p>
+<p>If the date format cannot be parsed, it is removed from the source dict with
+an error logged.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">date_keys</span></code>: <cite>REQUIRED</cite> List keys to the date value. Using a list allows processing of multiple dates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code>: Optional format string. Default behaviour uses <a class="reference external" href="https://dateutil.readthedocs.io/en/stable/parser.html#dateutil.parser.parse">dateutil.parser.parse</a>.
+If a format string is suppled, this will change to use <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime">datetime.datetime.strptime</a>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isodate_processor</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">date_keys</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+        <span class="nt">format</span><span class="p">:</span> <span class="s">&#39;%Y%m&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="date-combinator-processor">
+<h3>Date Combinator Processor<a class="headerlink" href="#date-combinator-processor" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.postprocessors.DateCombinatorProcessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.postprocessors.</span></span><span class="sig-name descname"><span class="pre">DateCombinatorProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.postprocessors.DateCombinatorProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">date_combinator</span></code></p>
+<dl>
+<dt>Description:</dt><dd><p>Used to automatically join date components to create an ISO 8601 date.
+E.g.
+- year (required)
+- month
+- day
+- hour
+- minutes
+- seconds</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are only expecting to extract &lt;year&gt;-&lt;month&gt; make sure to include
+a format string. Dateutil.parser.parse will use the current day to fill the
+blank rather than 01. e.g. <code class="docutils literal notranslate"><span class="pre">2021-03</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">2021-03-29T00:00:00</span></code>. Using format: <code class="docutils literal notranslate"><span class="pre">%Y-%m</span></code> will
+result in <code class="docutils literal notranslate"><span class="pre">2021-03</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">2021-03-01T00:00:00</span></code>.</p>
+</div>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">destructive</span></code>: Whether the keys are removed from the output when combined. <code class="docutils literal notranslate"><span class="pre">DEFAULT:</span> <span class="pre">true</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: Name of the key you would like to output. <code class="docutils literal notranslate"><span class="pre">DEFAULT:</span> <span class="pre">datetime</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code>: Format string to parse date to isodate. Date template is: <code class="docutils literal notranslate"><span class="pre">${year}-${month}-${day}T${hour}:${minute}:${second}</span></code>
+The format string is passed to <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime">datetime.datetime.strptime</a></p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date_combinator</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">destructive</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">format</span><span class="p">:</span> <span class="s">&#39;%Y-%m&#39;</span>
+        <span class="nt">output_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="stac-bbox-processor">
+<h3>STAC BBOX Processor<a class="headerlink" href="#stac-bbox-processor" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.postprocessors.BBOXProcessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.postprocessors.</span></span><span class="sig-name descname"><span class="pre">BBOXProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.postprocessors.BBOXProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">stac_bbox</span></code></p>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Accepts a dictionary of coordinate values and converts to <a class="reference external" href="https://tools.ietf.org/html/rfc7946#section-5">RFC 7946, section 5</a>
+formatted bbox.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key_list</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> list of keys to convert to bbox array. Ordering is respected.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stac_bbox</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">key_list</span><span class="p">:</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">west</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">south</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">east</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">north</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="string-join-processor">
+<h3>String Join Processor<a class="headerlink" href="#string-join-processor" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="asset_scanner.plugins.extraction_methods.postprocessors.StringJoinProcessor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asset_scanner.plugins.extraction_methods.postprocessors.</span></span><span class="sig-name descname"><span class="pre">StringJoinProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asset_scanner.plugins.extraction_methods.postprocessors.StringJoinProcessor" title="Permalink to this definition"></a></dt>
+<dd><p>Processor Name: <code class="docutils literal notranslate"><span class="pre">string_join</span></code></p>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Accepts a dictionary. String values are popped from the dictionary and
+are put back into the dictionary with the <code class="docutils literal notranslate"><span class="pre">output_key</span></code> specified.</p>
+</dd>
+<dt>Configuration Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key_list</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> list of keys to convert to bbox array. Ordering is respected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> text delimiter to put between strings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_key</span></code>: <code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code> name of the key you would like to output</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example Configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_processors</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string_join</span>
+      <span class="nt">inputs</span><span class="p">:</span>
+        <span class="nt">key_list</span><span class="p">:</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">year</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">month</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">day</span>
+        <span class="nt">delimiter</span><span class="p">:</span> <span class="s">&quot;-&quot;</span>
+        <span class="nt">output_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="third-party-post-processors">
+<h3>Third-Party Post-processors<a class="headerlink" href="#third-party-post-processors" title="Permalink to this headline"></a></h3>
+<p>The plugin nature lends itself to third-party plugins. If you develop a plugin which might
+be useful for others’ workflows. Please make a pull request to add it to this table.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Processor Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Vendor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plugin_filters.html" class="btn btn-neutral float-left" title="Plugin Filters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../asset_generator/index.html" class="btn btn-neutral float-right" title="Asset Generator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Richard Smith.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
