@@ -187,7 +187,8 @@ class BaseExtractor(ABC):
         source_media: StorageType,
         data: dict,
         namespace: str = None,
+        **kwargs
     ) -> None:
         for backend in self.output_plugins:
             if not backend.namespace or backend.namespace == namespace:
-                backend.export(data)
+                backend.export(data, **kwargs)

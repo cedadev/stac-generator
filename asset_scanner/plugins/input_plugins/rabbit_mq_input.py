@@ -179,7 +179,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         try:
             msg = json.loads(body)
-            return IngestMessage(**msg)
+            return msg
 
         except json.JSONDecodeError:
             # Assume the message is in the old format and split on :
@@ -316,13 +316,13 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             return
 
         # Extract filename and storage class
-        filename = message.filepath
+        filename = message["filepath"]
 
         try:
             # TODO: How to get this from message? CEDA message.message is str
             # storage_class = message.message.get('storage_type', StorageType.POSIX)
 
-            storage_class = StorageType.POSIX
+            storage_class = message["source_media"]
             if isinstance(storage_class, str):
                 storage_class = StorageType[storage_class]
 
@@ -330,7 +330,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             storage_class = StorageType.POSIX
 
         if self.should_process(filename, storage_class):
-            extractor.process_file(filename, storage_class)
+            extractor.process_file(**message)
 
             LOGGER.debug(f"Input processing: {filename}")
             self.acknowledge_message(ch, method.delivery_tag, connection)
