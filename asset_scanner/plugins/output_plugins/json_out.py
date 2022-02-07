@@ -39,7 +39,6 @@ from .base import OutputBackend
 
 
 class JsonOutputBackend(OutputBackend):
-
     def __init__(self, namespace=None, **kwargs):
         super().__init__(namespace, **kwargs)
         self.filepath: str = kwargs["filepath"]
@@ -52,7 +51,7 @@ class JsonOutputBackend(OutputBackend):
         else:
             filepath = self.filepath
 
-        mode = 'r+' if os.path.exists(filepath) else 'w+'
+        mode = "r+" if os.path.exists(filepath) else "w+"
 
         with open(filepath, mode) as file:
             try:

@@ -37,6 +37,7 @@ class BaseProcessor(ABC):
         """
         pass
 
+
 class BaseAggregationProcessor(BaseProcessor):
     """
     Modify the run method signature as the aggregation processor requires
@@ -44,5 +45,5 @@ class BaseAggregationProcessor(BaseProcessor):
     """
 
     @abstractmethod
-    def run(self, id: str, description: 'ItemDescription') -> dict:
+    def run(self, id: str, description: "ItemDescription") -> dict:
         ...
