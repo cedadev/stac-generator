@@ -15,8 +15,8 @@ from pydoc import locate
 import pkg_resources
 import yaml
 
-from asset_scanner.core import BaseExtractor
 from asset_scanner.core.exceptions import NoPluginsError
+from asset_scanner.core.extractor import BaseExtractor
 from asset_scanner.core.utils import load_plugins
 
 

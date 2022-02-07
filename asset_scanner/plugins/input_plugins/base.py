@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
-from asset_scanner.core import BaseExtractor
+from asset_scanner.core.extractor import BaseExtractor
 from asset_scanner.core.utils import load_plugins
 from asset_scanner.types.source_media import StorageType
 
