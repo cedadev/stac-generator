@@ -5,7 +5,7 @@ with open("README.md") as readme_file:
 
 setup(
     name="asset_scanner",
-    version="1.0.1",
+    version="1.0.2",
     description="Framework to provide plugin architecture to allow the scanning of assets to extract metadata and facets.",
     author="Richard Smith",
     url="https://github.com/cedadev/asset-scanner/",
@@ -38,7 +38,7 @@ setup(
             "file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin",
             "object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin",
             "intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin",
-            "rabbit_mq = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin",
+            "rabbitmq_in = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin",
             "thredds = asset_scanner.plugins.input_plugins.thredds_input:ThreddsInputPlugin",
             "file_input = asset_scanner.plugins.input_plugins.file_input:FileInputPlugin",
         ],
@@ -47,6 +47,7 @@ setup(
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
             "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
             "json_out = asset_scanner.plugins.output_plugins.json_out:JsonOutputBackend",
+            "rabbitmq_out = asset_scanner_plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
         ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
