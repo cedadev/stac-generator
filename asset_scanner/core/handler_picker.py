@@ -13,9 +13,12 @@ from typing import Dict, List, Optional, Union
 
 import pkg_resources
 
-from .processor import BaseProcessor
-
 LOGGER = logging.getLogger(__name__)
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .processor import BaseProcessor
 
 
 class HandlerPicker:
@@ -57,7 +60,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
+    def get_processor(self, name: str, **kwargs) -> Optional['BaseProcessor']:
         """
         Get the processor by name
 
