@@ -47,7 +47,7 @@ setup(
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
             "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
             "json_out = asset_scanner.plugins.output_plugins.json_out:JsonOutputBackend",
-            "rabbitmq_out = asset_scanner_plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
+            "rabbitmq_out = asset_scanner.plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
         ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
