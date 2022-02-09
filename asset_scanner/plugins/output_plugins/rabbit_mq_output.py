@@ -143,6 +143,7 @@ class RabbitMQOutBackend(OutputBackend):
         self.connection_conf = kwargs.get("connection", {})
         self.exchange_conf = kwargs.get("exchange", {})
         self.queues_conf = kwargs.get("queues", {})
+        self.header_conf = kwargs.get("header_conf", {})
 
         # Get the username and password for rabbit
         rabbit_user = self.connection_conf.get("user")
@@ -183,11 +184,10 @@ class RabbitMQOutBackend(OutputBackend):
             )
         self.channel = channel
 
-    @staticmethod
-    def build_header(header_kwargs: Dict):
-        header = {}
-        if header_kwargs.get("x-delay", 2000):
-            header["x-delay"] = header_kwargs["x-delay"]
+    def build_header(self):
+        header = self.header_conf
+        # Set the message exchange delay from header config. Default to 30000ms
+        header['x-delay'] = self.header_conf.get('x-delay', 30000)
         return pika.BasicProperties(headers=header)
 
     def export(self, data: Dict, **kwargs):
@@ -197,7 +197,7 @@ class RabbitMQOutBackend(OutputBackend):
         :param data: expected data as header dict
         :param kwargs: optional delayed message kwarg
         """
-        message_properties = self.build_header(header_kwargs=kwargs)
+        message_properties = self.build_header()
 
         msg = json.dumps(data)
 
