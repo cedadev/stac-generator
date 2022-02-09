@@ -166,18 +166,21 @@ class RabbitMQOutBackend(OutputBackend):
         )
 
         # Get the exchanges to bind
-        src_exchange = self.exchange_conf.get("source_exchange")
+        self.src_exchange = self.exchange_conf.get("source_exchange")
         self.dest_exchange = self.exchange_conf.get("destination_exchange")
 
         # Create a new channel
-        channel = connection.channel()
-        channel.exchange_declare(
-            exchange=self.dest_exchange["name"],
-            exchange_type=self.dest_exchange["type"],
-        )
-        channel.exchange_declare(
-            exchange=src_exchange["name"], exchange_type=src_exchange["type"]
-        )
+        if self.dest_exchange:
+            channel = connection.channel()
+            channel.exchange_declare(
+                exchange=self.dest_exchange["name"],
+                exchange_type=self.dest_exchange["type"],
+            )
+        if self.src_exchange:
+            channel.exchange_declare(
+                exchange=self.src_exchange["name"],
+                exchange_type=self.src_exchange["type"]
+            )
         self.channel = channel
 
     @staticmethod
