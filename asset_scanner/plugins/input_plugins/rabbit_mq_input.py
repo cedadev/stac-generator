@@ -179,6 +179,12 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         try:
             msg = json.loads(body)
+            if msg.get("source_media"):
+                source_media = msg.get("source_media")
+                try:
+                    msg["source_media"] = StorageType[source_media]
+                except KeyError:
+                    msg["source_media"] = StorageType.POSIX
             return msg
 
         except json.JSONDecodeError:
@@ -193,7 +199,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
                 "message": ":".join(split_line[6:]),
             }
 
-        return IngestMessage(**msg)
+        return msg
 
     def _connect(self, extractor) -> pika.channel.Channel:
         """

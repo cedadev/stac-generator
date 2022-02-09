@@ -203,7 +203,7 @@ class RabbitMQOutBackend(OutputBackend):
 
         self.channel.basic_publish(
             exchange=self.dest_exchange["name"],
-            routing_key=self.queues_conf.get("bind_kwargs", {}).get("routing_key", ""),
             body=msg,
+            routing_key=self.exchange_conf.get("routing_key", ""),
             properties=message_properties,
         )
