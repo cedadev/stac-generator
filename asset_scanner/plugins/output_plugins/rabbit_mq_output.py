@@ -180,14 +180,14 @@ class RabbitMQOutBackend(OutputBackend):
         if self.src_exchange:
             channel.exchange_declare(
                 exchange=self.src_exchange["name"],
-                exchange_type=self.src_exchange["type"]
+                exchange_type=self.src_exchange["type"],
             )
         self.channel = channel
 
     def build_header(self):
         header = self.header_conf
         # Set the message exchange delay from header config. Default to 30000ms
-        header['x-delay'] = self.header_conf.get('x-delay', 30000)
+        header["x-delay"] = self.header_conf.get("x-delay", 30000)
         return pika.BasicProperties(headers=header)
 
     def export(self, data: Dict, **kwargs):
