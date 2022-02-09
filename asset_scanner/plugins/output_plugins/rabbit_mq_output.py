@@ -137,9 +137,9 @@ from .base import OutputBackend
 
 
 class RabbitMQOutBackend(OutputBackend):
-    def __init__(**kwargs):
-        super().__init__(self, **kwargs)
-        
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
         self.connection_conf = kwargs.get("connection", {})
         self.exchange_conf = kwargs.get("exchange", {})
         self.queues_conf = kwargs.get("queues", {})
