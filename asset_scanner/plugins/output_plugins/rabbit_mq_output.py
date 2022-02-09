@@ -184,10 +184,14 @@ class RabbitMQOutBackend(OutputBackend):
             )
         self.channel = channel
 
-    def build_header(self):
+    def build_header(self, **kwargs):
         header = self.header_conf
         # Set the message exchange delay from header config. Default to 30000ms
-        header["x-delay"] = self.header_conf.get("x-delay", 30000)
+        if kwargs.get('duplicate', False):
+            header["x-delay"] = self.header_conf.get("x-delay", 30000)
+            header["x-deduplication-header"] = kwargs.get('id')
+        else:
+            header["x-delay"] = 0
         return pika.BasicProperties(headers=header)
 
     def export(self, data: Dict, **kwargs):
@@ -197,7 +201,7 @@ class RabbitMQOutBackend(OutputBackend):
         :param data: expected data as header dict
         :param kwargs: optional delayed message kwarg
         """
-        message_properties = self.build_header()
+        message_properties = self.build_header(**kwargs)
 
         msg = json.dumps(data)
 
