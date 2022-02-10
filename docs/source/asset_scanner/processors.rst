@@ -152,6 +152,11 @@ String Join Processor
 ---------------------
 .. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.StringJoinProcessor
 
+Facet Prefix Processor
+-------------------
+.. autoclass:: asset_scanner.plugins.extraction_methods.postprocessors.FacetPrefixProcessor
+
+
 Third-Party Post-processors
 ---------------------------
 
