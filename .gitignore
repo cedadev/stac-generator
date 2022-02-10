@@ -2,6 +2,8 @@
 *.egg-info
 *venv
 conf
+conf.yml
 __pycache__
 *.pyc
 docs/build/
+.DS_Store
