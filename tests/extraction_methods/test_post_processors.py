@@ -45,7 +45,7 @@ def bbox_processor():
 
 @pytest.fixture
 def facet_prefix_processor():
-    return postprocessors.FacetPrefixProcessor(prefix="CMIP6" terms=["date"])
+    return postprocessors.FacetPrefixProcessor(prefix="CMIP6", terms=["date"])
 
 
 def test_isodate_processor(isodate_processor, fpath, source_dict):
