@@ -278,7 +278,7 @@ def test_facet_prefix_processor(facet_prefix_processor, fpath, source_dict):
     """
     Check processor adds prefix to named facets
     """
-    expected = {"cmip6:date": source_dict["date"]}
+    expected = {"CMIP6:date": source_dict["date"]}
 
     output = facet_prefix_processor.run(fpath, source_dict=source_dict)
     assert output == expected
