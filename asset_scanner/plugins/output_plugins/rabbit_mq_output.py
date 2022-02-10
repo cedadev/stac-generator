@@ -187,9 +187,9 @@ class RabbitMQOutBackend(OutputBackend):
     def build_header(self, **kwargs):
         header = {}
         # Handle the deduplication of messages and add relevant headers
-        if kwargs.get('deduplicate', False):
+        if kwargs.get("deduplicate", False):
             header["x-delay"] = self.header_conf.get("x-delay", 30000)
-            header["x-deduplication-header"] = kwargs.get('id')
+            header["x-deduplication-header"] = kwargs.get("id")
 
         # Possbile dict merge header with header_conf here.
         return pika.BasicProperties(headers=header)
