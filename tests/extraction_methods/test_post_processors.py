@@ -43,6 +43,11 @@ def bbox_processor():
     return postprocessors.BBOXProcessor(key_list=["west", "south", "east", "north"])
 
 
+@pytest.fixture
+def facet_prefix_processor():
+    return postprocessors.FacetPrefixProcessor(prefix="CMIP6" terms=["date"])
+
+
 def test_isodate_processor(isodate_processor, fpath, source_dict):
     """Check isodate processor does what's expected"""
     expected = source_dict.copy()
@@ -267,3 +272,13 @@ def test_date_combinator_ym_no_format(fpath, caplog):
     output = processor.run(fpath, source_dict=source_dict)
     assert output == expected
     assert len(caplog.records) == 1
+
+
+def test_facet_prefix_processor(facet_prefix_processor, fpath, source_dict):
+    """
+    Check processor adds prefix to named facets
+    """
+    expected = {"cmip6:date": source_dict["date"]}
+
+    output = facet_prefix_processor.run(fpath, source_dict=source_dict)
+    assert output == expected
