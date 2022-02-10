@@ -362,7 +362,7 @@ class FacetPrefixProcessor(BasePostProcessor):
     Processor Name: ``facet_prefix``
 
     Description:
-        In some cases, you may wish add a prefix to some or all of the facets 
+        In some cases, you may wish add a prefix to some or all of the facets
         based on the vocabulary they're from.
 
     Configuration Options:
