@@ -29,15 +29,13 @@ import logging
 from typing import TYPE_CHECKING
 import requests
 import logging
-
 from asset_scanner.types.source_media import StorageType
-
+from asset_scanner.core.extractor import BaseExtractor
 from .base import BaseInputPlugin
+from string import Template
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
-    from asset_scanner.core.extractor import BaseExtractor
 
 class SolrInputPlugin(BaseInputPlugin):
 
@@ -47,7 +45,7 @@ class SolrInputPlugin(BaseInputPlugin):
         self.core = kwargs.get('core', 'files')
         self.url = f"http://{self.index_node}/solr/{self.core}/select"
 
-        search_params = kwargs.get('search_params')
+        search_params = kwargs.get('search_params', {})
         self.params = {
             'indent': search_params.get('indent', 'on'),
             'q': search_params.get('q', '*:*'),
@@ -72,7 +70,8 @@ class SolrInputPlugin(BaseInputPlugin):
 
     def run(self, extractor: BaseExtractor):
         for doc in self.iter_docs():
-            files = list(doc.items())
-            for file in files:
-                filepath = file.split('|')[0]
-                extractor.process_file(filepath=filepath, source_media=StorageType.ESGF_SOLR)
+            filepath: str = doc.get('id')
+            
+            # transoform file id to a filepath
+            filepath = filepath.replace('.', '/', (filepath.split('|')[0].count('.')-1))
+            extractor.process_file(filepath=filepath, source_media=StorageType.ESGF_SOLR)
