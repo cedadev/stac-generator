@@ -23,6 +23,7 @@ from dateutil.parser import parse
 
 # Framework imports
 from asset_scanner.core.utils import generate_id
+from asset_scanner.core.item_describer import ItemDescription
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ def is_remote_uri(path: str) -> bool:
     return bool(re.search(r"^[a-z][a-z0-9]*(\://|\:\:)", path))
 
 
-def generate_item_id_from_properties(filepath, collection_id, tags, description):
+def generate_item_id_from_properties(filepath: str, collection_id: str, tags, description: ItemDescription):
 
     has_all_facets = all(
         [facet in tags for facet in description.facets.aggregation_facets]
