@@ -38,7 +38,9 @@ def is_remote_uri(path: str) -> bool:
     return bool(re.search(r"^[a-z][a-z0-9]*(\://|\:\:)", path))
 
 
-def generate_item_id_from_properties(filepath: str, collection_id: str, tags, description: ItemDescription):
+def generate_item_id_from_properties(
+    filepath: str, collection_id: str, tags, description: ItemDescription
+):
 
     has_all_facets = all(
         [facet in tags for facet in description.facets.aggregation_facets]
