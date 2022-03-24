@@ -73,6 +73,7 @@ setup(
             "stac_bbox = asset_scanner.plugins.extraction_methods.postprocessors:BBOXProcessor",
             "string_join = asset_scanner.plugins.extraction_methods.postprocessors:StringJoinProcessor",
             "date_combinator = asset_scanner.plugins.extraction_methods.postprocessors:DateCombinatorProcessor",
+            "facet_prefix = asset_scanner.plugins.extraction_methods.postprocessors:FacetPrefixProcessor",
         ],
     },
 )

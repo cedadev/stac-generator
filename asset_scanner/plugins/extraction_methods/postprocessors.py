@@ -354,3 +354,50 @@ class DateCombinatorProcessor(BasePostProcessor):
                     source_dict.pop(key, None)
 
         return source_dict
+
+
+class FacetPrefixProcessor(BasePostProcessor):
+    """
+
+    Processor Name: ``facet_prefix``
+
+    Description:
+        In some cases, you may wish add a prefix to some or all of the facets
+        based on the vocabulary they're from.
+
+    Configuration Options:
+        - ``prefix``: Prefix to be added
+        - ``terms``: List of terms that require prefix
+
+    Example Configuration:
+
+    .. code-block:: yaml
+
+        post_processors:
+            - name: facet_prefix
+              inputs:
+                prefix:
+                  cmip6
+                terms:
+                    - start_time
+                    - model
+
+    """
+
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: Optional[Dict] = None,
+        **kwargs,
+    ) -> Dict:
+        output = {}
+        if source_dict:
+
+            for k, v in source_dict.items():
+                if k in self.terms:
+                    output[f"{self.prefix}:{k}"] = v
+                else:
+                    output[k] = v
+
+        return output
