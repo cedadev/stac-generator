@@ -38,7 +38,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import logging
-
+import sys
 import requests
 
 from asset_scanner.core.extractor import BaseExtractor
@@ -75,13 +75,15 @@ class SolrInputPlugin(BaseInputPlugin):
         """
         n = 0
         while True:
-            resp = requests.get(self.url, self.params)
-
-            if resp.status_code != 200:
+            try:
+                resp = requests.get(self.url, self.params)
+            except requests.exceptions.ConnectionError as e:
                 LOGGER.error(
-                    f"Response error: " f"could not retrieve response from {self.url}"
-                )
-                pass
+                    f"Failed to establish connection to {self.url}:\n"
+                    f"{e}"
+                    )
+                sys.exit(1)
+
             resp = resp.json()
             docs = resp["response"]["docs"]
 
