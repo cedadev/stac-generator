@@ -101,15 +101,21 @@ class SolrInputPlugin(BaseInputPlugin):
             self.params["cursorMark"] = resp["nextCursorMark"]
 
     def run(self, extractor: BaseExtractor):
-        for doc in self.iter_docs():
-            filepath: str = doc.get("id")
+        resp = requests.get(url="https://esgf-index4.ceda.ac.uk/solr/datasets/select?indent=on&rows=0&q=*:*&wt=json")
+        print(f"esgf: {resp.json()}")
 
-            LOGGER.info(f"Input processing: {filepath}")
+        resp = requests.get(url="https://api.ipify.org?format=json")
+        print(f"ip: {resp.json()}")
 
-            # transform file id to a filepath
-            # by replacing '.' with '/' up until the filename
-            filepath = filepath.replace(".", "/", filepath.split("|")[0].count(".") - 1)
+        # for doc in self.iter_docs():
+        #     filepath: str = doc.get("id")
 
-            extractor.process_file(
-                filepath=filepath, source_media=StorageType.ESGF_SOLR
-            )
+        #     LOGGER.info(f"Input processing: {filepath}")
+
+        #     # transform file id to a filepath
+        #     # by replacing '.' with '/' up until the filename
+        #     filepath = filepath.replace(".", "/", filepath.split("|")[0].count(".") - 1)
+
+        #     extractor.process_file(
+        #         filepath=filepath, source_media=StorageType.ESGF_SOLR
+        #     )
