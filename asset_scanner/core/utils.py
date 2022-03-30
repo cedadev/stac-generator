@@ -157,9 +157,14 @@ def dict_merge(*args, add_keys=True) -> dict:
 
             # This is an existing key with mismatched types
             elif k in rtn_dct and not isinstance(v, type(rtn_dct[k])):
-                raise TypeError(
-                    f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}"
-                )
+                if isinstance(v, list) and rtn_dct[k] in v:
+                    rtn_dct[k] = v
+                elif isinstance(rtn_dct[k], list) and v in rtn_dct[k]:
+                    rtn_dct[k] = rtn_dct[k]
+                else:
+                    raise TypeError(
+                        f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}"
+                    )
 
             # Recursive merge the next level
             elif isinstance(rtn_dct[k], dict) and isinstance(
