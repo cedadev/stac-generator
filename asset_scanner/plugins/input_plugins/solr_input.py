@@ -39,6 +39,7 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import logging
 import sys
+
 import requests
 
 from asset_scanner.core.extractor import BaseExtractor
