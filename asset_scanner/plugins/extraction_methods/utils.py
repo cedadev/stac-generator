@@ -21,9 +21,10 @@ from typing import Optional, Tuple
 # 3rd party imports
 from dateutil.parser import parse
 
+from asset_scanner.core.item_describer import ItemDescription
+
 # Framework imports
 from asset_scanner.core.utils import generate_id
-from asset_scanner.core.item_describer import ItemDescription
 
 LOGGER = logging.getLogger(__name__)
 

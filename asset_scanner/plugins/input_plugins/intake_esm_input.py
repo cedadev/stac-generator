@@ -51,15 +51,15 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 # Thirdparty imports
 import intake
 
+from asset_scanner.core.extractor import BaseExtractor
+
 # Framework imports
 from asset_scanner.types.source_media import StorageType
-from asset_scanner.core.extractor import BaseExtractor
 
 # Package imports
 from .base import BaseInputPlugin

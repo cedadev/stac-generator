@@ -5,9 +5,11 @@ Decorators
 
 Decorators allow the user to modify the input and out from the processors.
 
-:py:mod:`item_generator.extraction_methods.preprocessors` allow modification of the input arguments.
+:py:mod:`item_generator.extraction_methods.preprocessors` allow modification of
+the input arguments.
 
-:py:mod:`item_generator.extraction_methods.postprocessors` modify the output dictionary.
+:py:mod:`item_generator.extraction_methods.postprocessors` modify the output
+dictionary.
 
 """
 __author__ = "Richard Smith"
@@ -52,7 +54,8 @@ def accepts_preprocessors(func):
 def accepts_postprocessors(func):
     """
     Allows postprocessors to work on the output from the main
-    processor.  Uses the key ``post_processors`` from the processor description.
+    processor.  Uses the key ``post_processors`` from the processor
+    description.
 
     :param filepath: Path to the file
     :param source_media: The source media type

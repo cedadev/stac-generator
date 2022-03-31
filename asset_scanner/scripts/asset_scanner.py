@@ -51,7 +51,8 @@ def load_extractor(conf: dict) -> BaseExtractor:
     Load the extractor.
 
     Looks for extractor defined in the configuration in preference
-    and falls back to the first defined entry point at ``asset_scanner.extractors``
+    and falls back to the first defined entry point
+    at ``asset_scanner.extractors``
 
     :param conf: Configuration dict
     :return: Extractor
@@ -63,7 +64,7 @@ def load_extractor(conf: dict) -> BaseExtractor:
         extractor = locate(conf["extractor"])
         if not extractor:
             raise ImportError(
-                f'Unable to find {conf["extractor"]}. Check that it is installed.'
+                f'Unable to find {conf["extractor"]}. ' f"Check that it is installed."
             )
 
     if not extractor:

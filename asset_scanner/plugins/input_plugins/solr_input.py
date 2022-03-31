@@ -39,6 +39,7 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import logging
 import sys
+
 import requests
 
 from asset_scanner.core.extractor import BaseExtractor
@@ -78,10 +79,7 @@ class SolrInputPlugin(BaseInputPlugin):
             try:
                 resp = requests.get(self.url, self.params)
             except requests.exceptions.ConnectionError as e:
-                LOGGER.error(
-                    f"Failed to establish connection to {self.url}:\n"
-                    f"{e}"
-                    )
+                LOGGER.error(f"Failed to establish connection to {self.url}:\n" f"{e}")
                 sys.exit(1)
 
             resp = resp.json()
@@ -108,10 +106,9 @@ class SolrInputPlugin(BaseInputPlugin):
 
             # transform file id to a filepath
             # by replacing '.' with '/' up until the filename
-            filepath = filepath.replace(
-                ".", "/", filepath.split("|")[0].count(".") - 1
-                )
+            filepath = filepath.replace(".", "/", filepath.split("|")[0].count(".") - 1)
 
             extractor.process_file(
                 filepath=filepath, source_media=StorageType.ESGF_SOLR
             )
+            break
