@@ -81,7 +81,7 @@ class SolrInputPlugin(BaseInputPlugin):
                 LOGGER.error(
                     f"Failed to establish connection to {self.url}:\n"
                     f"{e}"
-                    )
+                )
                 sys.exit(1)
 
             resp = resp.json()
@@ -109,9 +109,12 @@ class SolrInputPlugin(BaseInputPlugin):
             # transform file id to a filepath
             # by replacing '.' with '/' up until the filename
             filepath = filepath.replace(
-                ".", "/", filepath.split("|")[0].count(".") - 1
-                )
+                ".",
+                "/",
+                filepath.split("|")[0].count(".")-1
+            )
 
             extractor.process_file(
                 filepath=filepath, source_media=StorageType.ESGF_SOLR
             )
+            break
