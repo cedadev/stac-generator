@@ -239,19 +239,16 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         # Declare relevant exchanges
         if src_exchange:
             channel.exchange_declare(
-                exchange=src_exchange["name"],
-                exchange_type=src_exchange["type"]
+                exchange=src_exchange["name"], exchange_type=src_exchange["type"]
             )
         channel.exchange_declare(
-            exchange=dest_exchange["name"],
-            exchange_type=dest_exchange["type"]
+            exchange=dest_exchange["name"], exchange_type=dest_exchange["type"]
         )
 
         # Bind source exchange to dest exchange
         if src_exchange:
             channel.exchange_bind(
-                destination=dest_exchange["name"],
-                source=src_exchange["name"]
+                destination=dest_exchange["name"], source=src_exchange["name"]
             )
 
         # Declare queue and bind queue to the dest exchange
@@ -262,21 +259,15 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
             channel.queue_declare(queue=queue["name"], **declare_kwargs)
             channel.queue_bind(
-                exchange=dest_exchange["name"],
-                queue=queue["name"],
-                **bind_kwargs
+                exchange=dest_exchange["name"], queue=queue["name"], **bind_kwargs
             )
 
             # Set callback
             callback = functools.partial(
-                self.callback,
-                connection=connection,
-                extractor=extractor
+                self.callback, connection=connection, extractor=extractor
             )
             channel.basic_consume(
-                queue=queue["name"],
-                on_message_callback=callback,
-                **consume_kwargs
+                queue=queue["name"], on_message_callback=callback, **consume_kwargs
             )
 
         return channel
@@ -308,11 +299,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         :param delivery_tag: from the callback method param. eg. method.delivery_tag
         :param connection: connection object from the callback param
         """
-        cb = functools.partial(
-            self._acknowledge_message,
-            channel,
-            delivery_tag
-        )
+        cb = functools.partial(self._acknowledge_message, channel, delivery_tag)
         connection.add_callback_threadsafe(cb)
 
     def callback(
@@ -369,9 +356,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         :return: Bool, ``default: True``
         """
         if self.filters:
-            return any(
-                (filter.run(filepath, source_media) for filter in self.filters)
-            )
+            return any((filter.run(filepath, source_media) for filter in self.filters))
 
         return True
 

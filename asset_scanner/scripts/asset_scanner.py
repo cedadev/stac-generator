@@ -25,13 +25,8 @@ def command_args():
     Sets the command line arguments and handles their parsing
     :return: command line options
     """
-    parser = argparse.ArgumentParser(
-        description="Run the asset scanner as configured"
-    )
-    parser.add_argument(
-        "conf",
-        help="Path to a yaml configuration file"
-    )
+    parser = argparse.ArgumentParser(description="Run the asset scanner as configured")
+    parser.add_argument("conf", help="Path to a yaml configuration file")
     args = parser.parse_args()
 
     return args
@@ -69,8 +64,7 @@ def load_extractor(conf: dict) -> BaseExtractor:
         extractor = locate(conf["extractor"])
         if not extractor:
             raise ImportError(
-                f'Unable to find {conf["extractor"]}. '
-                f'Check that it is installed.'
+                f'Unable to find {conf["extractor"]}. ' f"Check that it is installed."
             )
 
     if not extractor:
