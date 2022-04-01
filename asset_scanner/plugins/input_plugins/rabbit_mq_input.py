@@ -336,10 +336,10 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             storage_class = StorageType.POSIX
 
         if self.should_process(filename, storage_class):
+            self.acknowledge_message(ch, method.delivery_tag, connection)
             extractor.process_file(**message)
 
             LOGGER.info(f"Input processing: {filename}")
-            self.acknowledge_message(ch, method.delivery_tag, connection)
         else:
             LOGGER.info(f"Input skipping: {filename}")
 

@@ -61,5 +61,6 @@ class FileInputPlugin(BaseInputPlugin):
             with open(file) as f:
                 for line in f:
                     data = json.loads(line)
-                    data["source_media"] = StorageType(data["source_media"])
+                    source_media = data["source_media"]
+                    data["source_media"] = StorageType(source_media)
                     extractor.process_file(**data)
