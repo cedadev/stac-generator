@@ -32,6 +32,7 @@ from os import listdir
 from os.path import isdir, isfile, join
 
 from asset_scanner.core.extractor import BaseExtractor
+from asset_scanner.types.source_media import StorageType
 
 from .base import BaseInputPlugin
 
@@ -60,4 +61,6 @@ class FileInputPlugin(BaseInputPlugin):
             with open(file) as f:
                 for line in f:
                     data = json.loads(line)
+                    source_media = data["source_media"]
+                    data["source_media"] = StorageType(source_media)
                     extractor.process_file(**data)

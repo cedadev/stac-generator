@@ -4,7 +4,7 @@ RabbitMQ Output
 
 Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file objects.
 
-**Plugin name:** ``rabbitmq``
+**Plugin name:** ``rabbitmq_out``
 
 .. list-table::
     :header-rows: 1

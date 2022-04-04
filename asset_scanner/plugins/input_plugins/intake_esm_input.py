@@ -51,11 +51,12 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 # Thirdparty imports
 import intake
+
+from asset_scanner.core.extractor import BaseExtractor
 
 # Framework imports
 from asset_scanner.types.source_media import StorageType
@@ -63,11 +64,7 @@ from asset_scanner.types.source_media import StorageType
 # Package imports
 from .base import BaseInputPlugin
 
-logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:
-    from asset_scanner.core.extractor import BaseExtractor
+LOGGER = logging.getLogger(__name__)
 
 
 class IntakeESMInputPlugin(BaseInputPlugin):
@@ -85,16 +82,16 @@ class IntakeESMInputPlugin(BaseInputPlugin):
 
     def open_catalog(self):
         """Open the ESM catalog and perform a search, if required."""
-        logger.info("Opening catalog")
+        LOGGER.info("Opening catalog")
         catalog = intake.open_esm_datastore(self.uri, **self.intake_kwargs)
 
         if self.search_kwargs:
             catalog = catalog.search(**self.search_kwargs)
 
-        logger.info(f"Found {len(catalog.df)} items")
+        LOGGER.info(f"Found {len(catalog.df)} items")
         return catalog
 
-    def run(self, extractor: "BaseExtractor"):
+    def run(self, extractor: BaseExtractor):
         total_files = 0
         start = datetime.now()
 
@@ -112,9 +109,9 @@ class IntakeESMInputPlugin(BaseInputPlugin):
 
             if self.should_process(filepath, media_type):
                 extractor.process_file(filepath, media_type)
-                logger.debug(f"Input processing: {filepath}")
+                LOGGER.debug(f"Input processing: {filepath}")
             else:
-                logger.debug(f"Input skipping: {filepath}")
+                LOGGER.debug(f"Input skipping: {filepath}")
 
             total_files += 1
 

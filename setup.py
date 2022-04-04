@@ -41,6 +41,7 @@ setup(
             "rabbitmq_in = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin",
             "thredds = asset_scanner.plugins.input_plugins.thredds_input:ThreddsInputPlugin",
             "file_input = asset_scanner.plugins.input_plugins.file_input:FileInputPlugin",
+            "solr_input = asset_scanner.plugins.input_plugins.solr_input:SolrInputPlugin",
         ],
         "asset_scanner.output_plugins": [
             "standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend",

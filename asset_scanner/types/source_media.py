@@ -17,3 +17,4 @@ class StorageType(enum.Enum):
     POSIX = "POSIX"
     OBJECT_STORE = "OBJECT_STORE"
     TAPE = "TAPE"
+    ESGF_SOLR = "ESGF_SOLR"

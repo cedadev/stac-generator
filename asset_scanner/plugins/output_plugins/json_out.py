@@ -31,6 +31,11 @@ Example Configuration:
               filepath: location_to_destination_file
 
 """
+__author__ = "Mahir Rahman"
+__date__ = "23 Mar 2022"
+__copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "kazi.mahir@stfc.ac.uk"
 
 import json
 import os
@@ -39,6 +44,10 @@ from .base import OutputBackend
 
 
 class JsonOutputBackend(OutputBackend):
+    """
+    Export data to a json file
+    """
+
     def __init__(self, namespace=None, **kwargs):
         super().__init__(namespace, **kwargs)
         self.filepath: str = kwargs["filepath"]
