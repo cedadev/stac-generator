@@ -111,4 +111,3 @@ class SolrInputPlugin(BaseInputPlugin):
             extractor.process_file(
                 filepath=filepath, source_media=StorageType.ESGF_SOLR
             )
-            break
