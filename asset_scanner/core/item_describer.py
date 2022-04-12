@@ -62,8 +62,11 @@ class Collections(Processor):
 class Facets(Processor):
     """Facets processor description model."""
 
-    aggregation_facets: Optional[List] = []
-    search_facets: Optional[List] = []
+    common_facets: Optional[List] = []
+    collection_facets: Optional[List] = []
+    item_facets: Optional[List] = []
+    asset_facets: Optional[List] = []
+    # Facet layers are aggregated in ItemDescriptions.get_description
 
 
 class ItemDescription(BaseModel):
@@ -155,8 +158,20 @@ class ItemDescriptions:
         description_files = [node.description_file for node in nodes]
 
         config_description = self.load_config(*description_files)
+        description = ItemDescription(**config_description)
+        facets = description.facets
 
-        return ItemDescription(**config_description)
+        # Aggregate the facet layers
+        facets.collection_facets = list(set(
+            facets.collection_facets + facets.common_facets
+        ))
+        facets.item_facets = list(set(
+            facets.item_facets + facets.collection_facets
+        ))
+        facets.asset_facets = list(set(
+            facets.asset_facets + facets.item_facets
+        ))
+        return description
 
     @lru_cache(100)
     def load_config(self, *args: str) -> dict:

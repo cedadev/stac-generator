@@ -9,14 +9,13 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pkg_resources
 
-LOGGER = logging.getLogger(__name__)
+from .processor import BaseProcessor
 
-if TYPE_CHECKING:
-    from .processor import BaseProcessor
+LOGGER = logging.getLogger(__name__)
 
 
 class HandlerPicker:
@@ -58,7 +57,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get_processor(self, name: str, **kwargs) -> Optional["BaseProcessor"]:
+    def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
         """
         Get the processor by name
 

@@ -137,26 +137,40 @@ Facets
      - Type
      - Description
      - Example
-   * - ``aggregation_facets``
+   * - ``common_facets``
      - list
      - List of facets which define files which should be grouped together. e.g.
        All files which have the same value for the facets listed here, should become
        a single item.
      - .. code-block:: yaml
 
-            aggregation_facets:
+            common_facets:
                 - platform
                 - flight_number
-   * - ``search_facets``
+   * - ``collection_facets``
      - list
      - List of facets additonal facets which are useful for searching.
        This list will be added to the aggregation facets list to generate a summary
        at the collection level. This is used to feed faceted search.
      - .. code-block:: yaml
 
-            search_facets:
+            collection_facets:
                 - platform
                 - flight_number
+   * - ``item_facets``
+     - list 
+     - List of facets additional facets which are useful for searching at the item level.
+       This list will be an aggregation of common_facets and collection_facets. This
+       is used to generate properties at the item level.
+     - .. code-block:: yaml
+
+            item_facets:
+              - file_directory
+   * - ``asset_facets``
+     - list
+     - List of facets additional facets which are useful for searching at the asset level.
+       This list will be an aggregation of all facets to generate properties at 
+       the asset level. This is used to feed faceted search at the asset level.
    * -
      - :ref:`Processor <item_descriptions/item_descriptions:processor>`
      - Defines the keys for the processor workflow.

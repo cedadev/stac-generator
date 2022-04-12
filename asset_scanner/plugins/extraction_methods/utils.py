@@ -44,12 +44,12 @@ def generate_item_id_from_properties(
 ):
 
     has_all_facets = all(
-        [facet in tags for facet in description.facets.aggregation_facets]
+        [facet in tags for facet in description.facets.common_facets]
     )
 
     if has_all_facets:
         id_string = collection_id
-        for facet in description.facets.aggregation_facets:
+        for facet in description.facets.common_facets:
             vals = tags.get(facet)
             if isinstance(vals, (str, int)):
                 id_string = ".".join((id_string, vals))

@@ -9,10 +9,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .item_describer import ItemDescription
 
 
 class BaseProcessor(ABC):
@@ -40,14 +36,3 @@ class BaseProcessor(ABC):
         :return: dict
         """
         pass
-
-
-class BaseAggregationProcessor(BaseProcessor):
-    """
-    Modify the run method signature as the aggregation processor requires
-    different information.
-    """
-
-    @abstractmethod
-    def run(self, id: str, description: "ItemDescription") -> dict:
-        ...
