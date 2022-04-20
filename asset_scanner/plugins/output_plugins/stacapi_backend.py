@@ -58,49 +58,6 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-# Taken from https://chromium.googlesource.com/infra/infra/infra_libs/+/b2e2c9948c327b88b138d8bd60ec4bb3a957be78/time_functions/testing.py
-class MockDateTimeMeta(datetime.datetime.__dict__.get('__metaclass__', type)):
-    @classmethod
-    def __instancecheck__(cls, instance):
-      return isinstance(instance, datetime.datetime)
-
-# Taken from https://chromium.googlesource.com/infra/infra/infra_libs/+/b2e2c9948c327b88b138d8bd60ec4bb3a957be78/time_functions/testing.py
-class MockDateTime():
-    __metaclass__ = MockDateTimeMeta
-    mock_utcnow = datetime.datetime.utcnow()
-    tzinfo = "mock"
-
-    @classmethod
-    def isoformat(cls):
-        return cls.mock_utcnow.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    @classmethod
-    def utcnow(cls):
-        return cls.mock_utcnow
-
-    @classmethod
-    def now(cls, tz=None):
-        if not tz:
-            tz = tzlocal.get_localzone()
-        tzaware_utcnow = pytz.utc.localize(cls.mock_utcnow)
-        return tz.normalize(tzaware_utcnow.astimezone(tz)).replace(tzinfo=None)
-
-    @classmethod
-    def today(cls):
-        return cls.now().date()
-
-    @classmethod
-    def fromtimestamp(cls, timestamp, tz=None):
-        if not tz:
-            # TODO(sergiyb): This may fail for some unclear reason because pytz
-            # doesn't find normal timezones such as 'Europe/Berlin'. This seems to
-            # happen only in appengine/chromium_try_flakes tests, and not in tests
-            # for this module itself.
-            tz = tzlocal.get_localzone()
-        tzaware_dt = pytz.utc.localize(cls.utcfromtimestamp(timestamp))
-        return tz.normalize(tzaware_dt.astimezone(tz)).replace(tzinfo=None)
-
-
 class StacApiOutputBackend(OutputBackend):
     """
     Connects to a STAC API instance and exports the
@@ -150,9 +107,9 @@ class StacApiOutputBackend(OutputBackend):
         r = requests.post(os.path.join(stac_host, "collections"), json=json_data)
 
         if r.status_code == 200:
-            print(f"{bcolors.OKGREEN}[INFO] Created collection [{collection_id}] ({r.status_code}){bcolors.ENDC}")
+            print(f"{bcolors.OKGREEN}[INFO] Pushed STAC collection [{collection_id}] to [{stac_host}] ({r.status_code}){bcolors.ENDC}")
         elif r.status_code == 409:
-            print(f"{bcolors.WARNING}[INFO] Collection already exists [{collection_id}] ({r.status_code}), updating..{bcolors.ENDC}")
+            print(f"{bcolors.WARNING}[INFO] STAC collection [{collection_id}] already exists on [{stac_host}] ({r.status_code}), updating..{bcolors.ENDC}")
             r = requests.put(os.path.join(stac_host, "collections"), json=json_data)
             r.raise_for_status()
         else:
@@ -183,9 +140,6 @@ class StacApiOutputBackend(OutputBackend):
                                 properties={},
                                 collection=self.collection_id)
 
-        # TODO : utils.MockDateTime() has been used since STAC API requires date in %Y-%m-%dT%H:%M:%SZ format while
-        #  pystac.Item.datetime include the ms
-        stac_item.datetime = MockDateTime()
         stac_item.properties = data["body"]["properties"]
 
         link = pystac.Link("self", "dummy")
@@ -204,9 +158,9 @@ class StacApiOutputBackend(OutputBackend):
         r = requests.post(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
 
         if r.status_code == 200:
-            print(f"{bcolors.OKGREEN}[INFO] Created item [{item_id}] ({r.status_code}){bcolors.ENDC}")
+            print(f"{bcolors.OKGREEN}[INFO] Pushed STAC item [{item_id}] to [{stac_host}/collections/{collection_id}] ({r.status_code}){bcolors.ENDC}")
         elif r.status_code == 409:
-            print(f"{bcolors.WARNING}[INFO] Item already exists [{item_id}] ({r.status_code}), updating..{bcolors.ENDC}")
+            print(f"{bcolors.WARNING}[INFO] STAC item [{item_id}] already exists on [{stac_host}/collections/{collection_id}] ({r.status_code}), updating..{bcolors.ENDC}")
             # todo fix "DELETE is not allowed in a non-volatile function"
             # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
             # r.raise_for_status()
