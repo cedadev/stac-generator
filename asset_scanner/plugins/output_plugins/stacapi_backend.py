@@ -88,7 +88,7 @@ class StacApiOutputBackend(OutputBackend):
 
     def create_stac_collection(self, collection_id, collection_name, collection_description):
         # extents
-        sp_extent = pystac.SpatialExtent([-180, -180, 180, 180])
+        sp_extent = pystac.SpatialExtent([[-180, -90, 180, 90]])
         capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
         end_capture_date = datetime.datetime.strptime('2100-10-22', '%Y-%m-%d')
         tmp_extent = pystac.TemporalExtent([(capture_date, end_capture_date)])
