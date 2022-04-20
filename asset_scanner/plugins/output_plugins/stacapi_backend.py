@@ -3,7 +3,7 @@
 STAC API backend
 -------------
 
-An output backend which outputs the content generated to STAC API
+An output backend which outputs the content generated to STAC API.
 
 **Plugin name:** ``stacapi``
 
@@ -62,8 +62,7 @@ class bcolors:
 
 class StacApiOutputBackend(OutputBackend):
     """
-    Connects to a STAC API instance and exports the
-    documents to STAC API.
+    Connects to a STAC API instance and exports the documents to STAC API.
     """
 
     def __init__(self, **kwargs):
@@ -87,7 +86,6 @@ class StacApiOutputBackend(OutputBackend):
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
 
     def create_stac_collection(self, collection_id, collection_name, collection_description):
-        # extents
         sp_extent = pystac.SpatialExtent([[-180, -90, 180, 90]])
         capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
         end_capture_date = datetime.datetime.strptime('2100-10-22', '%Y-%m-%d')
