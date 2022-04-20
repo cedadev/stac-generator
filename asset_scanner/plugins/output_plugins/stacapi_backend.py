@@ -13,18 +13,11 @@ An output backend which outputs the content generated to STAC API
     * - Option
       - Value Type
       - Description
-    * - ``connection_kwargs``
-      - ``dict``
-      - ``REQUIRED`` Connection kwargs passed to the `elasticsearch client  <https://elasticsearch-py.readthedocs.io/en/latest/api.html#elasticsearch>`_
-    * - ``index.name``
+    * - ``connection.host``
+      - ``REQUIRED`` STAC API URL
+    * - ``collection.name``
       - ``str``
-      - ``REQUIRED`` The index to output the content.
-    * - ``index.mapping``
-      - ``str``
-      - Path to a yaml file which defines the mapping for the index
-    * - ``namespace``
-      - ``str``
-      - Can be used by downstream processors to separate outputs to different indices or clusters
+      - ``REQUIRED`` The collection to output the content.
 
 Example Configuration:
     .. code-block:: yaml
@@ -44,11 +37,15 @@ __contact__ = "mathieu.provencher@crim.ca"
 
 from typing import Dict
 import requests
-from urllib.parse import urljoin
-
+from shapely.geometry import Polygon, mapping
+import os
+import pystac
+import pystac.extensions.eo
 from asset_scanner.core.utils import Coordinates, load_yaml
-
+import datetime
 from .base import OutputBackend
+import tzlocal
+import pytz
 
 
 class bcolors:
@@ -63,13 +60,54 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
+# Taken from https://chromium.googlesource.com/infra/infra/infra_libs/+/b2e2c9948c327b88b138d8bd60ec4bb3a957be78/time_functions/testing.py
+class MockDateTimeMeta(datetime.datetime.__dict__.get('__metaclass__', type)):
+    @classmethod
+    def __instancecheck__(cls, instance):
+      return isinstance(instance, datetime.datetime)
+
+# Taken from https://chromium.googlesource.com/infra/infra/infra_libs/+/b2e2c9948c327b88b138d8bd60ec4bb3a957be78/time_functions/testing.py
+class MockDateTime():
+    __metaclass__ = MockDateTimeMeta
+    mock_utcnow = datetime.datetime.utcnow()
+    tzinfo = "mock"
+
+    @classmethod
+    def isoformat(cls):
+        return cls.mock_utcnow.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    @classmethod
+    def utcnow(cls):
+        return cls.mock_utcnow
+
+    @classmethod
+    def now(cls, tz=None):
+        if not tz:
+            tz = tzlocal.get_localzone()
+        tzaware_utcnow = pytz.utc.localize(cls.mock_utcnow)
+        return tz.normalize(tzaware_utcnow.astimezone(tz)).replace(tzinfo=None)
+
+    @classmethod
+    def today(cls):
+        return cls.now().date()
+
+    @classmethod
+    def fromtimestamp(cls, timestamp, tz=None):
+        if not tz:
+            # TODO(sergiyb): This may fail for some unclear reason because pytz
+            # doesn't find normal timezones such as 'Europe/Berlin'. This seems to
+            # happen only in appengine/chromium_try_flakes tests, and not in tests
+            # for this module itself.
+            tz = tzlocal.get_localzone()
+        tzaware_dt = pytz.utc.localize(cls.utcfromtimestamp(timestamp))
+        return tz.normalize(tzaware_dt.astimezone(tz)).replace(tzinfo=None)
+
+
 class StacApiOutputBackend(OutputBackend):
     """
     Connects to a STAC API instance and exports the
     documents to STAC API.
     """
-
-    CLEAN_METHODS = ["_format_bbox", "_format_temporal_extent"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -77,87 +115,109 @@ class StacApiOutputBackend(OutputBackend):
         self.stac_host = kwargs["connection"]["host"]
         self.collection_id = kwargs["collection"]["name"]
 
-        # todo create collection if not exist
-
-        # # Create the index, if it doesn't already exist
-        # if index_conf.get("mapping"):
-        #     if not self.es.indices.exists(self.index_name):
-        #         mapping = load_yaml(index_conf.get("mapping"))
-        #         self.es.indices.create(self.index_name, body=mapping)
-
-    @staticmethod
-    def _format_bbox(data: Dict) -> Dict:
-        """
-        Convert WGS84 coordinates into GeoJSON and
-        format for Elasticsearch. Replaces the bbox key.
-
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("bbox"):
-            bbox = body.pop("bbox")
-
-            body["spatial"] = {
-                "bbox": {
-                    "type": "envelope",
-                    "coordinates": Coordinates.from_wgs84(bbox).to_geojson(),
-                }
-            }
-
-        return data
-
-    @staticmethod
-    def _format_temporal_extent(data: Dict) -> Dict:
-        """
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("extent", {}).get("temporal"):
-            temporal_extent = body["extent"].pop("temporal")
-
-            if temporal_extent[0][0]:
-                body["extent"]["temporal"] = {"gte": temporal_extent[0][0]}
-            if temporal_extent[0][1]:
-                temporal = body["extent"].get("temporal", {})
-                temporal["lte"] = temporal_extent[0][1]
-                body["extent"]["temporal"] = temporal
-
-        return data
-
-    def clean(self, data: Dict) -> Dict:
-        """
-        :param data: Input dictionary
-        :returns: Dictionary produced as a result of the clean methods
-        """
-
-        for method in self.CLEAN_METHODS:
-            m = getattr(self, method)
-            data = m(data)
-
-        return data
+        stac_collection = self.create_stac_collection(self.collection_id)
+        self.post_collection(self.stac_host, stac_collection)
 
     def export(self, data, **kwargs):
+        # todo avoid processing second json object
+        if "body" not in data:
+            return
 
-        data = self.clean(data)
-
-        json_data = {}
+        json_data = self.create_stac_item(data)
 
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
+
+    def create_stac_collection(self, collection_name):
+        # extents
+        sp_extent = pystac.SpatialExtent([180, 180, 180, 180])
+        capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
+        tmp_extent = pystac.TemporalExtent([(capture_date, capture_date)])
+        extent = pystac.Extent(sp_extent, tmp_extent)
+
+        collection = pystac.Collection(id=collection_name,
+                                       description=collection_name,
+                                       extent=extent,
+                                       license='na')
+
+        return collection.to_dict()
+
+    def post_collection(self, stac_host, json_data):
+        """
+        Post a STAC collection.
+
+        Returns the collection id.
+        """
+        collection_id = json_data['id']
+        r = requests.post(os.path.join(stac_host, "collections"), json=json_data)
+
+        if r.status_code == 200:
+            print(f"{bcolors.OKGREEN}[INFO] Created collection [{collection_id}] ({r.status_code}){bcolors.ENDC}")
+        elif r.status_code == 409:
+            print(f"{bcolors.WARNING}[INFO] Collection already exists [{collection_id}] ({r.status_code}), updating..{bcolors.ENDC}")
+            r = requests.put(os.path.join(stac_host, "collections"), json=json_data)
+            r.raise_for_status()
+        else:
+            r.raise_for_status()
+
+        return collection_id
+
+    def create_stac_item(self, data):
+        # get bbox and footprint
+        bounds = {
+            "left": -180,
+            "bottom": -180,
+            "right": 180,
+            "top": 180
+        }
+        bbox = [bounds["left"], bounds["bottom"], bounds["right"], bounds["top"]]
+        footprint = Polygon([
+            [bounds["left"], bounds["bottom"]],
+            [bounds["left"], bounds["top"]],
+            [bounds["right"], bounds["top"]],
+            [bounds["right"], bounds["bottom"]]
+        ])
+
+        stac_item = pystac.Item(id=data["body"]["item_id"],
+                                geometry=mapping(footprint),
+                                bbox=bbox,
+                                datetime=datetime.datetime.utcnow(),
+                                properties={},
+                                collection=self.collection_id)
+
+        # TODO : utils.MockDateTime() has been used since STAC API requires date in %Y-%m-%dT%H:%M:%SZ format while
+        #  pystac.Item.datetime include the ms
+        stac_item.datetime = MockDateTime()
+        stac_item.properties = data["body"]["properties"]
+
+        # link = pystac.Link("file", item["http_url"], "application/netcdf")
+        # stac_item.add_link(link)
+
+        link = pystac.Link("self", "dummy")
+        stac_item.add_link(link)
+
+        asset = pystac.Asset(href=data["body"]["location"], media_type="application/netcdf", title="NetCDF file")
+        stac_item.add_asset('metadata_http', asset)
+
+        # asset = pystac.Asset(href=item["iso_url"], media_type="application/xml", title="Metadata ISO")
+        # stac_item.add_asset('metadata_iso', asset)
+        #
+        # asset = pystac.Asset(href=item["ncml_url"], media_type="application/xml", title="Metadata NcML")
+        # stac_item.add_asset('metadata_ncml', asset)
+
+        return stac_item.to_dict()
 
     def post_collection_item(self, stac_host, collection_id, json_data):
         """
         Post an item to a collection.
         """
         item_id = json_data['id']
-        r = requests.post(urljoin(stac_host, f"/collections/{collection_id}/items"), json=json_data)
+        r = requests.post(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
 
         if r.status_code == 200:
             print(f"{bcolors.OKGREEN}[INFO] Created item [{item_id}] ({r.status_code}){bcolors.ENDC}")
         elif r.status_code == 409:
             print(f"{bcolors.WARNING}[INFO] Item already exists [{item_id}] ({r.status_code}), updating..{bcolors.ENDC}")
-            r = requests.put(urljoin(stac_host, f"/collections/{collection_id}/items"), json=json_data)
-            r.raise_for_status()
+            # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
+            # r.raise_for_status()
         else:
             r.raise_for_status()

@@ -46,6 +46,7 @@ setup(
         "asset_scanner.output_plugins": [
             "standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend",
             "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
+            "stacapi = asset_scanner.plugins.output_plugins.stacapi_backend:StacApiOutputBackend",
             "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
             "json_out = asset_scanner.plugins.output_plugins.json_out:JsonOutputBackend",
             "rabbitmq_out = asset_scanner.plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
