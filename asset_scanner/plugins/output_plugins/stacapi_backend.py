@@ -1,6 +1,6 @@
 # encoding: utf-8
 """
-STAC API
+STAC API backend
 -------------
 
 An output backend which outputs the content generated to STAC API
@@ -17,7 +17,10 @@ An output backend which outputs the content generated to STAC API
       - ``REQUIRED`` STAC API URL
     * - ``collection.name``
       - ``str``
-      - ``REQUIRED`` The collection to output the content.
+      - ``REQUIRED`` The collection name to output the content to.
+    * - ``collection.description``
+      - ``str``
+      - ``REQUIRED`` The collection description.
 
 Example Configuration:
     .. code-block:: yaml
@@ -42,8 +45,7 @@ import pystac
 import pystac.extensions.eo
 import datetime
 from .base import OutputBackend
-import tzlocal
-import pytz
+from asset_scanner.core.utils import generate_id
 
 
 class bcolors:
@@ -68,9 +70,11 @@ class StacApiOutputBackend(OutputBackend):
         super().__init__(**kwargs)
 
         self.stac_host = kwargs["connection"]["host"]
-        self.collection_id = kwargs["collection"]["name"]
+        self.collection_name = kwargs["collection"]["name"]
+        self.collection_id = generate_id(self.collection_name)
+        self.collection_description = kwargs["collection"]["description"]
 
-        stac_collection = self.create_stac_collection(self.collection_id)
+        stac_collection = self.create_stac_collection(self.collection_id, self.collection_name, self.collection_description)
         self.post_collection(self.stac_host, stac_collection)
 
     def export(self, data, **kwargs):
@@ -82,7 +86,7 @@ class StacApiOutputBackend(OutputBackend):
 
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
 
-    def create_stac_collection(self, collection_name):
+    def create_stac_collection(self, collection_id, collection_name, collection_description):
         # extents
         sp_extent = pystac.SpatialExtent([-180, -180, 180, 180])
         capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
@@ -90,10 +94,21 @@ class StacApiOutputBackend(OutputBackend):
         tmp_extent = pystac.TemporalExtent([(capture_date, end_capture_date)])
         extent = pystac.Extent(sp_extent, tmp_extent)
 
-        collection = pystac.Collection(id=collection_name,
-                                       description=collection_name,
+        collection = pystac.Collection(id=collection_id,
+                                       title=collection_name,
+                                       description=collection_description,
                                        extent=extent,
-                                       license='na')
+                                       keywords=[
+                                           "climate change",
+                                           "CMIP5",
+                                           "WCRP",
+                                           "CMIP"
+                                       ],
+                                       providers=None,
+                                       summaries=pystac.Summaries({"product": [
+                                               "output1"
+                                           ]})
+                                       )
 
         return collection.to_dict()
 
