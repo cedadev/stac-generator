@@ -35,13 +35,11 @@ __copyright__ = "Copyright 2022 Computer Research Institute of Montréal"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
-from typing import Dict
 import requests
 from shapely.geometry import Polygon, mapping
 import os
 import pystac
 import pystac.extensions.eo
-from asset_scanner.core.utils import Coordinates, load_yaml
 import datetime
 from .base import OutputBackend
 import tzlocal
@@ -129,9 +127,10 @@ class StacApiOutputBackend(OutputBackend):
 
     def create_stac_collection(self, collection_name):
         # extents
-        sp_extent = pystac.SpatialExtent([180, 180, 180, 180])
+        sp_extent = pystac.SpatialExtent([-180, -180, 180, 180])
         capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
-        tmp_extent = pystac.TemporalExtent([(capture_date, capture_date)])
+        end_capture_date = datetime.datetime.strptime('2100-10-22', '%Y-%m-%d')
+        tmp_extent = pystac.TemporalExtent([(capture_date, end_capture_date)])
         extent = pystac.Extent(sp_extent, tmp_extent)
 
         collection = pystac.Collection(id=collection_name,
@@ -189,20 +188,11 @@ class StacApiOutputBackend(OutputBackend):
         stac_item.datetime = MockDateTime()
         stac_item.properties = data["body"]["properties"]
 
-        # link = pystac.Link("file", item["http_url"], "application/netcdf")
-        # stac_item.add_link(link)
-
         link = pystac.Link("self", "dummy")
         stac_item.add_link(link)
 
-        asset = pystac.Asset(href=data["body"]["location"], media_type="application/netcdf", title="NetCDF file")
+        asset = pystac.Asset(href=data["body"]["location"], media_type="application/netcdf", title=data["body"]["filename"], roles=["data"])
         stac_item.add_asset('metadata_http', asset)
-
-        # asset = pystac.Asset(href=item["iso_url"], media_type="application/xml", title="Metadata ISO")
-        # stac_item.add_asset('metadata_iso', asset)
-        #
-        # asset = pystac.Asset(href=item["ncml_url"], media_type="application/xml", title="Metadata NcML")
-        # stac_item.add_asset('metadata_ncml', asset)
 
         return stac_item.to_dict()
 
@@ -217,6 +207,7 @@ class StacApiOutputBackend(OutputBackend):
             print(f"{bcolors.OKGREEN}[INFO] Created item [{item_id}] ({r.status_code}){bcolors.ENDC}")
         elif r.status_code == 409:
             print(f"{bcolors.WARNING}[INFO] Item already exists [{item_id}] ({r.status_code}), updating..{bcolors.ENDC}")
+            # todo fix "DELETE is not allowed in a non-volatile function"
             # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
             # r.raise_for_status()
         else:
