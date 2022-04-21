@@ -104,7 +104,9 @@ class StacApiOutputBackend(OutputBackend):
                                        ],
                                        providers=None,
                                        summaries=pystac.Summaries({"product": [
-                                               "output1"
+                                               "product1",
+                                               "product2",
+                                               "product3"
                                            ]})
                                        )
 
@@ -158,8 +160,22 @@ class StacApiOutputBackend(OutputBackend):
         link = pystac.Link("self", "dummy")
         stac_item.add_link(link)
 
-        asset = pystac.Asset(href=data["body"]["location"], media_type="application/netcdf", title=data["body"]["filename"], roles=["data"])
+        # TODO : hardcoded url path replacements
+        asset = pystac.Asset(href=data["body"]["location"].replace("dodsC", "fileServer"), media_type="application/netcdf",
+                             title=data["body"]["filename"], roles=["data"])
         stac_item.add_asset('metadata_http', asset)
+
+        asset = pystac.Asset(href=data["body"]["location"].replace("dodsC", "iso"), media_type="application/xml",
+                             title="ISO", roles=["metadata"])
+        stac_item.add_asset('metadata_iso', asset)
+
+        asset = pystac.Asset(href=data["body"]["location"].replace("dodsC", "ncml"), media_type="application/xml",
+                             title="NcML", roles=["metadata"])
+        stac_item.add_asset('metadata_ncml', asset)
+
+        asset = pystac.Asset(href=data["body"]["location"], media_type="application/netcdf",
+                             title="OPeNDAP", roles=["data"])
+        stac_item.add_asset('metadata_opendap', asset)
 
         return stac_item.to_dict()
 
@@ -174,7 +190,7 @@ class StacApiOutputBackend(OutputBackend):
             print(f"{bcolors.OKGREEN}[INFO] Pushed STAC item [{item_id}] to [{stac_host}/collections/{collection_id}] ({r.status_code}){bcolors.ENDC}")
         elif r.status_code == 409:
             print(f"{bcolors.WARNING}[INFO] STAC item [{item_id}] already exists on [{stac_host}/collections/{collection_id}] ({r.status_code}), updating..{bcolors.ENDC}")
-            # todo fix "DELETE is not allowed in a non-volatile function"
+            # todo fix "asyncpg.exceptions.FeatureNotSupportedError: DELETE is not allowed in a non-volatile function"
             # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
             # r.raise_for_status()
         else:
