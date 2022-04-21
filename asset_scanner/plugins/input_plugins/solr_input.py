@@ -67,7 +67,7 @@ class SolrInputPlugin(BaseInputPlugin):
             "wt": search_params.get("wt", "json"),
             "rows": search_params.get("rows", self.DEFAULT_ROWS),
             "sort": search_params.get("sort", "id asc"),
-            "cursorMark": "*",
+            "cursorMark": search_params.get("cursorMark", "*"),
         }
 
     def iter_docs(self):
