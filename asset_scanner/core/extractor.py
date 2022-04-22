@@ -66,6 +66,9 @@ class BaseExtractor(ABC):
         self.post_processors = self.load_processors(
             entrypoint="asset_scanner.post_processors"
         )
+        self.post_extraction_methods = self.load_processors(
+            entrypoint="asset_scanner.post_extraction_methods"
+        )
 
     @staticmethod
     def _get_category(string, label, regex):
@@ -109,25 +112,23 @@ class BaseExtractor(ABC):
         loaded_pprocessors = []
 
         for pprocessor in processor.get(key, []):
-            pp_name = pprocessor["name"]
-            pp_kwargs = pprocessor.get("inputs", {})
-
-            loaded = self._get_processor(pp_name, key, **pp_kwargs)
+            loaded = self._load_facet_processor(pprocessor, key)
 
             if loaded:
                 loaded_pprocessors.append(loaded)
 
         return loaded_pprocessors
 
-    def _load_facet_processor(self, processor: dict) -> BaseProcessor:
+    def _load_facet_processor(self, processor: dict, key: str) -> BaseProcessor:
         processor_name = processor["name"]
         processor_inputs = processor.get("inputs", {})
-        output_key = processor.get("output_key")
+
+        if output_key := processor.get("output_key"):
+            processor_inputs["output_key"] = output_key
 
         return self._get_processor(
             processor_name,
-            "facet_processors",
-            output_key=output_key,
+            key,
             **processor_inputs
         )
 
@@ -137,7 +138,7 @@ class BaseExtractor(ABC):
         """Run the specified processor."""
 
         # Load the processors
-        p = self._load_facet_processor(processor)
+        p = self._load_facet_processor(processor, "facet_processors")
         pre_processors = self._load_extra_processors(processor, "pre_processors")
         post_processors = self._load_extra_processors(processor, "post_processors")
 
@@ -155,6 +156,26 @@ class BaseExtractor(ABC):
             metadata = dot2dict(output_key, metadata)
 
         return metadata
+
+    def _run_post_extraction_method(
+        self, post_extraction_method: dict, data: dict, source_media: StorageType
+    ) -> dict:
+        """Run the specified processor."""
+
+        # Load the post_extraction_method
+        processor = self._load_facet_processor(post_extraction_method, "post_extraction_methods")
+        pre_processors = self._load_extra_processors(post_extraction_method, "pre_processors")
+        post_processors = self._load_extra_processors(post_extraction_method, "post_processors")
+
+        # Retrieve the data
+        post_data = processor.run(
+            data,
+            source_media=source_media,
+            post_processors=post_processors,
+            pre_processors=pre_processors,
+        )
+
+        return post_data
 
     def get_categories(
         self, filepath: str, source_media: StorageType, description: ItemDescription

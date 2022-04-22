@@ -59,6 +59,9 @@ setup(
             "iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
             "xml_extract = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
         ],
+        "asset_scanner.post_extraction_methods": [
+            "vocab = asset_scanner.plugins.post_extraction_methods.vocab_post_extract:VocabPostExtract",
+        ],
         "asset_scanner.extraction_methods.header_extract.backends": [
             "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
             "cf = asset_scanner.plugins.extraction_methods.header_extract.backends.cf:CfBackend",
