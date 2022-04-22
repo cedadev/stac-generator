@@ -18,9 +18,6 @@ An output backend which outputs the content generated to STAC API.
     * - ``collection.name``
       - ``str``
       - ``REQUIRED`` The collection name to output the content to.
-    * - ``collection.description``
-      - ``str``
-      - ``REQUIRED`` The collection description.
 
 Example Configuration:
     .. code-block:: yaml
@@ -28,9 +25,9 @@ Example Configuration:
         outputs:
             - name: stacapi
               connection:
-                host: 'host1'
+                host: 'hosturl'
               collection:
-                name: 'cmip5'
+                name: 'CMIP6'
 """
 __author__ = "Mathieu Provencher"
 __date__ = "20 Apr 2022"
@@ -71,10 +68,8 @@ class StacApiOutputBackend(OutputBackend):
         self.stac_host = kwargs["connection"]["host"]
         self.collection_name = kwargs["collection"]["name"]
         self.collection_id = generate_id(self.collection_name)
-        self.collection_description = kwargs["collection"]["description"]
 
-        stac_collection = self.create_stac_collection(self.collection_id, self.collection_name, self.collection_description)
-        self.post_collection(self.stac_host, stac_collection)
+        # TODO if collection not exist, raise
 
     def export(self, data, **kwargs):
         # todo avoid processing second json object
@@ -84,53 +79,6 @@ class StacApiOutputBackend(OutputBackend):
         json_data = self.create_stac_item(data)
 
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
-
-    def create_stac_collection(self, collection_id, collection_name, collection_description):
-        sp_extent = pystac.SpatialExtent([[-180, -90, 180, 90]])
-        capture_date = datetime.datetime.strptime('2015-10-22', '%Y-%m-%d')
-        end_capture_date = datetime.datetime.strptime('2100-10-22', '%Y-%m-%d')
-        tmp_extent = pystac.TemporalExtent([(capture_date, end_capture_date)])
-        extent = pystac.Extent(sp_extent, tmp_extent)
-
-        collection = pystac.Collection(id=collection_id,
-                                       title=collection_name,
-                                       description=collection_description,
-                                       extent=extent,
-                                       keywords=[
-                                           "climate change",
-                                           "CMIP5",
-                                           "WCRP",
-                                           "CMIP"
-                                       ],
-                                       providers=None,
-                                       summaries=pystac.Summaries({"product": [
-                                               "product1",
-                                               "product2",
-                                               "product3"
-                                           ]})
-                                       )
-
-        return collection.to_dict()
-
-    def post_collection(self, stac_host, json_data):
-        """
-        Post a STAC collection.
-
-        Returns the collection id.
-        """
-        collection_id = json_data['id']
-        r = requests.post(os.path.join(stac_host, "collections"), json=json_data)
-
-        if r.status_code == 200:
-            print(f"{bcolors.OKGREEN}[INFO] Pushed STAC collection [{collection_id}] to [{stac_host}] ({r.status_code}){bcolors.ENDC}")
-        elif r.status_code == 409:
-            print(f"{bcolors.WARNING}[INFO] STAC collection [{collection_id}] already exists on [{stac_host}] ({r.status_code}), updating..{bcolors.ENDC}")
-            r = requests.put(os.path.join(stac_host, "collections"), json=json_data)
-            r.raise_for_status()
-        else:
-            r.raise_for_status()
-
-        return collection_id
 
     def create_stac_item(self, data):
         # get bbox and footprint
