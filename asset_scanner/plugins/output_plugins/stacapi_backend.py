@@ -83,10 +83,10 @@ class StacApiOutputBackend(OutputBackend):
     def create_stac_item(self, data):
         # get bbox and footprint
         bounds = {
-            "left": -180,
-            "bottom": -180,
-            "right": 180,
-            "top": 180
+            "left": -140.99778,
+            "bottom": 41.6751050889,
+            "right": -52.6480987209,
+            "top": 83.23324
         }
         bbox = [bounds["left"], bounds["bottom"], bounds["right"], bounds["top"]]
         footprint = Polygon([
