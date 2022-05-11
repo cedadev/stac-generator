@@ -77,7 +77,6 @@ class StacApiOutputBackend(OutputBackend):
             return
 
         json_data = self.create_stac_item(data)
-
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
 
     def create_stac_item(self, data):
