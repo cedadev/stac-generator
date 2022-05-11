@@ -104,7 +104,7 @@ class StacApiOutputBackend(OutputBackend):
 
         stac_item.properties = data["body"]["properties"]
 
-        link = pystac.Link("self", "dummy")
+        link = pystac.Link("self", "{}/collections/{}/items/{}".format(self.stac_host, self.collection_id, stac_item.id))
         stac_item.add_link(link)
 
         # TODO : hardcoded url path replacements
