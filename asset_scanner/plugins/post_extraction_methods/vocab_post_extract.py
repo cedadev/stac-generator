@@ -70,6 +70,13 @@ class VocabPostExtract(BaseProcessor):
     ) -> dict:
     
         properties = data["body"]["properties"]
+        first = True
+
+        # if there is already an unspecified_vocab it is not the first vocab
+        if "unspecified_vocab" in properties:
+            properties = properties["unspecified_vocab"]
+            first = False
+
 
         req_data={
             "namespace": self.namespace,
@@ -87,7 +94,15 @@ class VocabPostExtract(BaseProcessor):
 
         if json_response["error"]:
             raise Exception(f"Vocab request failed, reason: {json_response['reason']}")
+        
+        if not first:
+            new_properties = properties | json_response["result"]
+            vocabs = data["body"]["vocabs"] + [self.namespace]
 
-        data["body"] = data["body"] | {"properties": json_response["result"]}
+        else:
+            new_properties = json_response["result"]
+            vocabs = [self.namespace]
+        
+        data["body"] = data["body"] | {"vocabs": vocabs, "properties": new_properties}
 
         return data
