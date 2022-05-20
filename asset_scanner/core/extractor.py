@@ -122,8 +122,9 @@ class BaseExtractor(ABC):
     def _load_facet_processor(self, processor: dict, key: str) -> BaseProcessor:
         processor_name = processor["name"]
         processor_inputs = processor.get("inputs", {})
+        output_key = processor.get("output_key", None)
 
-        if output_key := processor.get("output_key"):
+        if output_key:
             processor_inputs["output_key"] = output_key
 
         return self._get_processor(
