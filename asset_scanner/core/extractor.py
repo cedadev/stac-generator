@@ -127,11 +127,7 @@ class BaseExtractor(ABC):
         if output_key:
             processor_inputs["output_key"] = output_key
 
-        return self._get_processor(
-            processor_name,
-            key,
-            **processor_inputs
-        )
+        return self._get_processor(processor_name, key, **processor_inputs)
 
     def _run_facet_processor(
         self, processor: dict, filepath: str, source_media: StorageType
@@ -164,9 +160,15 @@ class BaseExtractor(ABC):
         """Run the specified processor."""
 
         # Load the post_extraction_method
-        processor = self._load_facet_processor(post_extraction_method, "post_extraction_methods")
-        pre_processors = self._load_extra_processors(post_extraction_method, "pre_processors")
-        post_processors = self._load_extra_processors(post_extraction_method, "post_processors")
+        processor = self._load_facet_processor(
+            post_extraction_method, "post_extraction_methods"
+        )
+        pre_processors = self._load_extra_processors(
+            post_extraction_method, "pre_processors"
+        )
+        post_processors = self._load_extra_processors(
+            post_extraction_method, "post_processors"
+        )
 
         # Retrieve the data
         post_data = processor.run(
