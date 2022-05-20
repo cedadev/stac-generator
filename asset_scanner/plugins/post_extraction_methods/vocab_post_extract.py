@@ -15,6 +15,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import json
 import logging
+
 import requests
 
 from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
