@@ -43,6 +43,7 @@ class Processor(BaseModel):
     mappings: Optional[Dict] = {}
     overrides: Optional[Dict] = {}
     extraction_methods: List[Dict] = []
+    post_extraction_methods: Optional[List[Dict]] = []
     templates: Optional[Templates] = {}
 
 
