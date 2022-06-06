@@ -15,7 +15,7 @@ import logging
 
 # Python imports
 from abc import abstractmethod
-from typing import Dict, Optional
+from typing import Optional
 
 # Package imports
 from asset_scanner.core.processor import BaseProcessor
@@ -31,9 +31,9 @@ class BasePostProcessor(BaseProcessor):
         self,
         filepath: str,
         source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         pass
 
 
@@ -66,9 +66,9 @@ class FacetMapProcessor(BasePostProcessor):
         self,
         filepath: str,
         source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         output = {}
         if source_dict:
 
@@ -122,9 +122,9 @@ class ISODateProcessor(BasePostProcessor):
         self,
         filepath: str,
         source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         """
         :param filepath: file currently being processed
         :param source_media: media source of the file being processed
@@ -170,7 +170,7 @@ class BBOXProcessor(BasePostProcessor):
         formatted bbox.
 
     Configuration Options:
-        - ``key_list``: ``REQUIRED`` list of keys to convert to bbox array. Ordering is respected.
+        - ``coordinate_keys``: ``REQUIRED`` list of keys to convert to bbox array. Ordering is respected.
 
     Example Configuration:
 
@@ -179,7 +179,7 @@ class BBOXProcessor(BasePostProcessor):
         post_processors:
             - name: stac_bbox
               inputs:
-                key_list:
+                coordinate_keys:
                    - west
                    - south
                    - east
@@ -198,10 +198,196 @@ class BBOXProcessor(BasePostProcessor):
         if source_dict:
 
             try:
-                rfc_bbox = [float(source_dict[key]) for key in self.key_list]
-                source_dict = rfc_bbox
+                coordinates = [
+                    [float(source_dict[self.coordinate_keys[0]]), float(source_dict[self.coordinate_keys[1]])],
+                    [float(source_dict[self.coordinate_keys[2]]), float(source_dict[self.coordinate_keys[3]])]
+                ]
+
+                if "spatial" not in source_dict:
+                    source_dict["spatial"] = {"bbox": {}}
+
+                source_dict["spatial"]["bbox"] = {"type": "envelope", "coordinates": coordinates}
+
             except KeyError:
                 LOGGER.warning("Unable to convert bbox.", exc_info=True)
+
+        return source_dict
+
+
+class GeometryPointProcessor(BasePostProcessor):
+    """
+
+    Processor Name: ``stac_point_geometry``
+
+    Description:
+        Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
+        formatted geometry.
+
+    Configuration Options:
+        - ``coordinate_keys``: ``REQUIRED`` list of keys to convert to a point geometry. Ordering is respected.
+
+    Example Configuration:
+
+    .. code-block:: yaml
+
+        post_processors:
+            - name: stac_point_geometry
+              inputs:
+                coordinate_keys:
+                   - lon
+                   - lat
+
+    """
+
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: dict = {},
+        **kwargs,
+    ):
+
+        if source_dict:
+
+            try:
+
+                coordinates = [
+                    [float(source_dict[self.coordinate_keys[0]]), float(source_dict[self.coordinate_keys[1]])]
+                ]
+
+                if "spatial" not in source_dict:
+                    source_dict["spatial"] = {"geometry": {}}
+
+                source_dict["spatial"]["geometry"] = {"type": "Point", "coordinates": coordinates}
+
+            except KeyError:
+                LOGGER.warning("Unable to convert to point geometry.", exc_info=True)
+
+        return source_dict
+
+
+class GeometryLineProcessor(BasePostProcessor):
+    """
+
+    Processor Name: ``stac_line_geometry``
+
+    Description:
+        Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
+        formatted geometry.
+
+    Configuration Options:
+        - ``coordinate_keys``: ``REQUIRED`` list of keys to convert to line geometry. Ordering is respected.
+
+    Example Configuration:
+
+    .. code-block:: yaml
+
+        post_processors:
+            - name: stac_line_geometry
+              inputs:
+                coordinate_keys:
+                -
+                  - lon_1
+                  - lat_1
+                -
+                  - lon_2
+                  - lat_2
+
+    """
+
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: dict = {},
+        **kwargs,
+    ):
+
+        if source_dict:
+
+            try:
+
+                coordinates = []
+
+                for coordinate_key in self.coordinate_keys:
+                    coordinates.append([
+                        [float(source_dict[coordinate_key[0]]), float(source_dict[coordinate_key[1]])]
+                    ])
+
+                if "spatial" not in source_dict:
+                    source_dict["spatial"] = {"geometry": {}}
+
+                source_dict["spatial"]["geometry"] = {"type": "Line", "coordinates": coordinates}
+
+            except KeyError:
+                LOGGER.warning("Unable to convert to a line geometry.", exc_info=True)
+
+        return source_dict
+
+
+class GeometryPolygonProcessor(BasePostProcessor):
+    """
+
+    Processor Name: ``stac_polygon_geometry``
+
+    Description:
+        Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
+        formatted geometry.
+
+    Configuration Options:
+        - ``coordinate_keys``: ``REQUIRED`` list of keys to convert to polygon geometry. Ordering is respected.
+
+    Example Configuration:
+
+    .. code-block:: yaml
+
+        post_processors:
+            - name: stac_polygon_geometry
+              inputs:
+                coordinate_keys:
+                -
+                  - lon_1
+                  - lat_1
+                -
+                  - min_lon_2
+                  - max_lat_2
+                  - max_lon_2
+                  - min_lat_2
+                -
+                  - lon_3
+                  - lat_3
+    """
+
+    def run(
+        self,
+        filepath: str,
+        source_media: str = "POSIX",
+        source_dict: dict = {},
+        **kwargs,
+    ):
+
+        if source_dict:
+
+            try:
+
+                coordinates = []
+
+                for coordinate_key in self.coordinate_keys:
+                    coordinates.append([
+                        [float(source_dict[coordinate_key[0]]), float(source_dict[coordinate_key[1]])]
+                    ])
+                
+                coordinates.append([
+                    [float(source_dict[self.coordinate_keys[0][0]]), float(source_dict[self.coordinate_keys[0][1]])]
+                ])
+
+                if "spatial" not in source_dict:
+                    source_dict["spatial"] = {"geometry": {}}
+
+                source_dict["spatial"]["geometry"] = {"type": "Polygon", "coordinates": coordinates}
+
+            except KeyError:
+                LOGGER.warning("Unable to convert to a polygon geometry.", exc_info=True)
 
         return source_dict
 
@@ -300,7 +486,7 @@ class DateCombinatorProcessor(BasePostProcessor):
         self,
         filepath: str,
         source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        source_dict: Optional[dict] = None,
         **kwargs,
     ):
         if source_dict:
@@ -388,9 +574,9 @@ class FacetPrefixProcessor(BasePostProcessor):
         self,
         filepath: str,
         source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         output = {}
         if source_dict:
 
