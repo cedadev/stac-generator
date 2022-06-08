@@ -58,6 +58,7 @@ setup(
             "header_extract = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract",
             "iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
             "xml_extract = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
+            "elasticsearch = asset_scanner.plugins.extraction_methods.elasticsearch_extract:ElasticsearchExtract"
         ],
         "asset_scanner.extraction_methods.header_extract.backends": [
             "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",

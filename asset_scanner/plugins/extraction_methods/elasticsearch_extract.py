@@ -1,8 +1,8 @@
 # encoding: utf-8
 """
-..  _iso19115-extract:
+..  _elasticsearch-extract:
 
-ISO 19115 Extract
+Elasticsearch Extract
 ------------------
 """
 __author__ = "Rhys Evans"
@@ -59,39 +59,6 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
                       - term1
                       - term2
     """
-
-    @staticmethod
-    def base_query(file_id: str) -> dict:
-        """
-        Base query to filter the results to a single collection
-
-        :param file_id: Collection to restrict results to
-        """
-        return {
-            "query": {
-                "bool": {
-                "must_not": [
-                    {
-                    "term": {
-                        "categories.keyword": {
-                        "value": "hidden"
-                        }
-                    }
-                    }
-                ],
-                "must": [
-                    {
-                    "term": {
-                        "item_id.keyword": {
-                        "value": file_id
-                        }
-                    }
-                    }
-                ]
-                }
-            },
-            "aggs": {}
-        }
 
     @staticmethod
     def bbox_query(facet: str) -> dict:
@@ -194,7 +161,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         """
         Function to extract the lists of given facets from the aggregation
         """
-        next_query = self.base_query()
+        next_query = self.base_query
         items = self.aggregations
 
         while True:
@@ -207,63 +174,95 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
                     self.metadata[facet].extend([bucket['key'][facet] for bucket in aggregation["buckets"]])
 
-                    if aggregation["after_key"]:
+                    if hasattr(aggregation, "after_key"):
                         next_query["aggs"] |= self.query["aggs"][facet] 
                         next_query["aggs"][facet]["composite"]["sources"]["after"] = {facet: aggregation["after_key"][facet]}
         
-            if next_query == self.base_query():
+            if next_query == self.base_query:
                 break
 
             else:
                 result = self.es.search(index=self.index, body=next_query)
                 items = result['aggregations'].items()
             
+    def construct_base_query(self, key: str, id: str) -> dict:
+        """
+        Base query to filter the results to a single collection
+
+        :param file_id: Collection to restrict results to
+        """
+        self.base_query = {
+            "query": {
+                "bool": {
+                "must_not": [
+                    {
+                    "term": {
+                        "categories.keyword": {
+                        "value": "hidden"
+                        }
+                    }
+                    }
+                ],
+                "must": [
+                    {
+                    "term": {
+                        f"{key}.keyword": {
+                        "value": id
+                        }
+                    }
+                    }
+                ]
+                }
+            },
+            "aggs": {}
+        }
+    
     def construct_query(self):
         """
         Function to create the initial elasticsearch query
         """
-        self.query = self.base_query()
+        self.query = self.base_query
 
-        if bboxes := self.bbox:
-            for bbox in bboxes:
+        if hasattr(self, "bbox"):
+            for bbox in self.bbox:
                 self.query["aggs"] |= self.bbox_query(bbox)
         
-        if minimums := self.min:
-            for min in minimums:
+        if hasattr(self, "min"):
+            for min in self.min:
                 self.query["aggs"] |= self.min_query(min)
 
-        if maximums := self.max:
-            for max in maximums:
+        if hasattr(self, "max"):
+            for max in self.max:
                 self.query["aggs"] |= self.max_query(max)
         
-        if sums := self.sum:
-            for sum_term in sums:
+        if hasattr(self, "sum"):
+            for sum_term in self.sum:
                 self.query["aggs"] |= self.sum_query(sum_term)
 
-        if lists := self.list:
-            for list_term in lists:
+        if hasattr(self, "list"):
+            for list_term in self.list:
                 self.query["aggs"] |= self.facet_composite_query(list_term)
-    
+        
     def extract_metadata(self):
         """
         Function to extract the required metadata from the returned query result
         """
-        if self.default:
+        if hasattr(self, "default"):
             self.extract_default_facet(self.default)
         
-        if self.bbox:
+        if hasattr(self, "bbox"):
             self.extract_facet(self.bbox)
         
-        if self.min:
+        if hasattr(self, "min"):
             self.extract_facet(self.min)
 
-        if self.max:
+        if hasattr(self, "max"):
             self.extract_facet(self.max)
 
-        if self.sum:
+        if hasattr(self, "sum"):
             self.extract_facet(self.sum)
         
-        if self.list:
+        if hasattr(self, "list"):
             self.extract_facet_list(self.list)
 
         
@@ -274,6 +273,8 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         self.metadata = defaultdict(list)
 
         self.es = Elasticsearch(**self.connection_kwargs)
+
+        self.construct_base_query(filepath)
 
         self.construct_query()
 
