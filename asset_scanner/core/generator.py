@@ -14,7 +14,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import re
 from abc import ABC, abstractmethod
-from typing import List
 from cachetools import TTLCache
 
 from .handler_picker import HandlerPicker
@@ -59,6 +58,9 @@ class BaseGenerator(ABC):
         self.post_processors = self.load_processors(
             entrypoint="asset_scanner.post_processors"
         )
+        self.post_extraction_methods = self.load_processors(
+            entrypoint="asset_scanner.post_extraction_methods"
+        )
 
         self.header_deduplication = conf.get('header_deduplication', False)
         self.item_id_cache = TTLCache(
@@ -100,40 +102,35 @@ class BaseGenerator(ABC):
 
         return getattr(self, group).get_processor(name, **kwargs)
 
-    def _load_extra_processors(self, processor: dict, key: str) -> List[BaseProcessor]:
+    def _load_extra_processors(self, processor: dict, key: str) -> list[BaseProcessor]:
         """
         Load the post processors for the given processor
 
         :param processor: Configuration for the processor including any post processor
         :param key: The name of the key which holds the list of extra processors
 
-        :return: List of loaded processors.
+        :return: list of loaded processors.
         """
 
         loaded_pprocessors = []
 
         for pprocessor in processor.get(key, []):
-            pp_name = pprocessor["name"]
-            pp_kwargs = pprocessor.get("inputs", {})
-
-            loaded = self._get_processor(pp_name, key, **pp_kwargs)
+            loaded = self._load_facet_processor(pprocessor, key)
 
             if loaded:
                 loaded_pprocessors.append(loaded)
 
         return loaded_pprocessors
 
-    def _load_processor(self, processor: dict) -> BaseProcessor:
+    def _load_processor(self, processor: dict, key: str) -> BaseProcessor:
         processor_name = processor["name"]
         processor_inputs = processor.get("inputs", {})
-        output_key = processor.get("output_key")
+        output_key = processor.get("output_key", None)
 
-        return self._get_processor(
-            processor_name,
-            "facet_processors",
-            output_key=output_key,
-            **processor_inputs
-        )
+        if output_key:
+            processor_inputs["output_key"] = output_key
+
+        return self._get_processor(processor_name, key, **processor_inputs)
 
     def _run_processor(
         self, processor: dict, uri: str
@@ -141,7 +138,7 @@ class BaseGenerator(ABC):
         """Run the specified processor."""
 
         # Load the processors
-        p = self._load_processor(processor)
+        p = self._load_processor(processor, "processors")
         pre_processors = self._load_extra_processors(processor, "pre_processors")
         post_processors = self._load_extra_processors(processor, "post_processors")
 
@@ -195,9 +192,34 @@ class BaseGenerator(ABC):
 
         return tags
 
+    def _run_post_extraction_method(
+        self, post_extraction_method: dict, data: dict
+    ) -> dict:
+        """Run the specified processor."""
+
+        # Load the post_extraction_method
+        processor = self._load_processor(
+            post_extraction_method, "post_extraction_methods"
+        )
+        pre_processors = self._load_extra_processors(
+            post_extraction_method, "pre_processors"
+        )
+        post_processors = self._load_extra_processors(
+            post_extraction_method, "post_processors"
+        )
+
+        # Retrieve the data
+        post_data = processor.run(
+            data,
+            post_processors=post_processors,
+            pre_processors=pre_processors,
+        )
+
+        return post_data
+
     def get_categories(
         self, uri: str, description: CollectionDescription
-    ) -> List:
+    ) -> list:
         """
         Get category labels
 
@@ -218,7 +240,7 @@ class BaseGenerator(ABC):
     def load_processors(self, entrypoint: str = None) -> HandlerPicker:
         return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
 
-    def load_output_plugins(self) -> List:
+    def load_output_plugins(self) -> list:
         return load_plugins(self.conf, "asset_scanner.output_plugins", "outputs")
 
     @abstractmethod
