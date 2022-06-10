@@ -93,6 +93,18 @@ class Coordinates:
         return [[self.minlon, self.maxlat], [self.maxlon, self.minlat]]
 
 
+class Stats:
+
+    @classmethod
+    def from_boto(cls, s3: dict) -> dict:
+        return dict(
+            size=s3.get('ContentLength'),
+            last_modified=s3.get('LastModified'),
+            content_type=s3.get('ContentType'),
+            Etag=s3.get('Etag')
+        )
+
+
 def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
     """
     Load plugins from the entry points
