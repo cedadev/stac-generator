@@ -31,7 +31,7 @@ import json
 from os import listdir
 from os.path import isdir, isfile, join
 
-from asset_scanner.core.extractor import BaseExtractor
+from asset_scanner.core.generator import BaseGenerator
 from asset_scanner.types.source_media import StorageType
 
 from .base import BaseInputPlugin
@@ -55,12 +55,10 @@ class FileInputPlugin(BaseInputPlugin):
         else:
             self.file_list = [self.filepath]
 
-    def run(self, extractor: BaseExtractor):
+    def run(self, generator: BaseGenerator):
 
         for file in self.file_list:
             with open(file) as f:
                 for line in f:
-                    data = json.loads(line)
-                    source_media = data["source_media"]
-                    data["source_media"] = StorageType(source_media)
-                    extractor.process_file(**data)
+                    filepath = json.loads(line)
+                    generator.process(filepath)

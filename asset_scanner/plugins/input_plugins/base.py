@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
-from asset_scanner.core.extractor import BaseExtractor
+from asset_scanner.core.generator import BaseGenerator
 from asset_scanner.core.utils import load_plugins
 from asset_scanner.types.source_media import StorageType
 
@@ -23,23 +23,22 @@ class BaseInputPlugin(ABC):
                 kwargs, "asset_scanner.plugin_filters", "filters"
             )
 
-    def should_process(self, filepath, source_media: StorageType) -> bool:
+    def should_process(self, uri) -> bool:
         """
         Should the path be sent for processing?
 
         Will run through any filter plugins. All plugins must pass for a True
         response. Any False will short circuit the logic and return False
 
-        :param filepath: Filepath to test
-        :param source_media: Source media
+        :param uri: uri to test
 
         :return: Bool, ``default: True``
         """
         if self.filters:
-            return any((filter.run(filepath, source_media) for filter in self.filters))
+            return any((filter.run(uri) for filter in self.filters))
 
         return True
 
     @abstractmethod
-    def run(self, extractor: BaseExtractor):
+    def run(self, generator: BaseGenerator):
         ...

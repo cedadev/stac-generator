@@ -5,7 +5,7 @@ Object Store Input
 
 Takes an endpoint url and optionally a bucket prefix and delimiter and will
 scan the items at these points in the object store, submitting each to the
-asset extractor
+asset generator
 
 **Plugin name:** ``object_store``
 
@@ -63,7 +63,7 @@ from .base import BaseInputPlugin
 LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from asset_scanner.core.extractor import BaseExtractor
+    from asset_scanner.core.generator import BaseGenerator
 
 
 class ObjectStoreInputPlugin(BaseInputPlugin):
@@ -71,8 +71,11 @@ class ObjectStoreInputPlugin(BaseInputPlugin):
 
     def __init__(self, **kwargs):
 
+        super().__init__(**kwargs)
+
         self.endpoint_url = kwargs.get("endpoint_url")
         session = boto3.session.Session(**kwargs["session_kwargs"])
+
         s3 = session.resource(
             "s3",
             endpoint_url=self.endpoint_url,
@@ -82,19 +85,21 @@ class ObjectStoreInputPlugin(BaseInputPlugin):
         self.buckets = (
             [s3.Bucket(kwargs["bucket"])] if "bucket" in kwargs else s3.buckets.all()
         )
+
         self.prefix = kwargs.get("prefix", "")
         self.delimiter = kwargs.get("delimiter", "")
 
-    def run(self, extractor: "BaseExtractor"):
+    def run(self, generator: BaseGenerator):
 
         for bucket in self.buckets:
             total_files = 0
+
             for obj in bucket.objects.filter(
                 Prefix=self.prefix, Delimiter=self.delimiter
             ):
-                extractor.process_file(
+
+                generator.process(
                     f"{self.endpoint_url}/{bucket.name}/{obj.key}",
-                    "object_store",
                     client=self.client,
                 )
                 total_files += 1

@@ -90,7 +90,7 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
 
             - name: iso19115
               inputs:
-                url_template: 'api.catalogue.ceda.ac.uk/export/xml/$uuid.xml'
+                url_template: 'api.catalogue.ceda.ac.uk/export/xml/$uri'
                 extraction_keys:
                   - name: start_datetime
                     key: './/gml:beginPosition'
@@ -104,15 +104,15 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
+    def run(self, uri: str, **kwargs) -> dict:
 
         # Build the template
         url = Template(self.url_template)
         try:
-            url = url.substitute(kwargs)
+            url = url.substitute(uri)
         except KeyError:
             LOGGER.warning(
-                f"URL templating failed. Template: {self.url_template} key not found in kwargs: {kwargs}"
+                f"URL templating failed. Template: {self.url_template} key not found in kwargs: {uri}"
             )
             return {}
 

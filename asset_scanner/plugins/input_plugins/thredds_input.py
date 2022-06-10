@@ -61,7 +61,7 @@ from .base import BaseInputPlugin
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from asset_scanner.core.extractor import BaseExtractor
+    from asset_scanner.core.generator import BaseGenerator
 
 
 def walk_tds(cat: TDSCatalog, depth: int = 1):
@@ -126,40 +126,34 @@ class ThreddsInputPlugin(BaseInputPlugin):
 
         return catalog
 
-    def process_ds(self, ds, extractor: "BaseExtractor"):
+    def process_ds(self, ds, generator: BaseGenerator):
         """
         Process a single dataset.
 
         :param ds: siphon.catalog.TDSCatalog.datasets
-        :param extractor: BaseExtractor
+        :param generator: BaseGenerator
         """
         filepath = get_sub_attr(ds, self.object_attr)
-        parse_result = urlparse(filepath)
 
-        # Set media type
-        media_type = StorageType.OBJECT_STORE
-        if not parse_result.netloc:
-            media_type = StorageType.POSIX
-
-        if self.should_process(filepath, media_type):
-            extractor.process_file(filepath, media_type)
+        if self.should_process(filepath):
+            generator.process(filepath)
             logger.debug(f"Input processing: {filepath}")
         else:
             logger.debug(f"Input skipping: {filepath}")
 
-    def run(self, extractor: "BaseExtractor"):
+    def run(self, generator: BaseGenerator, kwargs):
         """
         Plugin's entrypoint.
 
-        :param extractor: BaseExtractor
+        :param generator: BaseGenerator
         """
         total_files = 0
         start = datetime.now()
 
         catalog = self.open_catalog()
 
-        for name, ds in walk_tds(catalog, depth=None):
-            self.process_ds(ds, extractor)
+        for _, ds in walk_tds(catalog, depth=None):
+            self.process_ds(ds, generator)
             total_files += 1
 
         end = datetime.now()

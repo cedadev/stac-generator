@@ -60,7 +60,7 @@ Sample configuration:
 
    .. code-block:: yaml
 
-      extractor: asset_generator.AssetExtractor
+      extractor: asset_generator.AssetGenerator
       item_descriptions:
         root_directory: /etc/item-generator/item_descriptions/descriptions
       inputs:

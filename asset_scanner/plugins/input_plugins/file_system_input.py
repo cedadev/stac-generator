@@ -4,7 +4,7 @@ File System Input
 -----------------
 
 Takes a path and will scan the file system, submitting
-each file to the asset extractor
+each file to the asset generator
 
 **Plugin name:** ``file_system``
 
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 if TYPE_CHECKING:
-    from asset_scanner.core.extractor import BaseExtractor
+    from asset_scanner.core.generator import BaseGenerator
 
 
 class FileSystemInputPlugin(BaseInputPlugin):
@@ -67,15 +67,15 @@ class FileSystemInputPlugin(BaseInputPlugin):
         self.root_path = kwargs["path"]
         self.kwargs = kwargs.get("kwargs", {})
 
-    def run(self, extractor: "BaseExtractor"):
+    def run(self, generator: BaseGenerator):
         total_files = 0
         start = datetime.now()
         for root, _, files in tqdm(os.walk(self.root_path, **self.kwargs)):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
 
-                if self.should_process(filename, StorageType.POSIX):
-                    extractor.process_file(filename, StorageType.POSIX)
+                if self.should_process(filename):
+                    generator.process(filename)
                     logger.debug(f"Input processing: {filename}")
                 else:
                     logger.debug(f"Input skipping: {filename}")

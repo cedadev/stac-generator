@@ -15,7 +15,7 @@ import logging
 
 # Python imports
 from abc import abstractmethod
-from typing import Dict, Optional
+from typing import Optional
 
 # Package imports
 from asset_scanner.core.processor import BaseProcessor
@@ -29,11 +29,10 @@ class BasePostProcessor(BaseProcessor):
     @abstractmethod
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        uri: str,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         pass
 
 
@@ -64,11 +63,10 @@ class FacetMapProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        uri: str,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         output = {}
         if source_dict:
 
@@ -120,13 +118,12 @@ class ISODateProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        uri: str,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         """
-        :param filepath: file currently being processed
+        :param uri: file currently being processed
         :param source_media: media source of the file being processed
         :param source_dict: dict containing the date value
 
@@ -144,11 +141,11 @@ class ISODateProcessor(BasePostProcessor):
 
                     if format_errors:
                         LOGGER.warning(
-                            f"Could not use format string {date_format} with date from: {filepath}"
+                            f"Could not use format string {date_format} with date from: {uri}"
                         )
 
                     if not date:
-                        LOGGER.error(f"Could not extract date from {filepath}")
+                        LOGGER.error(f"Could not extract date from {uri}")
                         source_dict.pop(key)
                     else:
                         source_dict[key] = date
@@ -189,8 +186,7 @@ class BBOXProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
+        uri: str,
         source_dict: dict = {},
         **kwargs,
     ):
@@ -239,8 +235,7 @@ class StringJoinProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
+        uri: str,
         source_dict: dict = {},
         **kwargs,
     ):
@@ -250,7 +245,7 @@ class StringJoinProcessor(BasePostProcessor):
                 string_elements = [str(source_dict.pop(key)) for key in self.key_list]
                 source_dict[self.output_key] = self.delimiter.join(string_elements)
             except KeyError:
-                LOGGER.warning(f"Unable merge strings. file: {filepath}", exc_info=True)
+                LOGGER.warning(f"Unable merge strings. file: {uri}", exc_info=True)
 
         return source_dict
 
@@ -298,16 +293,15 @@ class DateCombinatorProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        uri: str,
+        source_dict: Optional[dict] = None,
         **kwargs,
     ):
         if source_dict:
 
             if not source_dict.get("year"):
                 LOGGER.error(
-                    f'Unable to use date combinator for file: {filepath}. Requires at least "year"'
+                    f'Unable to use date combinator for file: {uri}. Requires at least "year"'
                 )
                 return source_dict
 
@@ -337,12 +331,12 @@ class DateCombinatorProcessor(BasePostProcessor):
 
             if format_errors:
                 LOGGER.warning(
-                    f"Error parsing date from file: {filepath} with format: {self.format}."
+                    f"Error parsing date from file: {uri} with format: {self.format}."
                     "Trying dateutil..."
                 )
             if not isodate:
                 LOGGER.error(
-                    f"Error parsing date from file: {filepath} on media: {source_media}"
+                    f"Error parsing date from file: {uri}"
                 )
 
             output_key = getattr(self, "output_key", "datetime")
@@ -386,11 +380,10 @@ class FacetPrefixProcessor(BasePostProcessor):
 
     def run(
         self,
-        filepath: str,
-        source_media: str = "POSIX",
-        source_dict: Optional[Dict] = None,
+        uri: str,
+        source_dict: Optional[dict] = None,
         **kwargs,
-    ) -> Dict:
+    ) -> dict:
         output = {}
         if source_dict:
 

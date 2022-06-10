@@ -130,8 +130,7 @@ from collections import namedtuple
 # Third-party imports
 import pika
 
-from asset_scanner.core.extractor import BaseExtractor
-from asset_scanner.types.source_media import StorageType
+from asset_scanner.core.generator import BaseGenerator
 
 from .base import BaseInputPlugin
 
@@ -166,7 +165,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         :return: IngestMessage
             {
                 'datetime': ':'.join(split_line[:3]),
-                'filepath': split_line[3],
+                'uri': split_line[3],
                 'action': split_line[4],
                 'filesize': split_line[5],
                 'message': ':'.join(split_line[6:])
@@ -179,12 +178,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         try:
             msg = json.loads(body)
-            if msg.get("source_media"):
-                source_media = msg.get("source_media")
-                try:
-                    msg["source_media"] = StorageType[source_media]
-                except KeyError:
-                    msg["source_media"] = StorageType.POSIX
+
             return msg
 
         except json.JSONDecodeError:
@@ -193,7 +187,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
             msg = {
                 "datetime": ":".join(split_line[:3]),
-                "filepath": split_line[3],
+                "uri": split_line[3],
                 "action": split_line[4],
                 "filesize": split_line[5],
                 "message": ":".join(split_line[6:]),
@@ -201,7 +195,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
         return msg
 
-    def _connect(self, extractor) -> pika.channel.Channel:
+    def _connect(self, generator) -> pika.channel.Channel:
         """
         Start Pika connection to server. This is run in each thread.
 
@@ -264,7 +258,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
 
             # Set callback
             callback = functools.partial(
-                self.callback, connection=connection, extractor=extractor
+                self.callback, connection=connection, generator=generator
             )
             channel.basic_consume(
                 queue=queue["name"], on_message_callback=callback, **consume_kwargs
@@ -309,7 +303,7 @@ class RabbitMQInputPlugin(BaseInputPlugin):
         properties: pika.frame.Header,
         body: bytes,
         connection: pika.connection.Connection,
-        extractor: BaseExtractor,
+        generator: BaseGenerator,
     ) -> None:
 
         # Get message
@@ -321,49 +315,21 @@ class RabbitMQInputPlugin(BaseInputPlugin):
             self.acknowledge_message(ch, method.delivery_tag, connection)
             return
 
-        # Extract filename and storage class
-        filename = message["filepath"]
+        # Extract uri
+        uri = message["uri"]
 
-        try:
-            # TODO: How to get this from message? CEDA message.message is str
-            # storage_class = message.message.get('storage_type', StorageType.POSIX)
-
-            storage_class = message["source_media"]
-            if isinstance(storage_class, str):
-                storage_class = StorageType[storage_class]
-
-        except KeyError:
-            storage_class = StorageType.POSIX
-
-        if self.should_process(filename, storage_class):
+        if self.should_process(uri):
             self.acknowledge_message(ch, method.delivery_tag, connection)
-            extractor.process_file(**message)
+            generator.process(**message)
 
-            LOGGER.info(f"Input processing: {filename}")
+            LOGGER.info(f"Input processing: {uri}")
         else:
-            LOGGER.info(f"Input skipping: {filename}")
+            LOGGER.info(f"Input skipping: {uri}")
 
-    def should_process(self, filepath, source_media: StorageType) -> bool:
-        """
-        Should the path be sent for processing?
-
-        Will run through any filter plugins. All plugins must pass for a True
-        response. Any False will short circuit the logic and return False
-
-        :param filepath: Filepath to test
-        :param source_media: Source media
-
-        :return: Bool, ``default: True``
-        """
-        if self.filters:
-            return any((filter.run(filepath, source_media) for filter in self.filters))
-
-        return True
-
-    def run(self, extractor: BaseExtractor):
+    def run(self, generator: BaseGenerator):
 
         while True:
-            channel = self._connect(extractor)
+            channel = self._connect(generator)
 
             try:
                 LOGGER.info("READY")

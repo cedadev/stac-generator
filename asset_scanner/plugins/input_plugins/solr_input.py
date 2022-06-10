@@ -42,8 +42,7 @@ import sys
 
 import requests
 
-from asset_scanner.core.extractor import BaseExtractor
-from asset_scanner.types.source_media import StorageType
+from asset_scanner.core.generator import BaseGenerator
 
 from .base import BaseInputPlugin
 
@@ -98,16 +97,14 @@ class SolrInputPlugin(BaseInputPlugin):
             # Change the search params to get next page.
             self.params["cursorMark"] = resp["nextCursorMark"]
 
-    def run(self, extractor: BaseExtractor):
+    def run(self, generator: BaseGenerator):
         for doc in self.iter_docs():
-            filepath: str = doc.get("id")
+            uri: str = doc.get("id")
 
-            LOGGER.info(f"Input processing: {filepath}")
+            LOGGER.info(f"Input processing: {uri}")
 
-            # transform file id to a filepath
+            # transform id to a uri
             # by replacing '.' with '/' up until the filename
-            filepath = filepath.replace(".", "/", filepath.split("|")[0].count(".") - 1)
+            uri = uri.replace(".", "/", uri.split("|")[0].count(".") - 1)
 
-            extractor.process_file(
-                filepath=filepath, source_media=StorageType.ESGF_SOLR
-            )
+            generator.process(uri)

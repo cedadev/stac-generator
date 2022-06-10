@@ -9,10 +9,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .item_describer import ItemDescription
 
 
 class BaseProcessor(ABC):
@@ -31,23 +27,11 @@ class BaseProcessor(ABC):
             setattr(self, k, v)
 
     @abstractmethod
-    def run(self, filepath: str, media_source: str = "POSIX", **kwargs) -> dict:
+    def run(self, uri: str, **kwargs) -> dict:
         """
         The action of running the processor and returning an output
-        :param filepath: Path to object
-        :param media_source: Media type for the target object
+        :param uri: URI for object
         :param kwargs: free kwargs passed to the processor.
         :return: dict
         """
         pass
-
-
-class BaseAggregationProcessor(BaseProcessor):
-    """
-    Modify the run method signature as the aggregation processor requires
-    different information.
-    """
-
-    @abstractmethod
-    def run(self, id: str, description: "ItemDescription") -> dict:
-        ...

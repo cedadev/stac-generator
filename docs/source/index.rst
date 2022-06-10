@@ -33,7 +33,7 @@ describe a range of geospatial information, so it can more easily be indexed and
 A "spatiotemporal asset" is any file that represents information about the earth captured
 in a certain space and time.
 
-Extractors
+Generators
 ==========
 
 The different packages are designed to extract different types and levels of metadata.

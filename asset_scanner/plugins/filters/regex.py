@@ -1,12 +1,12 @@
 # encoding: utf-8
 """
-Path Regex Filter
+Regex Filter
 -----------------
 
-Takes a filepath and matches against a regex pattern. This can be used to pre-filter
-paths for processing. Can use the ``exclude`` flag to flip the regex match.
+Takes a uri and matches against a regex pattern. This can be used to pre-filter
+uris for processing. Can use the ``exclude`` flag to flip the regex match.
 
-**Plugin name:** ``path_regex``
+**Plugin name:** ``regex``
 
 .. list-table::
     :header-rows: 1
@@ -19,7 +19,7 @@ paths for processing. Can use the ``exclude`` flag to flip the regex match.
       - ``REQUIRED`` Pattern to match.
     * - ``exclude``
       - ``bool``
-      - Optional flag to either include or exclude the matched path. False (0) will send only paths that match to processing. True (1)
+      - Optional flag to either include or exclude the matched path. False will send only paths that match to processing. True
         will send all paths which do not match the regex for processing. ``DEFAULT: False``
 
 Example Configuration:
@@ -29,9 +29,9 @@ Example Configuration:
             - name: file_system
               path: /badc/cmip5
               filters:
-                - name: path_regex
+                - name: regex
                   regex: ^\/badc\/cmip[56]\/.*files
-                  exclude: 1
+                  exclude: True
 
 """
 __author__ = "Richard Smith"
@@ -41,15 +41,15 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import re
+from distutils.util import strtobool
 
-
-class PathRegexFilter:
+class RegexFilter:
     def __init__(self, **kwargs):
         self.regex = kwargs["regex"]
-        self.exclude = kwargs.get("exclude", 0)
+        self.exclude = strtobool(kwargs.get("exclude", "False"))
 
-    def run(self, filepath: str, source_media: str) -> bool:
+    def run(self, uri: str) -> bool:
         if self.exclude:
-            return not bool(re.match(self.regex, filepath))
+            return not bool(re.match(self.regex, uri))
         else:
-            return bool(re.match(self.regex, filepath))
+            return bool(re.match(self.regex, uri))

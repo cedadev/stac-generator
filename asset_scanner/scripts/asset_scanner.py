@@ -16,7 +16,7 @@ import pkg_resources
 import yaml
 
 from asset_scanner.core.exceptions import NoPluginsError
-from asset_scanner.core.extractor import BaseExtractor
+from asset_scanner.core.generator import BaseGenerator
 from asset_scanner.core.utils import load_plugins
 
 
@@ -46,38 +46,38 @@ def load_config(path):
     return conf
 
 
-def load_extractor(conf: dict) -> BaseExtractor:
+def load_generator(conf: dict) -> BaseGenerator:
     """
-    Load the extractor.
+    Load the generator.
 
-    Looks for extractor defined in the configuration in preference
+    Looks for generator defined in the configuration in preference
     and falls back to the first defined entry point
-    at ``asset_scanner.extractors``
+    at ``asset_scanner.generators``
 
     :param conf: Configuration dict
-    :return: Extractor
+    :return: Generator
     """
 
-    extractor = None
+    generator = None
 
-    if conf.get("extractor"):
-        extractor = locate(conf["extractor"])
-        if not extractor:
+    if conf.get("generator"):
+        generator = locate(conf["generator"])
+        if not generator:
             raise ImportError(
-                f'Unable to find {conf["extractor"]}. ' f"Check that it is installed."
+                f'Unable to find {conf["generator"]}. ' f"Check that it is installed."
             )
 
-    if not extractor:
-        for entry_point in pkg_resources.iter_entry_points("asset_scanner.extractors"):
-            extractor = entry_point.load()
+    if not generator:
+        for entry_point in pkg_resources.iter_entry_points("asset_scanner.generators"):
+            generator = entry_point.load()
 
             # Only load the first one
             break
 
-    if not extractor:
+    if not generator:
         raise NoPluginsError("No extraction plugins have been loaded")
 
-    return extractor(conf)
+    return generator(conf)
 
 
 def main():
@@ -87,12 +87,12 @@ def main():
 
     setup_logging(conf)
 
-    extractor = load_extractor(conf)
+    generator = load_generator(conf)
 
     input_plugins = load_plugins(conf, "asset_scanner.input_plugins", "inputs")
 
     for input in input_plugins:
-        input.run(extractor)
+        input.run(generator)
 
 
 if __name__ == "__main__":

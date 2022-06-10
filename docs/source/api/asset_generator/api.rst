@@ -4,12 +4,12 @@ Asset Generator API
 
 :fa:`github` `View on Github <https://github.com/cedadev/asset-extractor>`_
 
-Asset Extractor
+Asset Generator
 ===============
 
 .. automodule:: asset_generator.core.asset_extractor
 
-.. autoclass:: asset_generator.core.asset_extractor.AssetExtractor
+.. autoclass:: asset_generator.core.asset_extractor.AssetGenerator
 
 Media Handlers
 ==============

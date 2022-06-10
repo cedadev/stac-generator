@@ -67,7 +67,7 @@ Sample configuration
 
    .. code-block:: yaml
 
-      extractor: item_generator.FacetExtractor
+      extractor: item_generator.FacetGenerator
       item_descriptions:
          root_directory: /home/users/rsmith013/search_futures/item-descriptions/descriptions
       inputs:

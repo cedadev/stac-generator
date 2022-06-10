@@ -27,7 +27,7 @@ LOGGER = logging.getLogger(__name__)
 
 class BasePreProcessor(BaseProcessor):
     @abc.abstractmethod
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
+    def run(self, uri: str, **kwargs) -> dict:
         pass
 
 
@@ -48,13 +48,13 @@ class ReducePathtoName(BasePreProcessor):
 
     """
 
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs):
+    def run(self, uri: str, **kwargs):
 
-        filepath = os.path.basename(filepath)
+        uri = os.path.basename(uri)
 
-        LOGGER.info(f"Identified file name: {filepath}")
+        LOGGER.info(f"Identified file name: {uri}")
 
-        return (filepath, source_media), kwargs
+        return uri, kwargs
 
 
 class CEDAObservation(BasePreProcessor):
@@ -76,13 +76,13 @@ class CEDAObservation(BasePreProcessor):
               pre_processors:
                 - name: ceda_observation
                   inputs:
-                    url_template: http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$filepath
+                    url_template: http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri
 
     """
 
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs):
+    def run(self, uri: str, **kwargs):
 
-        url = Template(self.url_template).substitute(filepath=filepath)
+        url = Template(self.url_template).substitute(uri=uri)
 
         r = requests.get(url)
 
@@ -95,4 +95,4 @@ class CEDAObservation(BasePreProcessor):
                 uuid = url.split("/")[-1]
                 kwargs["uuid"] = uuid
 
-        return (filepath, source_media), kwargs
+        return uri, kwargs

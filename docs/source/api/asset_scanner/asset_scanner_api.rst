@@ -6,7 +6,7 @@ Asset Scanner API
 
 .. automodule:: asset_scanner.core.extractor
 
-.. autoclass:: asset_scanner.core.BaseExtractor
+.. autoclass:: asset_scanner.core.BaseGenerator
 
 .. automodule:: asset_scanner.core.item_describer
     :members:

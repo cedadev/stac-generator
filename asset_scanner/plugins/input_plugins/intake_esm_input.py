@@ -56,10 +56,7 @@ from urllib.parse import urlparse
 # Thirdparty imports
 import intake
 
-from asset_scanner.core.extractor import BaseExtractor
-
-# Framework imports
-from asset_scanner.types.source_media import StorageType
+from asset_scanner.core.generator import BaseGenerator
 
 # Package imports
 from .base import BaseInputPlugin
@@ -91,27 +88,20 @@ class IntakeESMInputPlugin(BaseInputPlugin):
         LOGGER.info(f"Found {len(catalog.df)} items")
         return catalog
 
-    def run(self, extractor: BaseExtractor):
+    def run(self, generator: BaseGenerator):
         total_files = 0
         start = datetime.now()
 
         catalog = self.open_catalog()
 
-        for index, row in catalog.df.iterrows():
-            filepath = getattr(row, self.object_attr)
+        for _, row in catalog.df.iterrows():
+            uri = getattr(row, self.object_attr)
 
-            parse_result = urlparse(filepath)
-
-            # Set media type
-            media_type = StorageType.OBJECT_STORE
-            if not parse_result.netloc:
-                media_type = StorageType.POSIX
-
-            if self.should_process(filepath, media_type):
-                extractor.process_file(filepath, media_type)
-                LOGGER.debug(f"Input processing: {filepath}")
+            if self.should_process(uri):
+                generator.process(uri)
+                LOGGER.debug(f"Input processing: {uri}")
             else:
-                LOGGER.debug(f"Input skipping: {filepath}")
+                LOGGER.debug(f"Input skipping: {uri}")
 
             total_files += 1
 

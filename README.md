@@ -11,7 +11,7 @@ Legacy Documentation: https://cedadev.github.io/asset-scanner/
 Documentation: https://asset-scanner.readthedocs.io/en/latest/index.html
 
 The asset scanner provides the framework and access to shared tools.
-The framework allows you to build extractors to get metadata from file objects using plugins to change the source of the
+The framework allows you to build generators to get metadata from file objects using plugins to change the source of the
 files, the output of the metadata and the processing chain which extracts the metadata.
 The framework leverages a modular, plugin architecture to allow users to modify the workflow to fit their needs.
 

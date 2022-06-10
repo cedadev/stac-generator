@@ -70,9 +70,9 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
+    def run(self, uri: str, **kwargs) -> dict:
 
-        m = re.match(self.regex, filepath)
+        m = re.match(self.regex, uri)
 
         if m:
             LOGGER.info("Found matches for regex extract")
