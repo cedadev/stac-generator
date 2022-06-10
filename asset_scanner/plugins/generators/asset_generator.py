@@ -71,7 +71,7 @@ class AssetGenerator(BaseGenerator):
             body['item_id'] = item_id
             body['type'] = 'asset'
 
-        data = {'id': generate_id(uri), 'body': {}}
+        data = {'id': generate_id(uri), 'body': body}
 
         self.output(uri, data, namespace="asset")
 

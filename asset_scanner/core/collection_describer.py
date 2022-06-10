@@ -15,7 +15,7 @@ import logging
 # Python imports
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import yaml
 
@@ -29,23 +29,6 @@ from asset_scanner.core.utils import dict_merge, load_description_files
 LOGGER = logging.getLogger(__name__)
 
 
-class Templates(BaseModel):
-    """Templates description model."""
-
-    title: Optional[str]
-    description: Optional[str]
-
-
-class Processor(BaseModel):
-    """Common model for processor."""
-
-    defaults: Optional[Dict] = {}
-    mappings: Optional[Dict] = {}
-    overrides: Optional[Dict] = {}
-    extraction_methods: List[Dict] = []
-    templates: Optional[Templates] = {}
-
-
 class Category(BaseModel):
     """Category label model."""
 
@@ -53,39 +36,37 @@ class Category(BaseModel):
     regex: str
 
 
-class Collections(Processor):
+class STACModel(BaseModel):
     """Collections processor description model."""
 
     id: Optional[str]
+    extraction_methods: list[dict] = []
+    post_extraction_methods: list[dict] = []
 
 
-class Facets(Processor):
-    """Facets processor description model."""
+class CollectionDescription(BaseModel):
+    """Top level container for CollectionDescriptions."""
 
-    aggregation_facets: Optional[List] = []
-    search_facets: Optional[List] = []
+    paths: list
 
+    asset: Optional[STACModel] = {}
+    item: Optional[STACModel] = {}
+    collection: Optional[STACModel] = []
 
-class ItemDescription(BaseModel):
-    """Top level container for ItemDescriptions."""
-
-    paths: List
-    collections: Optional[Collections] = {}
-    facets: Optional[Facets] = {}
-    categories: Optional[List[Category]] = []
+    categories: Optional[list[Category]] = []
 
     def __repr__(self):
         return yaml.dump(self.dict())
 
 
-class ItemDescriptions:
+class CollectionDescriptions:
     """
     Holds references to all the description files and handles loading, merging
     and returning an :py:obj:`ItemDescription`
     """
 
     def __init__(
-        self, root_path: Optional[str] = None, filelist: Optional[List] = None
+        self, root_path: Optional[str] = None, filelist: Optional[list] = None
     ):
         """
 
@@ -97,13 +78,13 @@ class ItemDescriptions:
 
         self._build_tree(root_path, filelist)
 
-    def _build_tree(self, root_path: str, files: List[Path]) -> None:
+    def _build_tree(self, root_path: str, files: list[Path]) -> None:
         """
         Loads the yaml files from the root path and builds the dataset tree
         with references to the yaml files.
 
         :param root_path: Path at the top of the yaml file tree
-        :param files: List of files to open.
+        :param files: list of files to open.
         """
 
         if not files:
@@ -126,7 +107,7 @@ class ItemDescriptions:
 
                     self.tree.add_child(dataset, description_file=file.as_posix())
 
-    def get_description(self, filepath: str) -> ItemDescription:
+    def get_description(self, filepath: str) -> CollectionDescription:
         """
         Get the merged description for the given file path.
         This gets all the description files along the path
@@ -137,7 +118,7 @@ class ItemDescriptions:
         files describing ``/badc`` will be overridden by files
         which describe ``/badc/faam/data``
 
-        Dict values are overridden by more specific files and
+        dict values are overridden by more specific files and
         arrays are appended to, with duplicates ignored.
 
         .. note::
@@ -156,14 +137,14 @@ class ItemDescriptions:
 
         config_description = self.load_config(*description_files)
 
-        return ItemDescription(**config_description)
+        return CollectionDescription(**config_description)
 
     @lru_cache(100)
     def load_config(self, *args: str) -> dict:
         """
 
         :param args: each arg is a filepath to a description file
-        :return: Dictionary containing the merged properties of all the matching nodes
+        :return: dictionary containing the merged properties of all the matching nodes
         """
         base_dict = {}
         for file in args:
@@ -184,7 +165,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    descriptions = ItemDescriptions(args.root)
+    descriptions = CollectionDescriptions(args.root)
 
     description = descriptions.get_description(args.path)
 
