@@ -32,7 +32,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: thredds
+            - method: thredds
               uri: test-url
               object_path_attr: access_urls.OPENDAP
 

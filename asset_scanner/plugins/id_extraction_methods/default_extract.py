@@ -14,18 +14,14 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
-import re
 
 from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
 from asset_scanner.core.processor import BaseProcessor
 
-# Package imports
-from .mixins import PropertiesOutputKeyMixin
-
 LOGGER = logging.getLogger(__name__)
 
 
-class DefaultExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class DefaultExtract(BaseProcessor):
     """
 
     .. list-table::
@@ -38,31 +34,29 @@ class DefaultExtract(PropertiesOutputKeyMixin, BaseProcessor):
           - .. fa:: check
 
     Description:
-        Takes a set of default facets.
+        Extracts default id.
 
     Configuration Options:
-        - ``defaults``: Dictionary of defaults to be added
+        - ``value``: id value
         - ``pre_processors``: List of pre-processors to apply
         - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
-
 
     Example configuration:
         .. code-block:: yaml
 
-            - method: default
-              inputs:
-                defaults:
-                  mip_era: CMIP6
+          id:
+            method: default
+            inputs:
+              value: cmip6
 
     """
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(
+        self,
+        body: dict,
+        **kwargs,
+    ) -> dict:
 
-      return self.defaults
+        return self.value

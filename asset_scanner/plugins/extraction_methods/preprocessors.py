@@ -44,7 +44,7 @@ class ReducePathtoName(BasePreProcessor):
     .. code-block:: yaml
 
           pre_processors:
-            - name: filename_reducer
+            - method: filename_reducer
 
     """
 
@@ -74,7 +74,7 @@ class CEDAObservation(BasePreProcessor):
         .. code-block:: yaml
 
               pre_processors:
-                - name: ceda_observation
+                - method: ceda_observation
                   inputs:
                     url_template: http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri
 

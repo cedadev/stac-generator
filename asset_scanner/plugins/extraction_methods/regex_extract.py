@@ -56,13 +56,13 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-            - name: regex
+            - method: regex
               inputs:
                 regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
               pre_processors:
-                - name: filename_reducer
+                - method: filename_reducer
               post_processors:
-                - name: isodate_processor
+                - method: isodate_processor
                   inputs:
                     date_key: datetime
 

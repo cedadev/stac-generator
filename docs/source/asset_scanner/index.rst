@@ -71,10 +71,10 @@ Sample configuration
       item_descriptions:
          root_directory: /home/users/rsmith013/search_futures/item-descriptions/descriptions
       inputs:
-        - name: file_system
+        - method: file_system
           path: /badc/faam/data/2005/b069-jan-05
       outputs:
-        - name: standard_out
+        - method: standard_out
       logging:
          level: INFO
 

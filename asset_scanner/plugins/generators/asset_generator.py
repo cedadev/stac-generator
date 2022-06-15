@@ -10,15 +10,13 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 
 # Framework imports
+from asset_scanner.core.collection_describer import CollectionDescription
 from asset_scanner.core.generator import BaseGenerator
-from asset_scanner.core.utils import dict_merge, generate_id
+from asset_scanner.core.utils import dict_merge
 from asset_scanner.types.generators import ExtractionType
-from asset_scanner.types.source_media import StorageType
-from asset_scanner.plugins.extraction_methods import utils as item_utils
 
 # Python imports
 import logging
-
 
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +30,27 @@ class AssetGenerator(BaseGenerator):
     passed to its ``process`` method.
     """
 
-    EXTRACTION_TYPE = ExtractionType.ITEM
+    EXTRACTION_TYPE = ExtractionType.ASSET
+
+    def get_categories(
+        self, uri: str, description: CollectionDescription
+    ) -> list:
+        """
+        Get category labels
+
+        :param uri: uri for object
+        :param description: CollectionDescription
+        :return:
+
+        """
+        categories = set()
+
+        for conf in description.categories:
+            label = self._get_category(uri, **conf.dict())
+            if label:
+                categories.add(label)
+
+        return list(categories) or ["data"]
 
     def process(self, uri: str, **kwargs) -> None:
         """
@@ -43,53 +61,44 @@ class AssetGenerator(BaseGenerator):
         :return:
         """
 
-        body = {}
+        body = {
+            'type': self.EXTRACTION_TYPE.value
+        }
 
         # Get dataset description file
-        if self.collection_descriptions:
+        description = self.collection_descriptions.get_description(uri)
 
-            description = self.collection_descriptions.get_description(uri)
-            categories = self.get_categories(uri, description)
-            body['categories'] = categories
+        # extract facets, run post extractions and extract ids
+        extraction_methods_output = self.run_extraction_methods(uri, description, **kwargs)
+        print(extraction_methods_output)
+        body = dict_merge(body, extraction_methods_output)
 
-            # Get facet values
-            processor_output = self.run_processors(uri, description, **kwargs)
-            properties = processor_output.get('properties', {})
+        body = self.run_post_extraction_methods(body, description, **kwargs)
 
-            # Get collection id
-            coll_id = self.get_collection_id(description, uri)
+        ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-            # Generate item id
-            item_id = item_utils.generate_item_id_from_properties(
-                uri,
-                coll_id,
-                properties,
-                description
-            )
-            properties = dict_merge(properties, body.get('properties', {}))
-            body['properties'] = properties
-            body['item_id'] = item_id
-            body['type'] = 'asset'
+        body['categories'] = self.get_categories(uri, description)
+        body['item_id'] = ids["item_id"]
 
-        data = {'id': generate_id(uri), 'body': body}
+        data = {'id': ids["asset_id"], 'body': body}
 
-        self.output(uri, data, namespace="asset")
+        self.output(uri, data, namespace=self.EXTRACTION_TYPE.value)
 
         # If deduplication enabled, check LRU cache and pass relevant kwargs
         kwargs = {
                     'deduplicate': False,
-                    'id': item_id
+                    'id': ids["item_id"]
                 }
 
         if self.header_deduplication:
             # Check if id is in the cache
-            if self.item_id_cache.get(item_id):
+            if self.item_id_cache.get(ids["item_id"]):
                 kwargs['deduplicate'] = True
             # add a dummy value to the cache of equal to True.
-            self.item_id_cache.update({item_id: True})
+            self.item_id_cache.update({ids["item_id"]: True})
 
         message = {
-            "item_id": item_id,
+            "item_id": ids["item_id"],
             "uri": uri,
         }
 

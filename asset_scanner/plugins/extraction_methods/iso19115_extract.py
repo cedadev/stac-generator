@@ -82,22 +82,22 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
         Example:
             .. code-block:: yaml
 
-                  - name: start_datetime
+                  - method: start_datetime
                     key: './/gml:beginPosition'
 
     Example configuration:
         .. code-block:: yaml
 
-            - name: iso19115
+            - method: iso19115
               inputs:
                 url_template: 'api.catalogue.ceda.ac.uk/export/xml/$uri'
                 extraction_keys:
-                  - name: start_datetime
+                  - method: start_datetime
                     key: './/gml:beginPosition'
               pre_processors:
-                - name: ceda_observation
+                - method: ceda_observation
               post_processors:
-                - name: isodate_processor
+                - method: isodate_processor
                   inputs:
                     date_key: datetime
     """

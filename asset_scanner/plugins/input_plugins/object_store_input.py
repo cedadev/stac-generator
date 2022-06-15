@@ -35,7 +35,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: object_store
+            - method: object_store
                 endpoint_url: https://cedadev-o.s3-ext.jc.rl.ac.uk
                 session_kwargs: {
                     aws_access_key_id: ACCESS_KEY,

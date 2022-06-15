@@ -26,7 +26,7 @@ Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - name: json_out
+            - method: json_out
               namespace: header
               filepath: location_to_destination_file
 

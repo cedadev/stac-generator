@@ -33,14 +33,14 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
     .. list-table::
 
         * - Processor Name
-          - ``header_extract``
+          - ``header``
         * - Accepts Pre-processors
           - .. fa:: times
         * - Accepts Post-processors
           - .. fa:: check
 
     Description:
-        Takes a filepath string and a list of attributes
+        Takes a uri string and a list of attributes
         and returns a dictionary of the values extracted from the
         file header.
 
@@ -55,7 +55,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-            - name: header_extract
+            - method: header
               inputs:
                 attributes:
                     - institution
@@ -66,16 +66,16 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
     """
 
     @accepts_postprocessors
-    def run(self, filepath: str, source_media: str = "POSIX", **kwargs) -> dict:
+    def run(self, uri: str, **kwargs) -> dict:
 
         try:
-            backend = self.guess_backend(filepath)
+            backend = self.guess_backend(uri)
         except NoSuitableBackendException:
-            LOGGER.warning(f"Header extract backend not found for {filepath}")
+            LOGGER.warning(f"Header extract backend not found for {uri}")
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = self.attr_extraction(backend, filepath, self.attributes)
+        data = self.attr_extraction(backend, uri, self.attributes)
 
         return data
 
@@ -94,19 +94,19 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 LOGGER.warning(ex)
         return backend_entrypoints
 
-    def guess_backend(self, filepath: str) -> Dict:
+    def guess_backend(self, uri: str) -> Dict:
         backends = self.list_backend()
-        for engine, backend in backends.items():
+        for _, backend in backends.items():
             backend = backend()
-            if backend.guess_can_open(filepath):
+            if backend.guess_can_open(uri):
                 return backend
 
-        raise (NoSuitableBackendException(f"No backend found for file {filepath}"))
+        raise (NoSuitableBackendException(f"No backend found for file {uri}"))
 
     @staticmethod
-    def attr_extraction(backend, file: str, attributes: List) -> dict:
+    def attr_extraction(backend, uri: str, attributes: List) -> dict:
         """
-        Takes a filepath and list of attributes and extracts the metadata from the header.
+        Takes a uri and list of attributes and extracts the metadata from the header.
 
         :param file: file-like object
         :param attributes: Header attributes to extract
@@ -116,4 +116,4 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
         :return: Dictionary of extracted attributes
         """
 
-        return backend.attr_extraction(file, attributes)
+        return backend.attr_extraction(uri, attributes)

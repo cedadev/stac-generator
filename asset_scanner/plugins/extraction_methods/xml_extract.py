@@ -30,7 +30,7 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
     .. list-table::
 
         * - Processor Name
-          - ``xml_extract``
+          - ``xml``
         * - Accepts Pre-processors
           - .. fa:: check
         * - Accepts Post-processors
@@ -70,17 +70,17 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
         Example:
             .. code-block:: yaml
 
-                  - name: start_datetime
+                  - method: start_datetime
                     key: './/gml:beginPosition'
 
     Example configuration:
         .. code-block:: yaml
 
-            - name: xml_extract
+            - method: xml
               inputs:
                 filter_expr: '\.manifest$'
                 extraction_keys:
-                  - name: start_datetime
+                  - method: start_datetime
                     key: './/gml:beginPosition'
     """
 

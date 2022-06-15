@@ -28,7 +28,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: file_system
+            - method: file_system
               path: test_directory
 
 """

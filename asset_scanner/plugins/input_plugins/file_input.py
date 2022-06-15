@@ -21,7 +21,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: file_input
+            - method: file_input
               filepath: input_file(s)_location
 
 """

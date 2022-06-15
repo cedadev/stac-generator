@@ -26,10 +26,10 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: file_system
+            - method: file_system
               path: /badc/cmip5
               filters:
-                - name: regex
+                - method: regex
                   regex: ^\/badc\/cmip[56]\/.*files
                   exclude: True
 

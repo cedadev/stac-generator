@@ -54,7 +54,7 @@ class FacetMapProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: facet_map
+            - method: facet_map
               inputs:
                 term_map:
                     time_coverage_start: start_time
@@ -108,7 +108,7 @@ class ISODateProcessor(BasePostProcessor):
         .. code-block:: yaml
 
             post_processors:
-                - name: isodate_processor
+                - method: isodate_processor
                   inputs:
                     date_keys:
                       - key: date
@@ -174,7 +174,7 @@ class BBOXProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: stac_bbox
+            - method: stac_bbox
               inputs:
                 key_list:
                    - west
@@ -222,7 +222,7 @@ class StringJoinProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: string_join
+            - method: string_join
               inputs:
                 key_list:
                    - year
@@ -283,7 +283,7 @@ class DateCombinatorProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: date_combinator
+            - method: date_combinator
               inputs:
                 destructive: true
                 format: '%Y-%m'
@@ -368,7 +368,7 @@ class FacetPrefixProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: facet_prefix
+            - method: facet_prefix
               inputs:
                 prefix:
                   cmip6

@@ -53,7 +53,7 @@ The source and dest exchange keys comprise:
     * - Option
       - Value Type
       - Description
-    * - name
+    * - method
       - string
       - ``REQUIRED`` Exchange name
     * - type
@@ -71,7 +71,7 @@ List of queue objects. Each queue object comprises:
     * - Option
       - Value Type
       - Description
-    * - name
+    * - method
       - string
       - ``REQUIRED`` Queue name
     * - kwargs
@@ -89,7 +89,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: rabbitmq
+            - method: rabbitmq
               connection:
                 host: my-rabbit-server.co.uk
                 user: user
@@ -105,7 +105,7 @@ Example Configuration:
                     name: mydest-exchange
                     type: fanout
               queues:
-                - name:
+                - method:
                   kwargs:
                     durable: true
                   bind_kwargs:

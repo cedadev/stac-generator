@@ -24,7 +24,7 @@ from asset_scanner.core.processor import BaseProcessor
 LOGGER = logging.getLogger(__name__)
 
 
-class VocabPostExtract(BaseProcessor):
+class VocabExtract(BaseProcessor):
     """
 
     .. list-table::
@@ -50,7 +50,7 @@ class VocabPostExtract(BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-          - name: vocab
+          - method: vocab
             inputs:
               url: vocab.ceda.ac.uk
               namespace: cmip6
@@ -65,15 +65,14 @@ class VocabPostExtract(BaseProcessor):
     @accepts_postprocessors
     def run(
         self,
-        data: dict,
-        source_media: str = "POSIX",
+        body: dict,
         **kwargs,
     ) -> dict:
 
-        properties = data["body"]["properties"]
-        first = True
+        properties = body["properties"]
 
         # if there is already an unspecified_vocab it is not the first vocab
+        first = True
         if "unspecified_vocab" in properties:
             properties = properties["unspecified_vocab"]
             first = False
@@ -99,12 +98,12 @@ class VocabPostExtract(BaseProcessor):
 
         if not first:
             new_properties = properties | json_response["result"]
-            vocabs = data["body"]["vocabs"] + [self.namespace]
+            vocabs = body["vocabs"] + [self.namespace]
 
         else:
             new_properties = json_response["result"]
             vocabs = [self.namespace]
 
-        data["body"] = data["body"] | {"vocabs": vocabs, "properties": new_properties}
+        body = body | {"vocabs": vocabs, "properties": new_properties}
 
-        return data
+        return body

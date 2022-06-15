@@ -65,7 +65,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-            - name: object_store_stats
+            - method: object_store_stats
               inputs:
                 uri_parse: urlparse
 
@@ -73,7 +73,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        session_kwargs = getattr(self, 'boto_session_kwargs', {})
+        session_kwargs = getattr(self.conf, 'boto_session_kwargs', {})
         self.session = boto3.session.Session(**session_kwargs)
         self.anonymous = not session_kwargs
 
@@ -171,7 +171,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
             with file as f:
                 stats = vars(f)
 
-        self.info['location'] = uri
+        self.info['uri'] = uri
         self.extract_filename(object_path)
         self.extract_extension(object_path)
         self.extract_stat('size', stats, 'size')

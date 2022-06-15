@@ -37,16 +37,16 @@ identify all files in this dataset as belonging together.
       - /badc/faam/data
     facets:
       extraction_methods:
-        - name: regex
+        - method: regex
           inputs:
             regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
           pre_processors:
-            - name: filename_reducer
+            - method: filename_reducer
           post_processors:
-            - name: isodate_processor
+            - method: isodate_processor
               inputs:
                 date_key: datetime
-        - name: regex
+        - method: regex
           inputs:
             regex: '^\/(?:[^/]*/)(?P<platform>\w*)\/(?:[^/]*/){2}(?P<flight_number>\w\d{3})'
       aggregation_facets:
@@ -166,16 +166,16 @@ Facets
 
     facets:
         extraction_methods:
-        - name: regex
+        - method: regex
           inputs:
             regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
           pre_processors:
-            - name: filename_reducer
+            - method: filename_reducer
           post_processors:
-            - name: isodate_processor
+            - method: isodate_processor
               inputs:
                 date_key: datetime
-        - name: regex
+        - method: regex
           inputs:
             regex: '^\/(?:[^/]*/)(?P<platform>\w*)\/(?:[^/]*/){2}(?P<flight_number>\w\d{3})'
       aggregation_facets:
@@ -243,7 +243,7 @@ Processor
 
             facets:
                 extraction_methods:
-                - name: regex
+                - method: regex
                   inputs:
                     regex: '^\/(?:[^/]*/)(?P<platform>\w*)\/(?:[^/]*/){2}(?P<flight_number>\w\d{3})'
 

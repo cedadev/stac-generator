@@ -44,24 +44,24 @@ be used as an example. An example which includes extracting metadata from the Ne
         id: Ic93XnsBhuk7QqVbSFwS
     facets:
         extraction_methods:
-            - name: regex
+            - method: regex
               description: Extract facets from the file path
               inputs:
                 regex: '^\/(?:[^/]*/)(?P<platform>\w*)(?:[^/]*/){3}(?P<product_version>[0-9v.]+)/'
-            - name: regex
+            - method: regex
               description: Extract facets from the filename
               inputs:
                 regex: '^(?:[^_]*_){2}(?P<processing_level>[^_]+)__(?P<variable>[^_]+)_{4}(?P<start_datetime>[0-9T]+)_(?P<end_datetime>[0-9T]+)_(?P<orbit>\d+)(?:[^_]*_){3}(?P<datetime>[0-9T]+)'
               pre_processors:
-                - name: filename_reducer
+                - method: filename_reducer
               post_processors:
-                - name: isodate_processor
+                - method: isodate_processor
                   inputs:
                     date_keys:
                       - start_datetime
                       - end_datetime
                       - datetime
-            - name: header_extract
+            - method: header_extract
               description: Extract header metadata
               inputs:
                attributes:

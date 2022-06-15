@@ -38,7 +38,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: intake_catalog
+            - method: intake_catalog
               uri: test_directory
 
 """

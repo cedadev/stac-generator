@@ -83,7 +83,7 @@ Here is an example for the elasticsearch output making use of additional kwargs:
 
 .. code-block::
 
-      - name: elasticsearch
+      - method: elasticsearch
         namespace: facets
         connection_kwargs:
           hosts: [host1]
@@ -94,7 +94,7 @@ Here is an example for the elasticsearch output making use of additional kwargs:
           ssl_show_warn: false
         index:
             name: ceda-items-2021-06-09
-      - name: elasticsearch
+      - method: elasticsearch
         namespace: assets
         connection_kwargs:
           hosts: [host1]

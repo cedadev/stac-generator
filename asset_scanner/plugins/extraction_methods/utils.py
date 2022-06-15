@@ -21,10 +21,8 @@ from typing import Optional, Tuple
 # 3rd party imports
 from dateutil.parser import parse
 
-from asset_scanner.core.item_describer import ItemDescription
+from asset_scanner.core.collection_describer import CollectionDescription
 
-# Framework imports
-from asset_scanner.core.utils import generate_id
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,26 +35,6 @@ def is_remote_uri(path: str) -> bool:
     supported in <=v0.16.2.
     """
     return bool(re.search(r"^[a-z][a-z0-9]*(\://|\:\:)", path))
-
-
-def generate_item_id_from_properties(
-    filepath: str, collection_id: str, tags, description: ItemDescription
-):
-
-    has_all_facets = all(
-        [facet in tags for facet in description.facets.aggregation_facets]
-    )
-
-    if has_all_facets:
-        id_string = collection_id
-        for facet in description.facets.aggregation_facets:
-            vals = tags.get(facet)
-            if isinstance(vals, (str, int)):
-                id_string = ".".join((id_string, vals))
-            if isinstance(vals, (list)):
-                id_string = ".".join((id_string, f"multi_{facet}"))
-        return generate_id(id_string)
-    return generate_id(f"{collection_id}.{filepath}")
 
 
 def isoformat_date(date_string: str, format=None) -> Tuple[Optional[str], bool]:

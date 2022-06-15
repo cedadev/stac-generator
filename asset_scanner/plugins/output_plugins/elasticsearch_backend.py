@@ -31,7 +31,7 @@ Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - name: elasticsearch
+            - method: elasticsearch
               connection_kwargs:
                 hosts: ['host1','host2']
               index:

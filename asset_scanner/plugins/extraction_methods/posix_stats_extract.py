@@ -17,13 +17,11 @@ import os
 import hashlib
 from datetime import datetime
 import logging
-from typing import Optional
 
 import magic
 
 from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
 from asset_scanner.core.processor import BaseProcessor
-from asset_scanner.core.utils import generate_id
 
 # Package imports
 from .mixins import PropertiesOutputKeyMixin
@@ -59,7 +57,7 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-            - name: posix_stats
+            - method: posix_stats
 
     """
 
@@ -142,7 +140,7 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         stats = os.stat(uri)
 
-        self.info['location'] = uri
+        self.info['uri'] = uri
         self.extract_filename(uri)
         self.extract_extension(uri)
         self.extract_stat('size', stats, 'st_size')
@@ -150,4 +148,4 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
         self.extract_magic_number(uri)
         # self.extract_checksum(uri, self.checksum)
 
-        return {'id': generate_id(uri), 'body': self.info}
+        return self.info

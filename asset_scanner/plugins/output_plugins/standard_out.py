@@ -22,7 +22,7 @@ Example configuration:
     .. code-block:: yaml
 
         outputs:
-            - name: standard_out
+            - method: standard_out
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"

@@ -21,12 +21,9 @@ import logging
 from string import Template
 
 from asset_scanner.core.generator import BaseGenerator
-from asset_scanner.core.utils import dict_merge, generate_id
+from asset_scanner.core.utils import dict_merge
 
-from asset_scanner.types.source_media import StorageType
 from asset_scanner.types.generators import ExtractionType
-
-from asset_scanner.plugins.extraction_methods import utils as item_utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,27 +32,17 @@ class ItemGenerator(BaseGenerator):
 
     EXTRACTION_TYPE = ExtractionType.ITEM
     
-    def process(self, uri: str, **kwargs):
+    def process_template(self, uri: str, **kwargs):
         """
         Method to outline the processing pipeline for an item
 
         :param uri:
         :return:
         """
-        # Generate ID
-        id = generate_id(uri)
-
-        LOGGER.info(f'Processing: {uri}')
-
-        # Get dataset description file
-        description = self.collection_descriptions.get_description(filepath)
-
-        # processor_output = self.run_processors(filepath, description, source_media, **kwargs)
-
-        # properties = processor_output.get('properties', {})
         properties = {}
 
         # Generate title and description properties from templates
+        description = self.collection_descriptions.get_description(uri)
         templates = description.facets.templates
 
         if templates:
@@ -68,55 +55,54 @@ class ItemGenerator(BaseGenerator):
                 desc = Template(desc_template).safe_substitute(properties)
                 properties['description'] = desc
 
-        # Get collection id
-        coll_id = description.collections.id
+    def process(self, uri: str, **kwargs) -> None:
+        """
+        Method to outline the processing pipeline for an asset
 
-        # Generate item id
-        if kwargs.get('item_id'):
-            item_id = kwargs['item_id']
-        # This can be removed, properties no longer needed for id if passed in kwargs
-        else:
-            item_id = item_utils.generate_item_id_from_properties(
-                filepath,
-                coll_id,
-                properties,
-                description
-            )
+        :param uri:
+        :param checksum:
+        :return:
+        """
 
         body = {
-                'item_id': item_id,
-                'type': 'item',
-                'collection_id': coll_id,
-                'properties': properties
-            }
-
-        merged_body = dict_merge(body, summaries)
-
-        output = {
-            'id': item_id,
-            'body': merged_body
+            'type': self.EXTRACTION_TYPE.value
         }
 
-        # Output the item
-        self.output(filepath, source_media, output, namespace='items')
+        # Get dataset description file
+
+        description = self.collection_descriptions.get_description(uri)
+
+        # extract data
+        extraction_methods_output = self.run_extraction_methods(uri, description, **kwargs)
+        body = dict_merge(body, extraction_methods_output)
+
+        body = self.run_post_extraction_methods(body, description, **kwargs)
+
+        ids = self.run_id_extraction_methods(body, description, **kwargs)
+
+        body["collection_id"] = ids["collection_id"]
+        body["item_id"] = ids["item_id"]
+
+        data = {'id': ids["item_id"], 'body': body}
+
+        self.output(uri, data, namespace=self.EXTRACTION_TYPE.value)
 
         # If deduplication enabled, check LRU cache and pass relevant kwargs
         kwargs = {
                     'deduplicate': False,
-                    'id': coll_id
+                    'id': ids["collection_id"]
                 }
+
         if self.header_deduplication:
             # Check if id is in the cache
-            if self.collection_id_cache.get(coll_id):
+            if self.item_id_cache.get(ids["collection_id"]):
                 kwargs['deduplicate'] = True
             # add a dummy value to the cache of equal to True.
-            self.collection_id_cache.update({coll_id: True})
+            self.item_id_cache.update({ids["collection_id"]: True})
 
         message = {
-            'collection_id': coll_id,
-            'filepath': filepath,
-            'source_media': source_media.value
+            'collection_id': ids["collection_id"],
+            "uri": uri,
         }
 
-        # Output the header
-        self.output(filepath, source_media, message, namespace='header', **kwargs)
+        self.output(uri, message, namespace="header", **kwargs)

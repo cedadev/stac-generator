@@ -24,7 +24,7 @@ Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - name: file_out
+            - method: file_out
               namespace: header
               filepath: location_to_destination_file
 

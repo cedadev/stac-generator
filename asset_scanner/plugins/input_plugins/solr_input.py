@@ -25,7 +25,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - name: solr_input
+            - method: solr_input
               index_node: url.index-node.ac.uk
               search_params:
                 q: "facet: value"
