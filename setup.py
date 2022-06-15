@@ -58,13 +58,14 @@ setup(
             "header = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract",
             "iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
             "xml = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
+            "elasticsearch = asset_scanner.plugins.extraction_methods.elasticsearch_extract:ElasticsearchExtract",
         ],
         "asset_scanner.post_extraction_methods": [
             "vocab = asset_scanner.plugins.post_extraction_methods.vocab_extract:VocabExtract",
         ],
         "asset_scanner.id_extraction_methods": [
             "default = asset_scanner.plugins.id_extraction_methods.default_extract:DefaultExtract",
-            "hash = asset_scanner.plugins.id_extraction_methods.hash_extract:HashExtract"
+            "hash = asset_scanner.plugins.id_extraction_methods.hash_extract:HashExtract",
         ],
         "asset_scanner.extraction_methods.header_extract.backends": [
             "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
