@@ -53,14 +53,18 @@ setup(
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
         ],
-        "asset_scanner.facet_extractors": [
+        "asset_scanner.extraction_methods": [
             "regex = asset_scanner.plugins.extraction_methods.regex_extract:RegexExtract",
-            "header_extract = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract",
+            "header = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract",
             "iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
-            "xml_extract = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
+            "xml = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
         ],
         "asset_scanner.post_extraction_methods": [
-            "vocab = asset_scanner.plugins.post_extraction_methods.vocab_post_extract:VocabPostExtract",
+            "vocab = asset_scanner.plugins.post_extraction_methods.vocab_extract:VocabExtract",
+        ],
+        "asset_scanner.id_extraction_methods": [
+            "default = asset_scanner.plugins.id_extraction_methods.default_extract:DefaultExtract",
+            "hash = asset_scanner.plugins.id_extraction_methods.hash_extract:HashExtract"
         ],
         "asset_scanner.extraction_methods.header_extract.backends": [
             "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
@@ -77,6 +81,11 @@ setup(
             "string_join = asset_scanner.plugins.extraction_methods.postprocessors:StringJoinProcessor",
             "date_combinator = asset_scanner.plugins.extraction_methods.postprocessors:DateCombinatorProcessor",
             "facet_prefix = asset_scanner.plugins.extraction_methods.postprocessors:FacetPrefixProcessor",
+        ],
+        "asset_scanner.generators": [
+            "asset = asset_scanner.plugins.generators.asset_generator:AssetGenerator",
+            "item = asset_scanner.plugins.generators.item_generator:ItemGenerator",
+            "collection = asset_scanner.plugins.generators.collection_generator:CollectionGenerator",
         ],
     },
 )

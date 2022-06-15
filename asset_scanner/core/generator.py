@@ -19,7 +19,8 @@ from cachetools import TTLCache
 from .handler_picker import HandlerPicker
 from .collection_describer import CollectionDescription, CollectionDescriptions
 from .processor import BaseProcessor
-from .utils import dict_merge, dot2dict, generate_id, load_plugins
+from .utils import dict_merge, dot2dict, load_plugins
+from asset_scanner.types.generators import ExtractionType
 
 
 class BaseGenerator(ABC):
@@ -28,20 +29,40 @@ class BaseGenerator(ABC):
 
     Attributes:
 
-        PROCESSOR_ENTRY_POINT:
-            Defines the entry point to look for in the setup.py for the
-            downstream package. This is used by the ``asset_scanner`` command
-            to load the extractor if the extractor is not specifically defined
-            in the the configuration file.
+        EXTRACTION_TYPE:
+            Defines the stac level the extraction is occuring at.
+
+        DEFAULT_ID_EXTRACTION_METHODS:
+            Defines the default id extraction methods for each stac level 
+            which is used if a method is not specified in the description.
+
     """
 
     EXTRACTION_TYPE = None
-    
-    PROCESSOR_ENTRY_POINT = None
-    
+
+    DEFAULT_ID_EXTRACTION_METHODS = {
+        "asset_id" : {
+            "method": "hash",
+            "inputs": {
+                "terms": ["uri"]
+            }
+        },
+        "item_id": {
+            "method": "hash",
+            "inputs": {
+                "terms": []
+            }
+        },
+        "collection_id": {
+            "method": "default",
+            "inputs": {
+                "name": "undefined"
+            }
+        }
+    }
+
     def __init__(self, conf: dict):
         self.conf = conf
-        self.processors = self.load_processors()
         self.output_plugins = self.load_output_plugins()
         self.collection_descriptions = (
             CollectionDescriptions(conf["collection_descriptions"]["root_directory"])
@@ -49,8 +70,8 @@ class BaseGenerator(ABC):
             else None
         )
 
-        self.facet_processors = self.load_processors(
-            entrypoint="asset_scanner.facet_extractors"
+        self.extraction_methods = self.load_processors(
+            entrypoint="asset_scanner.extraction_methods"
         )
         self.pre_processors = self.load_processors(
             entrypoint="asset_scanner.pre_processors"
@@ -60,6 +81,9 @@ class BaseGenerator(ABC):
         )
         self.post_extraction_methods = self.load_processors(
             entrypoint="asset_scanner.post_extraction_methods"
+        )
+        self.id_extraction_methods = self.load_processors(
+            entrypoint="asset_scanner.id_extraction_methods"
         )
 
         self.header_deduplication = conf.get('header_deduplication', False)
@@ -86,13 +110,8 @@ class BaseGenerator(ABC):
 
         return label
     
-    def get_collection_id(self, description: CollectionDescription) -> str:
-        """Return the collection ID."""
-        collection_id = getattr(description.collection, 'id', 'undefined')
-        return generate_id(collection_id)
-
     def _get_processor(
-        self, name: str, group: str = "processors", **kwargs
+        self, name: str, group: str , **kwargs
     ) -> BaseProcessor:
         """
 
@@ -115,7 +134,7 @@ class BaseGenerator(ABC):
         loaded_pprocessors = []
 
         for pprocessor in processor.get(key, []):
-            loaded = self._load_facet_processor(pprocessor, key)
+            loaded = self._load_processor(pprocessor, key)
 
             if loaded:
                 loaded_pprocessors.append(loaded)
@@ -123,45 +142,86 @@ class BaseGenerator(ABC):
         return loaded_pprocessors
 
     def _load_processor(self, processor: dict, key: str) -> BaseProcessor:
-        processor_name = processor["name"]
-        processor_inputs = processor.get("inputs", {})
-        output_key = processor.get("output_key", None)
+        processor_name = processor["method"]
 
+        processor_inputs = processor.get("inputs", {})
+
+        processor_conf = self.conf.get(self.EXTRACTION_TYPE.value, {}).get(processor_name, {})
+
+        processor_inputs["conf"] = processor_conf
+
+        output_key = processor.get("output_key", None)
         if output_key:
             processor_inputs["output_key"] = output_key
 
         return self._get_processor(processor_name, key, **processor_inputs)
 
-    def _run_processor(
-        self, processor: dict, uri: str
+    def _run_extraction_method(
+        self, extraction_method: dict, uri: str
     ) -> dict:
-        """Run the specified processor."""
+        """Run the specified extraction method."""
 
         # Load the processors
-        p = self._load_processor(processor, "processors")
-        pre_processors = self._load_extra_processors(processor, "pre_processors")
-        post_processors = self._load_extra_processors(processor, "post_processors")
+        processor = self._load_processor(extraction_method, "extraction_methods")
+        pre_processors = self._load_extra_processors(extraction_method, "pre_processors")
+        post_processors = self._load_extra_processors(extraction_method, "post_processors")
 
         # Retrieve the metadata
-        metadata = p.run(
+        metadata = processor.run(
             uri,
             pre_processors=pre_processors,
             post_processors=post_processors,
         )
 
-        output_key = getattr(p, "output_key", None)
+        output_key = getattr(extraction_method, "output_key", "properties")
 
         if output_key and metadata:
             metadata = dot2dict(output_key, metadata)
 
         return metadata
     
-    def run_processors(self,
-                       uri: str,
-                       description: CollectionDescription,
-                       **kwargs: dict) -> dict:
+    def _run_post_extraction_method(
+        self, post_extraction_method: dict, body: dict
+    ) -> dict:
+        """Run the specified post extraction method."""
+
+        # Load the processors
+        processor = self._load_processor(post_extraction_method, "post_extraction_methods")
+        pre_processors = self._load_extra_processors(post_extraction_method, "pre_processors")
+        post_processors = self._load_extra_processors(post_extraction_method, "post_processors")
+
+        # Retrieve the data
+        post_body = processor.run(
+            body,
+            post_processors=post_processors,
+            pre_processors=pre_processors,
+        )
+
+        return post_body
+    
+    def _run_id_extraction_method(
+        self, id_extraction_method: dict, body: dict
+    ) -> dict:
+        """Run the specified id extraction method."""
+
+        # Load the processors
+        processor = self._load_processor(id_extraction_method, "id_extraction_methods")
+
+        # Retrieve the data
+        id = processor.run(
+            body,
+            post_processors=[],
+            pre_processors=[],
+        )
+
+        return id
+
+    def run_extraction_methods(self,
+                              uri: str,
+                              description: CollectionDescription,
+                              **kwargs: dict) -> dict:
         """
-        Extract the raw facets from the file based on the listed processors
+        Extract facets from the listed extraction methods
 
         :param uri: uri for object
         :param description: CollectionDescription
@@ -169,16 +229,18 @@ class BaseGenerator(ABC):
         :return: result from the processing
         """
         # Execute facet extraction functions
-        generator_description = description.get(self.EXTRACTION_TYPE)
+        generator_description = getattr(description, self.EXTRACTION_TYPE.value)
 
-        if processors := generator_description.get("extraction_methods"):
-            for processor in processors:
+        if generator_description:
+            body = {}
 
-                metadata = self._run_processor(processor, uri)
+            for extraction_method in generator_description.extraction_methods:
+
+                metadata = self._run_extraction_method(extraction_method, uri)
 
                 # Merge the extracted metadata with the metadata already retrieved
                 if metadata:
-                    tags = dict_merge(tags, metadata)
+                    body = dict_merge(body, metadata)
 
         # Process multi-values
 
@@ -190,55 +252,87 @@ class BaseGenerator(ABC):
 
         # Process URIs to human terms
 
-        return tags
+        return body
 
-    def _run_post_extraction_method(
-        self, post_extraction_method: dict, data: dict
-    ) -> dict:
-        """Run the specified processor."""
-
-        # Load the post_extraction_method
-        processor = self._load_processor(
-            post_extraction_method, "post_extraction_methods"
-        )
-        pre_processors = self._load_extra_processors(
-            post_extraction_method, "pre_processors"
-        )
-        post_processors = self._load_extra_processors(
-            post_extraction_method, "post_processors"
-        )
-
-        # Retrieve the data
-        post_data = processor.run(
-            data,
-            post_processors=post_processors,
-            pre_processors=pre_processors,
-        )
-
-        return post_data
-
-    def get_categories(
-        self, uri: str, description: CollectionDescription
-    ) -> list:
+    def run_post_extraction_methods(self,
+                                    body: dict,
+                                    description: CollectionDescription,
+                                    **kwargs: dict) -> dict:
         """
-        Get category labels
+        Extract the raw facets from the listed extraction methods
 
-        :param uri: uri for object
+        :param body: Dict of current extracted data
         :param description: CollectionDescription
-        :return:
-
+        :return: result from the processing
         """
-        categories = set()
 
-        for conf in description.categories:
-            label = self._get_category(uri, **conf.dict())
-            if label:
-                categories.add(label)
+        # Execute facet extraction functions
+        generator_description = getattr(description, self.EXTRACTION_TYPE.value)
 
-        return list(categories) or ["data"]
+        if generator_description:
 
-    def load_processors(self, entrypoint: str = None) -> HandlerPicker:
-        return HandlerPicker(entrypoint or self.PROCESSOR_ENTRY_POINT)
+            for post_extraction_method in generator_description.post_extraction_methods:
+
+                body = self._run_post_extraction_method(post_extraction_method, body)
+
+            return body
+
+    def run_id_extraction_methods(self,
+                                  body: dict,
+                                  description: CollectionDescription,
+                                  **kwargs: dict) -> dict:
+        """
+        Extract the raw facets from the listed extraction methods
+
+        :param body: Dict of current extracted data
+        :param description: CollectionDescription
+        :return: dictionary containing ids
+        """
+
+        ids = {}
+        collection_description = description.collection
+
+        if collection_description.id:
+            collection_id_description = collection_description.id
+
+        else:
+            collection_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["collection_id"]
+        
+
+        ids["collection_id"] = self._run_id_extraction_method(collection_id_description, body)
+
+        if self.EXTRACTION_TYPE in [ExtractionType.ASSET, ExtractionType.ITEM]:
+            item_description = description.item
+
+            if item_description.id:
+                item_id_description = item_description.id
+
+            else:
+                item_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["item_id"]
+
+            # Add collection_id to item_id terms
+            if "method" in item_id_description and item_id_description["method"] == "hash":
+                item_id_description["inputs"]["terms"].append("collection_id")
+                body["properties"]["collection_id"] = ids["collection_id"]
+                
+            
+            ids["item_id"] = self._run_id_extraction_method(item_id_description, body)
+        
+        if self.EXTRACTION_TYPE in [ExtractionType.ASSET]:
+            asset_description = description.asset
+
+            if asset_description.id:
+                asset_id_description = asset_description.id
+
+            else:
+                asset_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["asset_id"]
+            
+            ids["asset_id"] = self._run_id_extraction_method(asset_id_description, body)
+        
+        return ids
+
+    def load_processors(self, entrypoint: str) -> HandlerPicker:
+        return HandlerPicker(entrypoint)
 
     def load_output_plugins(self) -> list:
         return load_plugins(self.conf, "asset_scanner.output_plugins", "outputs")
@@ -251,6 +345,7 @@ class BaseGenerator(ABC):
 
     def output(
         self,
+        uri: str,
         data: dict,
         namespace: str = None,
         **kwargs

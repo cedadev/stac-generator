@@ -39,7 +39,7 @@ class Category(BaseModel):
 class STACModel(BaseModel):
     """Collections processor description model."""
 
-    id: Optional[str]
+    id: dict = {}
     extraction_methods: list[dict] = []
     post_extraction_methods: list[dict] = []
 
@@ -49,11 +49,11 @@ class CollectionDescription(BaseModel):
 
     paths: list
 
-    asset: Optional[STACModel] = {}
-    item: Optional[STACModel] = {}
-    collection: Optional[STACModel] = []
+    asset: Optional[STACModel]
+    item: Optional[STACModel]
+    collection: Optional[STACModel]
 
-    categories: Optional[list[Category]] = []
+    categories: list[Category] = []
 
     def __repr__(self):
         return yaml.dump(self.dict())

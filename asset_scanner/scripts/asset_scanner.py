@@ -61,14 +61,10 @@ def load_generator(conf: dict) -> BaseGenerator:
     generator = None
 
     if conf.get("generator"):
-        generator = locate(conf["generator"])
-        if not generator:
-            raise ImportError(
-                f'Unable to find {conf["generator"]}. ' f"Check that it is installed."
-            )
+        entry_points = pkg_resources.iter_entry_points("asset_scanner.generators", conf.get("generator"))
 
-    if not generator:
-        for entry_point in pkg_resources.iter_entry_points("asset_scanner.generators"):
+        for entry_point in entry_points:
+
             generator = entry_point.load()
 
             # Only load the first one

@@ -70,7 +70,6 @@ class AssetGenerator(BaseGenerator):
 
         # extract facets, run post extractions and extract ids
         extraction_methods_output = self.run_extraction_methods(uri, description, **kwargs)
-        print(extraction_methods_output)
         body = dict_merge(body, extraction_methods_output)
 
         body = self.run_post_extraction_methods(body, description, **kwargs)

@@ -137,10 +137,6 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
     return loaded_plugins
 
 
-def generate_id(path):
-    return hashlib.md5(path.encode("utf-8")).hexdigest()
-
-
 def load_yaml(path):
     with open(path) as reader:
         return yaml.safe_load(reader)

@@ -14,6 +14,6 @@ import enum
 class ExtractionType(enum.Enum):
     """Enum values for extraction classes"""
 
-    ASSET = "ASSET"
-    ITEM = "ITEM"
-    COLLECTION = "COLLECTION"
+    ASSET = "asset"
+    ITEM = "item"
+    COLLECTION = "collection"
