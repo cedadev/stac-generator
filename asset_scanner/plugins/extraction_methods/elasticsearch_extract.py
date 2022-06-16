@@ -35,7 +35,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     Configuration Options:
         - ``index``: ``REQUIRED`` Name of the index holding the STAC entities
-        - ``connection_kwargs``: ``REQUIRED`` Connection parameters passed to
+        - ``session_kwargs``: ``REQUIRED`` Session parameters passed to
         `elasticsearch.Elasticsearch<https://elasticsearch-py.readthedocs.io/en/7.10.0/api.html>`_
 
     Configuration Example:
@@ -45,7 +45,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 name: elasticsearch
                 inputs:
                     index: ceda-index
-                    connection_kwargs:
+                    session_kwargs:
                       hosts: ['host1:9200','host2:9200']
                     bbox:
                       - bbox
@@ -62,8 +62,8 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if hasattr(self.conf, "connection_kwargs"):
-            self.es = Elasticsearch(**self.conf.connection_kwargs)
+        if "session_kwargs" in self.conf:
+            self.es = Elasticsearch(**self.conf["session_kwargs"])
 
     @staticmethod
     def bbox_query(facet: str) -> dict:
@@ -190,11 +190,11 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 result = self.es.search(index=self.index, body=next_query)
                 items = result['aggregations'].items()
             
-    def construct_base_query(self, key: str, id: str) -> dict:
+    def construct_base_query(self, key: str, uri: str) -> dict:
         """
         Base query to filter the results to a single collection
 
-        :param file_id: Collection to restrict results to
+        :param uri: Collection to restrict results to
         """
         self.base_query = {
             "query": {
@@ -212,7 +212,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
                     {
                     "term": {
                         f"{key}.keyword": {
-                        "value": id
+                        "value": uri
                         }
                     }
                     }
@@ -275,12 +275,12 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
-        if hasattr(self, "connection_kwargs"):
-            self.es = Elasticsearch(**self.connection_kwargs)
+        if hasattr(self, "session_kwargs"):
+            self.es = Elasticsearch(**self.session_kwargs)
 
         self.metadata = defaultdict(list)
 
-        self.construct_base_query(uri)
+        self.construct_base_query("item_id", uri)
 
         self.construct_query()
 

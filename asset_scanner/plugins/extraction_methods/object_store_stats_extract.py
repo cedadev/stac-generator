@@ -73,7 +73,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        session_kwargs = getattr(self.conf, 'boto_session_kwargs', {})
+        session_kwargs = getattr(self.conf, 'session_kwargs', {})
         self.session = boto3.session.Session(**session_kwargs)
         self.anonymous = not session_kwargs
 
@@ -127,9 +127,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
     def run(self, uri: str, **kwargs) -> dict:
         """
 
-        :param path:
-        :param source_media:
-        :param checksum:
+        :param uri:
         :param kwargs:
         :return:
 

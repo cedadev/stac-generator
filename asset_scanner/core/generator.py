@@ -146,9 +146,9 @@ class BaseGenerator(ABC):
 
         processor_inputs = processor.get("inputs", {})
 
-        processor_conf = self.conf.get(self.EXTRACTION_TYPE.value, {}).get(processor_name, {})
-
-        processor_inputs["conf"] = processor_conf
+        processor_conf = self.conf.get(key, {}).get(processor_name, {})
+        if processor_conf:
+            processor_inputs["conf"] = processor_conf
 
         output_key = processor.get("output_key", None)
         if output_key:
