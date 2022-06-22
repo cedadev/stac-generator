@@ -1,12 +1,14 @@
 # encoding: utf-8
 """
-Collection of functions which can be used to extract metadata from file headers
+Metadata extraction backend for NcML (XML) description files.
 """
 __author__ = "David Huard"
 __date__ = "June 2022"
 __copyright__ = "Copyright 2022 Ouranos"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "huard.david@ouranos.ca"
+
+# Note that some of the XML parsing functions below are not used at the moment, but included for future reference.
 
 from typing import List
 
@@ -23,13 +25,10 @@ class NcMLBackend:
     ----
 
     Backend Name: ``NcML``
-
-    Description:
-        Takes an input string and returns a boolean on whether this
-        backend can open that file.
     """
 
     def guess_can_open(self, filepath: str) -> bool:
+        """Return a boolean on whether this backend can open that file."""
         try:
             get_ncml(filepath)
             return True
@@ -46,12 +45,18 @@ class NcMLBackend:
 
         :return: Dictionary of extracted attributes
         """
+        # Send GET request to server for the THREDDS NCML response
         content = get_ncml(file)
+
+        # Convert response to an XML etree.Element
         elem = to_element(content)
 
         extracted_metadata = {}
         for attr in attributes:
+            # xpath expression to parse XML and extract attribute
             expr = attribute(attr)
+
+            # Execute xpath expression
             value = elem.xpath(expr, namespaces=NS)
 
             if value:
