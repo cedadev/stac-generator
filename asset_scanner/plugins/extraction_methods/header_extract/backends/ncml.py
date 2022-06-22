@@ -30,7 +30,7 @@ class NcMLBackend:
     def guess_can_open(self, filepath: str) -> bool:
         """Return a boolean on whether this backend can open that file."""
         try:
-            get_ncml(filepath)
+            self._content = get_ncml(filepath)
             return True
         except requests.exceptions.HTTPError:
             return False
@@ -45,11 +45,9 @@ class NcMLBackend:
 
         :return: Dictionary of extracted attributes
         """
-        # Send GET request to server for the THREDDS NCML response
-        content = get_ncml(file)
 
         # Convert response to an XML etree.Element
-        elem = to_element(content)
+        elem = to_element(self._content)
 
         extracted_metadata = {}
         for attr in attributes:
@@ -65,15 +63,29 @@ class NcMLBackend:
         return extracted_metadata
 
 
-def get_ncml(url: str, catalog: str = None, dataset: str = None) -> bytes:
-    """Read NcML response from server.
-
-    Providing the catalog and dataset reproduces the NcML response we get when we click on the NcML service on THREDDS.
+def get_ncml(filepath: str) -> bytes:
+    """Get the NcML file description.
 
     Parameters
     ----------
-    url : str
-      Link to NcML service of dataset hosted on a THREDDS server.
+    filepath: str
+      Path to file, or URL of NCML THREDDS service.
+    """
+    from urllib.parse import urlparse
+
+    parse_result = urlparse(filepath)
+    if parse_result.netloc:
+        return get_ncml_from_thredds(filepath)
+    return get_ncml_from_fs(filepath)
+
+
+def get_ncml_from_thredds(filepath: str, catalog: str = None, dataset: str = None) -> bytes:
+    """Read NcML response from THREDDS server.
+
+    Parameters
+    ----------
+    filepath : str
+      Link to NcML service of dataset hosted on a THREDDS server, or local filepath.
     catalog : str
       Link to catalog storing the dataset.
     dataset : str
@@ -86,18 +98,25 @@ def get_ncml(url: str, catalog: str = None, dataset: str = None) -> bytes:
     """
     import requests
 
-    # For some reason, this is required to obtain the "THREDDSMetadata" group and the available services.
-    # Note that the OPENDAP link would have been available from the top "location" attribute.
+    # For some reason, params is required to obtain the "THREDDSMetadata" group and the available services.
     params = {}
     if catalog:
         params["catalog"] = catalog
     if dataset:
         params["dataset"] = dataset
 
-    r = requests.get(url, params=params)
+    r = requests.get(filepath, params=params)
     # logger.info(r.url)
     r.raise_for_status()
     return r.content
+
+
+def get_ncml_from_fs(filepath: str) -> bytes:
+    """Return NcML file description using `ncdump` utility."""
+    import subprocess
+    cmd = ["ncdump", "-hx", filepath]
+    proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return proc.stdout.read()
 
 
 def to_element(content: bytes) -> Element:
