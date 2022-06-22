@@ -9,6 +9,8 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "huard.david@ouranos.ca"
 
 from typing import List
+
+import requests.exceptions
 from lxml.etree import XMLParser, fromstring, Element
 
 # NcML namespace
@@ -31,7 +33,7 @@ class NcMLBackend:
         try:
             get_ncml(filepath)
             return True
-        except ValueError:
+        except requests.exceptions.HTTPError:
             return False
 
     def attr_extraction(self, file: str, attributes: List, **kwargs) -> dict:
@@ -89,6 +91,7 @@ def get_ncml(url: str, catalog: str = None, dataset: str = None) -> bytes:
 
     r = requests.get(url, params=params)
     # logger.info(r.url)
+    r.raise_for_status()
     return r.content
 
 
