@@ -10,6 +10,8 @@ __contact__ = "huard.david@ouranos.ca"
 # Python imports
 import logging
 
+import pydantic
+
 from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
 from asset_scanner.core.processor import BaseProcessor
 
@@ -33,6 +35,7 @@ class ControlledVocabularyPostExtract(BaseProcessor):
 
     Configuration Options:
         - ``model``: pydantic.BaseModel subclass to be imported at run-time, e.g. `package.module.class_name`.
+        - ``strict``: If True, raise ValidationError, otherwise simply log ValidationError messages.
 
     Example Configuration:
 
@@ -41,8 +44,8 @@ class ControlledVocabularyPostExtract(BaseProcessor):
         post_processors:
             - name: controlled_vocabulary
               inputs:
-                model:
-                  my_cv.collections.CMIP5
+                model: my_cv.collections.CMIP5
+                strict: False
     """
 
     @accepts_postprocessors
@@ -62,12 +65,17 @@ class ControlledVocabularyPostExtract(BaseProcessor):
         klass = getattr(module, scopes[-1])
 
         # Get metadata attributes
-        properties = data["body"]["properties"]
+        properties = data["properties"]
 
         # Instantiate data model
-        cv = klass(**properties)
+        try:
+            cv = klass(**properties)
+            data["properties"] = cv.dict()
 
-        # Return validated properties. Could be different from original properties (default values, processing, etc.)
-        data["body"]["properties"] = cv.dict()
+        except pydantic.ValidationError as exc:
+            LOGGER.warning(exc)
+
+            if self.strict:
+                raise exc
 
         return data
