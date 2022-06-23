@@ -8,8 +8,6 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from typing import List
-
 import cf
 from cf.read_write.read import file_type
 
@@ -33,7 +31,7 @@ class CfBackend:
         except IOError:
             return False
 
-    def attr_extraction(self, file: str, attributes: List, **kwargs) -> dict:
+    def attr_extraction(self, file: str, attributes: list, extractor_kwargs: dict) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 
@@ -44,7 +42,7 @@ class CfBackend:
         :return: Dictionary of extracted attributes
         """
 
-        field_list = cf.read(file, **kwargs)
+        field_list = cf.read(file, **extractor_kwargs)
 
         properties = {}
         for field in field_list:

@@ -10,7 +10,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from functools import lru_cache
-from typing import Dict, List
 
 import pkg_resources as pkg
 
@@ -46,6 +45,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     Configuration Options:
         - ``attributes``: A list of attributes to match for from the file header
+        - ``extractor_kwargs``: A dictionary of kwargs for the extractor
         - ``post_processors``: List of post_processors to apply
         - ``output_key``: When the metadata is returned, this key determines
           where the metadata is fit in the response. Dot separated
@@ -58,9 +58,12 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
             - method: header
               inputs:
                 attributes:
-                    - institution
-                    - sensor
-                    - platform
+                  - institution
+                  - sensor
+                  - platform
+                extractor_kwargs:
+                  decode_times: False
+
 
 
     """
@@ -75,13 +78,13 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = self.attr_extraction(backend, uri, self.attributes)
+        data = self.attr_extraction(backend, uri, self.attributes, self.extractor_kwargs)
 
         return data
 
     @staticmethod
     @lru_cache(maxsize=1)
-    def list_backend() -> Dict:
+    def list_backend() -> dict:
         backend_entrypoints = {}
         for pkg_ep in pkg.iter_entry_points(
             "asset_scanner.extraction_methods.header_extract.backends"
@@ -94,7 +97,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 LOGGER.warning(ex)
         return backend_entrypoints
 
-    def guess_backend(self, uri: str) -> Dict:
+    def guess_backend(self, uri: str) -> dict:
         backends = self.list_backend()
         for _, backend in backends.items():
             backend = backend()
@@ -104,7 +107,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
         raise (NoSuitableBackendException(f"No backend found for file {uri}"))
 
     @staticmethod
-    def attr_extraction(backend, uri: str, attributes: List) -> dict:
+    def attr_extraction(backend, uri: str, attributes: list, extractor_kwargs: dict) -> dict:
         """
         Takes a uri and list of attributes and extracts the metadata from the header.
 
@@ -113,7 +116,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
         :param kwargs: kwargs to send to xarray.open_dataset(). e.g. engine to
         specify different engines to use with grib data.
 
-        :return: Dictionary of extracted attributes
+        :return: dictionary of extracted attributes
         """
 
-        return backend.attr_extraction(uri, attributes)
+        return backend.attr_extraction(uri, attributes, extractor_kwargs)

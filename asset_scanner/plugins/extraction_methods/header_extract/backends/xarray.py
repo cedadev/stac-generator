@@ -8,8 +8,6 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from typing import List
-
 import xarray as xr
 from xarray.backends.plugins import guess_engine
 
@@ -33,7 +31,7 @@ class XarrayBackend:
         except ValueError:
             return False
 
-    def attr_extraction(self, file: str, attributes: List, **kwargs) -> dict:
+    def attr_extraction(self, file: str, attributes: list, extractor_kwargs: dict) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 
@@ -45,7 +43,7 @@ class XarrayBackend:
         :return: Dictionary of extracted attributes
         """
 
-        ds = xr.open_dataset(file, engine=self.engine, decode_times=False, **kwargs)
+        ds = xr.open_dataset(file, engine=self.engine, decode_times=False, **extractor_kwargs)
 
         extracted_metadata = {}
         for attr in attributes:
