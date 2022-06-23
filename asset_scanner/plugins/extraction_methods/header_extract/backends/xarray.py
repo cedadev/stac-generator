@@ -31,7 +31,7 @@ class XarrayBackend:
         except ValueError:
             return False
 
-    def attr_extraction(self, file: str, attributes: list, extractor_kwargs: dict) -> dict:
+    def attr_extraction(self, file: str, attributes: list, backend_kwargs: dict) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 
@@ -43,7 +43,7 @@ class XarrayBackend:
         :return: Dictionary of extracted attributes
         """
 
-        ds = xr.open_dataset(file, engine=self.engine, decode_times=False, **extractor_kwargs)
+        ds = xr.open_dataset(file, engine=self.engine, decode_times=False, **backend_kwargs)
 
         extracted_metadata = {}
         for attr in attributes:

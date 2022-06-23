@@ -31,7 +31,7 @@ class CfBackend:
         except IOError:
             return False
 
-    def attr_extraction(self, file: str, attributes: list, extractor_kwargs: dict) -> dict:
+    def attr_extraction(self, file: str, attributes: list, backend_kwargs: dict) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 
@@ -42,7 +42,7 @@ class CfBackend:
         :return: Dictionary of extracted attributes
         """
 
-        field_list = cf.read(file, **extractor_kwargs)
+        field_list = cf.read(file, **backend_kwargs)
 
         properties = {}
         for field in field_list:
