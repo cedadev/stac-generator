@@ -48,9 +48,8 @@ class JsonOutputBackend(OutputBackend):
     Export data to a json file
     """
 
-    def __init__(self, namespace=None, **kwargs):
-        super().__init__(namespace, **kwargs)
-        self.filepath: str = kwargs["filepath"]
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.filepath = self.filepath.rstrip("/")
 
     def export(self, data, **kwargs):

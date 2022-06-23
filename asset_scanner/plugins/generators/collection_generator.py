@@ -58,4 +58,4 @@ class ItemGenerator(BaseGenerator):
 
         data = {'id': ids["collection_id"], 'body': body}
 
-        self.output(uri, data, namespace=self.EXTRACTION_TYPE.value)
+        self.output(data)

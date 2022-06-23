@@ -34,9 +34,14 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         Using an ID. Generate a summary of information for higher level entities.
 
     Configuration Options:
-        - ``index``: ``REQUIRED`` Name of the index holding the STAC entities
-        - ``session_kwargs``: ``REQUIRED`` Session parameters passed to
+        - ``index``: Name of the index holding the STAC entities
+        - ``session_kwargs``: Session parameters passed to
         `elasticsearch.Elasticsearch<https://elasticsearch-py.readthedocs.io/en/7.10.0/api.html>`_
+        - ``bbox``: list of terms for which their aggregate bbox should be returned.
+        - ``min``: list of terms for which the minimum of their aggregate should be returned.
+        - ``max``: list of terms for which the maximum of their aggregate should be returned.
+        - ``sum``: list of terms for which the sum of their aggregate should be returned.
+        - ``list``: list of terms for which a list of their aggregage should be returned.
 
     Configuration Example:
 
@@ -64,6 +69,9 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         super().__init__(**kwargs)
         if "session_kwargs" in self.conf:
             self.es = Elasticsearch(**self.conf["session_kwargs"])
+        
+        if "index" in self.conf and not hasattr(self, "session_kwargs"):
+            self.index = self.conf["index"]
 
     @staticmethod
     def bbox_query(facet: str) -> dict:

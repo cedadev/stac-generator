@@ -14,7 +14,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import re
 from abc import ABC, abstractmethod
-from cachetools import TTLCache
 
 from .handler_picker import HandlerPicker
 from .collection_describer import CollectionDescription, CollectionDescriptions
@@ -84,12 +83,6 @@ class BaseGenerator(ABC):
         )
         self.id_extraction_methods = self.load_processors(
             entrypoint="asset_scanner.id_extraction_methods"
-        )
-
-        self.header_deduplication = conf.get('header_deduplication', False)
-        self.item_id_cache = TTLCache(
-            maxsize=conf.get('CACHE_MAX_SIZE', 10),
-            ttl=conf.get('CACHE_MAX_AGE', 30)
         )
 
     @staticmethod
@@ -347,9 +340,7 @@ class BaseGenerator(ABC):
         self,
         uri: str,
         data: dict,
-        namespace: str = None,
         **kwargs
     ) -> None:
         for backend in self.output_plugins:
-            if not backend.namespace or backend.namespace == namespace:
-                backend.export(data, **kwargs)
+            backend.export(data, **kwargs)

@@ -30,7 +30,7 @@ Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file o
         <https://pika.readthedocs.io/en/stable/modules/parameters.html#connectionparameters>`_
     * - ``exchange.source_exchange``
       - dict
-      - Dictionary describing the source exchange. `exchange`_
+      - dictionary describing the source exchange. `exchange`_
     * - ``exchange.dest_exchange``
       - dict
       - ``REQUIRED`` The final exchange. This is where the queues will be bound. `exchange`_
@@ -108,28 +108,20 @@ Example Configuration:
                 password: '*********'
                 vhost: my_virtual_host
                 kwargs:
-                    heartbeat: 300
+                  heartbeat: 300
               exchange:
-                source_exchange:
-                    name: mysource-exchange
-                    type: fanout
-                destination_exchange:
-                    name: mydest-exchange
-                    type: fanout
-              queues:
-                - method:
-                  kwargs:
-                    durable: true
-                  bind_kwargs:
-                    routing_key: my.routing.key
-                  consume_kwargs:
-                    auto_ack: false
-              header_conf:
+                name: mydest-exchange
+                type: fanout
+                routing_key: asset
+              deduplication:
                 x_delay: 30000
+              cache:
+                max_size: 10
+                max_age: 30
 """
 
 import json
-from typing import Dict
+from cachetools import TTLCache
 
 import pika
 
@@ -140,75 +132,64 @@ class RabbitMQOutBackend(OutputBackend):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.connection_conf = kwargs.get("connection", {})
-        self.exchange_conf = kwargs.get("exchange", {})
-        self.queues_conf = kwargs.get("queues", {})
-        self.header_conf = kwargs.get("header_conf", {})
+        self.id_cache = TTLCache(
+            maxsize=self.cache.get('max_size', 10),
+            ttl=self.cache.get('max_age', 30)
+        )
 
-        # Get the username and password for rabbit
-        rabbit_user = self.connection_conf.get("user")
-        rabbit_password = self.connection_conf.get("password")
-
-        # Get the server variables
-        rabbit_server = self.connection_conf.get("host")
-        rabbit_vhost = self.connection_conf.get("vhost")
+        if not hasattr(self, "deduplication"):
+          self.deduplication = False
 
         # Create the credentials object
-        credentials = pika.PlainCredentials(rabbit_user, rabbit_password)
+        credentials = pika.PlainCredentials(self.connection["user"], self.connection["password"])
 
         # Start the rabbitMQ connection
-        connection = pika.BlockingConnection(
+        rabbit_connection = pika.BlockingConnection(
             pika.ConnectionParameters(
-                host=rabbit_server,
+                host=self.connection["host"],
                 credentials=credentials,
-                virtual_host=rabbit_vhost,
-                **self.connection_conf.get("kwargs", {}),
+                virtual_host=self.connection["vhost"],
+                **self.connection.get("kwargs", {}),
             )
         )
 
-        # Get the exchanges to bind
-        self.src_exchange = self.exchange_conf.get("source_exchange")
-        self.dest_exchange = self.exchange_conf.get("destination_exchange")
-
         # Create a new channel
-        if self.dest_exchange:
-            channel = connection.channel()
-            channel.exchange_declare(
-                exchange=self.dest_exchange["name"],
-                exchange_type=self.dest_exchange["type"],
-            )
-        if self.src_exchange:
-            channel.exchange_declare(
-                exchange=self.src_exchange["name"],
-                exchange_type=self.src_exchange["type"],
-            )
-        self.channel = channel
+        self.channel = rabbit_connection.channel()
+        self.channel.exchange_declare(
+            exchange=self.exchange["name"],
+            exchange_type=self.exchange["type"],
+        )
 
-    def build_header(self, **kwargs):
+    def build_properties(self, id):
         header = {}
         # Handle the deduplication of messages and add relevant headers
-        if kwargs.get("deduplicate", False):
-            header["x-delay"] = self.header_conf.get("x-delay", 30000)
-            header["x-deduplication-header"] = kwargs.get("id")
+        if self.deduplication:
+            header["x-delay"] = self.deduplication.get("x-delay", 30000)
+            header["x-deduplication-header"] = id
 
-        # Possbile dict merge header with header_conf here.
         return pika.BasicProperties(headers=header)
 
-    def export(self, data: Dict, **kwargs):
+    def export(self, data: dict, **kwargs):
         """
         Export the data to rabbit.
 
         :param data: expected data as header dict
-        :param kwargs: optional delayed message kwarg
         """
-        # Pass kwargs to handle the deduplication and header generation
-        message_properties = self.build_header(**kwargs)
+        id = data["id"]
+        msg = json.dumps(self.message)
 
-        msg = json.dumps(data)
+        if self.deduplication:
+          # Check if id is in the cache
+          if self.id_cache.get(id):
+              self.deduplicate = True
+          # add a dummy value to the cache of equal to True.
+          self.id_cache.update({id: True})
+        
+        properties = self.build_properties(id)
 
         self.channel.basic_publish(
-            exchange=self.dest_exchange["name"],
+            exchange=self.exchange["name"],
             body=msg,
-            routing_key=self.exchange_conf.get("routing_key", ""),
-            properties=message_properties,
+            routing_key=self.exchange.get("routing_key", ""),
+            properties=properties,
         )

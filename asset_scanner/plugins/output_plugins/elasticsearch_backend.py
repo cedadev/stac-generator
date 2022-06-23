@@ -23,9 +23,6 @@ using the Elasticsearch API
     * - ``index.mapping``
       - ``str``
       - Path to a yaml file which defines the mapping for the index
-    * - ``namespace``
-      - ``str``
-      - Can be used by downstream processors to separate outputs to different indices or clusters
 
 Example Configuration:
     .. code-block:: yaml
@@ -36,7 +33,6 @@ Example Configuration:
                 hosts: ['host1','host2']
               index:
                 name: 'assets-2021-06-02'
-              namespace: assets
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"

@@ -49,13 +49,11 @@ class FileoutOutputBackend(OutputBackend):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.filepath: str = kwargs["filepath"]
         self.filepath = self.filepath.rstrip("/")
 
     def export(self, data: dict, **kwargs) -> None:
 
-        if kwargs.get("deduplicate", False):
+        if hasattr(self, "deduplicate"):
             return
 
         if os.path.isdir(self.filepath):

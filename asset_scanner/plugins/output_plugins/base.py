@@ -12,8 +12,14 @@ from abc import ABC, abstractmethod
 
 
 class OutputBackend(ABC):
-    def __init__(self, namespace=None, **kwargs):
-        self.namespace = namespace
+    def __init__(self, **kwargs):
+        """
+        Set the kwargs to generate instance attributes of the same name
+        :param kwargs:
+        """
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     @abstractmethod
     def export(self, data, **kwargs):

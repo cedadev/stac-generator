@@ -81,24 +81,6 @@ class AssetGenerator(BaseGenerator):
 
         data = {'id': ids["asset_id"], 'body': body}
 
-        self.output(uri, data, namespace=self.EXTRACTION_TYPE.value)
+        message = {'item_id': ids["item_id"], 'uri': uri}
 
-        # If deduplication enabled, check LRU cache and pass relevant kwargs
-        kwargs = {
-                    'deduplicate': False,
-                    'id': ids["item_id"]
-                }
-
-        if self.header_deduplication:
-            # Check if id is in the cache
-            if self.item_id_cache.get(ids["item_id"]):
-                kwargs['deduplicate'] = True
-            # add a dummy value to the cache of equal to True.
-            self.item_id_cache.update({ids["item_id"]: True})
-
-        message = {
-            "item_id": ids["item_id"],
-            "uri": uri,
-        }
-
-        self.output(uri, message, namespace="header", **kwargs)
+        self.output(data, message=message)

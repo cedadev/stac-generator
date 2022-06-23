@@ -85,24 +85,6 @@ class ItemGenerator(BaseGenerator):
 
         data = {'id': ids["item_id"], 'body': body}
 
-        self.output(uri, data, namespace=self.EXTRACTION_TYPE.value)
+        message = {'collection_id': ids["collection_id"], 'uri': uri}
 
-        # If deduplication enabled, check LRU cache and pass relevant kwargs
-        kwargs = {
-                    'deduplicate': False,
-                    'id': ids["collection_id"]
-                }
-
-        if self.header_deduplication:
-            # Check if id is in the cache
-            if self.item_id_cache.get(ids["collection_id"]):
-                kwargs['deduplicate'] = True
-            # add a dummy value to the cache of equal to True.
-            self.item_id_cache.update({ids["collection_id"]: True})
-
-        message = {
-            'collection_id': ids["collection_id"],
-            "uri": uri,
-        }
-
-        self.output(uri, message, namespace="header", **kwargs)
+        self.output(data, message=message)
