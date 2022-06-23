@@ -64,8 +64,6 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 extractor_kwargs:
                   decode_times: False
 
-
-
     """
 
     @accepts_postprocessors
