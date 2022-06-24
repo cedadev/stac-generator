@@ -295,8 +295,8 @@ class BaseGenerator(ABC):
 
             # Add collection_id to item_id terms
             if (
-                "method" in item_id_description and
-                item_id_description["method"] == "hash"
+                "method" in item_id_description
+                and item_id_description["method"] == "hash"
             ):
                 item_id_description["inputs"]["terms"].append("collection_id")
                 body["properties"]["collection_id"] = ids["collection_id"]

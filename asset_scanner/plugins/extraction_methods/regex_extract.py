@@ -73,7 +73,6 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
         super().__init__(**kwargs)
         self.regex = rf"{self.regex}"
 
-
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
