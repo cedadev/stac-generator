@@ -21,7 +21,6 @@ import logging
 
 from asset_scanner.core.generator import BaseGenerator
 from asset_scanner.core.utils import dict_merge
-
 from asset_scanner.types.generators import ExtractionType
 
 LOGGER = logging.getLogger(__name__)

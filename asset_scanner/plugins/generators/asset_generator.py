@@ -9,15 +9,14 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
+# Python imports
+import logging
+
 # Framework imports
 from asset_scanner.core.collection_describer import CollectionDescription
 from asset_scanner.core.generator import BaseGenerator
 from asset_scanner.core.utils import dict_merge
 from asset_scanner.types.generators import ExtractionType
-
-# Python imports
-import logging
-
 
 LOGGER = logging.getLogger(__name__)
 

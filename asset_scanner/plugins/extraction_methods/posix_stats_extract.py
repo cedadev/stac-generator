@@ -12,11 +12,12 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
+import hashlib
+import logging
+
 # Python imports
 import os
-import hashlib
 from datetime import datetime
-import logging
 
 import magic
 

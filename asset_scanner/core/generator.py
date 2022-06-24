@@ -15,11 +15,12 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import re
 from abc import ABC, abstractmethod
 
-from .handler_picker import HandlerPicker
+from asset_scanner.types.generators import ExtractionType
+
 from .collection_describer import CollectionDescription, CollectionDescriptions
+from .handler_picker import HandlerPicker
 from .processor import BaseProcessor
 from .utils import dict_merge, dot2dict, load_plugins
-from asset_scanner.types.generators import ExtractionType
 
 
 class BaseGenerator(ABC):

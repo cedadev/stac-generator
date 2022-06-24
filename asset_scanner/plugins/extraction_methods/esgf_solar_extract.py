@@ -12,10 +12,11 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
-# Python imports
-from functools import lru_cache
 import logging
 import os
+
+# Python imports
+from functools import lru_cache
 
 import requests
 

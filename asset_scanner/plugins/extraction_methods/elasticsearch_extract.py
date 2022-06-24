@@ -11,9 +11,10 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "rhys.r.evans@stfc.ac.uk"
 
+import logging
+
 # Python imports
 from collections import defaultdict
-import logging
 
 # Third party imports
 from elasticsearch import Elasticsearch

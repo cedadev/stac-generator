@@ -12,23 +12,24 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
+import logging
+
 # Python imports
 import os
-import logging
-from urllib.parse import urlparse
 from pathlib import Path
 from typing import Optional
-
-from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
-from asset_scanner.core.processor import BaseProcessor
-from asset_scanner.core.utils import Stats
+from urllib.parse import urlparse
 
 # Third-party imports
 import boto3
 import fsspec as fs
-from botocore.exceptions import ClientError
-from botocore.config import Config
 from botocore import UNSIGNED
+from botocore.config import Config
+from botocore.exceptions import ClientError
+
+from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
+from asset_scanner.core.processor import BaseProcessor
+from asset_scanner.core.utils import Stats
 
 # Package imports
 from .mixins import PropertiesOutputKeyMixin

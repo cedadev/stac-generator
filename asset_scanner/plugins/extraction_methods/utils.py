@@ -23,7 +23,6 @@ from dateutil.parser import parse
 
 from asset_scanner.core.collection_describer import CollectionDescription
 
-
 LOGGER = logging.getLogger(__name__)
 
 DATE_TEMPLATE = Template("${year}-${month}-${day}T${hour}:${minute}:${second}")

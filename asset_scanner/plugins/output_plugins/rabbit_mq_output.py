@@ -121,9 +121,9 @@ Example Configuration:
 """
 
 import json
-from cachetools import TTLCache
 
 import pika
+from cachetools import TTLCache
 
 from .base import OutputBackend
 
