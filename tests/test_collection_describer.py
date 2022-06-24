@@ -18,7 +18,13 @@ ROOT_DESCRIPTIONS = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "test_descriptions"
 )
 
-default_description = {"paths": [], "asset": {}, "item": {}, "collection": {}, "categories": []}
+default_description = {
+    "paths": [],
+    "asset": {},
+    "item": {},
+    "collection": {},
+    "categories": [],
+}
 
 
 @pytest.fixture

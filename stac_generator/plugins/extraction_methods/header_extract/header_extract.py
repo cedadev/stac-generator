@@ -101,7 +101,8 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         if hasattr(self, "backend"):
             entry_point = pkg.iter_entry_points(
-                "stac_generator.extraction_methods.header_extract.backends", self.backend
+                "stac_generator.extraction_methods.header_extract.backends",
+                self.backend,
             )
             backend = entry_point.load()
 
