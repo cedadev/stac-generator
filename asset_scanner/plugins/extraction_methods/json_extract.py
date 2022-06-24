@@ -40,12 +40,10 @@ class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
           - .. fa:: check
 
     Description:
-        Takes an input string and a regex with
-        named capture groups and returns a dictionary of the values
-        extracted using the named capture groups.
+        Takes an input list of string to extract from the json file.
 
     Configuration Options:
-        - ``regex``: The regular expression to match against the filepath
+        - ``terms``: List of terms to extract
         - ``pre_processors``: List of pre-processors to apply
         - ``post_processors``: List of post_processors to apply
         - ``output_key``: When the metadata is returned, this key determines
@@ -58,15 +56,10 @@ class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
     Example configuration:
         .. code-block:: yaml
 
-            - method: regex
+            - method: json
               inputs:
-                regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
-              pre_processors:
-                - method: filename_reducer
-              post_processors:
-                - method: isodate_processor
-                  inputs:
-                    date_key: datetime
+                terms:
+                  - mip_era
 
     """
 

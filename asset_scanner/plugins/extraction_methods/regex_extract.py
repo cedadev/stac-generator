@@ -58,7 +58,7 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
             - method: regex
               inputs:
-                regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
+                regex: ^(?:[^_]*_){2}(?P<datetime>\d*)
               pre_processors:
                 - method: filename_reducer
               post_processors:
@@ -66,7 +66,13 @@ class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
                   inputs:
                     date_key: datetime
 
+    # noqa: W605
     """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.regex = rf"{self.regex}"
+
 
     @accepts_preprocessors
     @accepts_postprocessors

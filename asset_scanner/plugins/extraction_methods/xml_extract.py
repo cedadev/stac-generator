@@ -82,6 +82,8 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 extraction_keys:
                   - method: start_datetime
                     key: './/gml:beginPosition'
+
+    # noqa: W605
     """
 
     @accepts_preprocessors
@@ -114,7 +116,7 @@ class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
 if __name__ == "__main__":
     kwargs = {
-        "filter_expr": "\.manifest$",
+        "filter_expr": r"\.manifest$",
         "extraction_keys": [
             {"name": "instrument", "key": ".//safe:instrument/safe:familyName"},
             {

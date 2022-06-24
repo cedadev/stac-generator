@@ -33,6 +33,7 @@ Example Configuration:
                   regex: ^\/badc\/cmip[56]\/.*files
                   exclude: True
 
+# noqa: W605
 """
 __author__ = "Richard Smith"
 __date__ = "20 Sep 2021"
@@ -46,7 +47,7 @@ from distutils.util import strtobool
 
 class RegexFilter:
     def __init__(self, **kwargs):
-        self.regex = kwargs["regex"]
+        self.regex = rf"{kwargs['regex']}"
         self.exclude = strtobool(kwargs.get("exclude", "False"))
 
     def run(self, uri: str) -> bool:
