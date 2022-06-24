@@ -65,12 +65,12 @@ class ControlledVocabularyPostExtract(BaseProcessor):
         klass = getattr(module, scopes[-1])
 
         # Get metadata attributes
-        properties = data["properties"]
+        properties = data["body"]["properties"]
 
         # Instantiate data model
         try:
             cv = klass(**properties)
-            data["properties"] = cv.dict()
+            data["body"]["properties"] = cv.dict()
 
         except pydantic.ValidationError as exc:
             LOGGER.warning(exc)
