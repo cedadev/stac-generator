@@ -2,7 +2,7 @@
 Output Plugins
 ===============
 
-.. automodule:: asset_scanner.plugins.output_plugins
+.. automodule:: stac_generator.plugins.output_plugins
 
 .. list-table::
    :header-rows: 1
@@ -10,12 +10,12 @@ Output Plugins
    * - Plugin Name
      - Description
      - Required packages
-   * - :ref:`Standard Out <asset_scanner/output_plugins:standard out>`
+   * - :ref:`Standard Out <stac_generator/output_plugins:standard out>`
      - Useful for debugging and preparing workflows. A simple ``print()``.
      - ``None``
-   * - :ref:`Elasticsearch <asset_scanner/output_plugins:elasticsearch>`
+   * - :ref:`Elasticsearch <stac_generator/output_plugins:elasticsearch>`
      - Outputs the metadata directly to Elasticsearch.
      - ``pip install asset-scanner[elasticsearch]``
 
-.. automodule:: asset_scanner.plugins.output_plugins.standard_out
-.. automodule:: asset_scanner.plugins.output_plugins.elasticsearch_backend
+.. automodule:: stac_generator.plugins.output_plugins.standard_out
+.. automodule:: stac_generator.plugins.output_plugins.elasticsearch_backend

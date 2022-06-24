@@ -11,10 +11,10 @@ which extracts the metadata. The framework leverages a modular, plugin architect
 to allow users to modify the workflow to fit their needs.
 
 The process expects a stream of "assets" (an asset being a file, zarr object, etc.).
-The source of this stream is configured with `input plugins <asset_scanner/input_plugins>`_
+The source of this stream is configured with `input plugins <stac_generator/input_plugins>`_
 which could be as simple as listing directories on a file system or using message
 queues as part of a complex ingest system. The `extractors <extractors>`_ operate on this stream and
-pass to `output plugins <asset_scanner/output_plugins>`_. The output is at the level
+pass to `output plugins <stac_generator/output_plugins>`_. The output is at the level
 of an "asset" so higher level aggregated objects may require an aggregation step.
 
 These outputs are also configurable so could dump to the terminal (for debugging), file,
@@ -43,7 +43,7 @@ The different packages are designed to extract different types and levels of met
 
     * - Name
       - Description
-    * - :ref:`Asset Generator <asset_generator/index:asset generator>`
+    * - :ref:`Asset Generator <stac_generator/index:asset generator>`
       - The asset generator is focused on asset level metadata (name, location, size, etc.)
     * - :ref:`Item Generator <item_generator/index:item generator>`
       - The item generator takes the stream of assets and runs a workflow, defined by :ref:`item descriptions <item_descriptions/item_descriptions:item descriptions>` , to extract facets.
@@ -58,7 +58,7 @@ The different packages are designed to extract different types and levels of met
    :caption: Contents:
 
    asset_scanner/index
-   asset_generator/index
+   stac_generator/index
    item_generator/index
    item_descriptions/item_descriptions
 
@@ -67,7 +67,7 @@ The different packages are designed to extract different types and levels of met
    :caption: API:
 
    api/asset_scanner/asset_scanner_api
-   api/asset_generator/api
+   api/stac_generator/api
    api/item_generator/item_generator_api
 
 

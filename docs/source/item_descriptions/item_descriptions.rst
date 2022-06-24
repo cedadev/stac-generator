@@ -1,6 +1,6 @@
 
 ******************
-Item Descriptions
+Collection Descriptions
 ******************
 
 .. toctree::
@@ -260,4 +260,4 @@ Processor
 Schema
 -------
 
-.. program-output:: python -c "from asset_scanner.core.item_describer import ItemDescription; import json; print(json.dumps(ItemDescription.schema(), indent=4))"
+.. program-output:: python -c "from stac_generator.core.item_describer import ItemDescription; import json; print(json.dumps(ItemDescription.schema(), indent=4))"

@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "asset_scanner"
+project = "stac_generator"
 copyright = "2021, Richard Smith"
 author = "Richard Smith"
 

@@ -14,8 +14,8 @@ There are various pluggable pieces:
 
 These pieces should allow you to construct a workflow which works for your use case and provide
 python entry points to allow you to write your own plugins.
-The Asset Scanner package stores some common :ref:`input <asset_scanner/input_plugins:input plugins>`
-and :ref:`output plugins <asset_scanner/output_plugins:output plugins>` (PRs welcome).
+The Asset Scanner package stores some common :ref:`input <stac_generator/input_plugins:input plugins>`
+and :ref:`output plugins <stac_generator/output_plugins:output plugins>` (PRs welcome).
 This package, Item Generator, contains some processors which are used to extract attributes from files and
 passes them to the output plugin. You can read more about the processors, and how pre/post processors work
 :ref:`here <item_generator/processors/processors:processors>`.

@@ -7,25 +7,25 @@ Asset Generator API
 Asset Generator
 ===============
 
-.. automodule:: asset_generator.core.asset_extractor
+.. automodule:: stac_generator.core.asset_extractor
 
-.. autoclass:: asset_generator.core.asset_extractor.AssetGenerator
+.. autoclass:: stac_generator.core.asset_extractor.AssetGenerator
 
 Media Handlers
 ==============
 
-.. automodule:: asset_generator.media_handlers
+.. automodule:: stac_generator.media_handlers
 
 POSIX Handler
 -------------
 
-.. automodule:: asset_generator.media_handlers.posix_handler
+.. automodule:: stac_generator.media_handlers.posix_handler
 
-.. autoclass:: asset_generator.media_handlers.posix_handler.PosixHandler
+.. autoclass:: stac_generator.media_handlers.posix_handler.PosixHandler
 
 Object Store Handler
 --------------------
 
-.. automodule:: asset_generator.media_handlers.object_store_handler
+.. automodule:: stac_generator.media_handlers.object_store_handler
 
-.. autoclass:: asset_generator.media_handlers.object_store_handler.ObjectStoreHandler
+.. autoclass:: stac_generator.media_handlers.object_store_handler.ObjectStoreHandler

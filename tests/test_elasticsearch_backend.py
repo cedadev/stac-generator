@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from asset_scanner.plugins.output_plugins.elasticsearch_backend import (
+from stac_generator.plugins.output_plugins.elasticsearch_backend import (
     ElasticsearchOutputBackend,
 )
 

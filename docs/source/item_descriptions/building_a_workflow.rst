@@ -59,9 +59,9 @@ The item-generator outputs two things:
 
 You can then run your workflow using:
 
-``asset_scanner <path_to_config_file>``
+``stac_generator <path_to_config_file>``
 
-.. program-output:: asset_scanner -h
+.. program-output:: stac_generator -h
 
 .. note::
 

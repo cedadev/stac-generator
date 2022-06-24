@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from asset_scanner.plugins.extraction_methods import postprocessors
+from stac_generator.plugins.extraction_methods import postprocessors
 
 
 @pytest.fixture

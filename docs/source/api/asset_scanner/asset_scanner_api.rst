@@ -4,9 +4,9 @@ Asset Scanner API
 
 :fa:`github` `View on Github <https://github.com/cedadev/asset-scanner>`_
 
-.. automodule:: asset_scanner.core.extractor
+.. automodule:: stac_generator.core.extractor
 
-.. autoclass:: asset_scanner.core.BaseGenerator
+.. autoclass:: stac_generator.core.BaseGenerator
 
-.. automodule:: asset_scanner.core.item_describer
+.. automodule:: stac_generator.core.item_describer
     :members:

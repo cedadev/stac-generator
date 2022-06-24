@@ -15,11 +15,11 @@ Usage
 ======
 
 There is a console script defined by this package which can be used to run the
-extractors ``asset_generator``.
+extractors ``stac_generator``.
 
 .. code-block:: console
 
-    usage: asset_scanner [-h] conf
+    usage: stac_generator [-h] conf
 
     Run the asset scanner as configured
 
@@ -46,7 +46,7 @@ Base configuration options:
    * - Option
      - Description
    * - ``extractor``
-     - The python import path to the extractor class. If not specified, it picks up the class installed with the entry point ``asset_scanner.extractors``
+     - The python import path to the extractor class. If not specified, it picks up the class installed with the entry point ``stac_generator.extractors``
    * - ``item_descriptions``
      - ``REQUIRED`` Path to the root directory for the item descriptions. Used to describe workflows.
    * - ``inputs``

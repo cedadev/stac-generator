@@ -44,7 +44,7 @@ and is provided in the form of the `item description files <https://cedadev.gith
      - ``REQUIRED`` Must have at least one `output plugin <https://cedadev.github.io/asset-scanner/output_plugins.html>`_
    * - ``extractor``
      - The python import path to the extractor class. If not specified, it picks up the
-       class installed with the entry point ``asset_scanner.extractors``
+       class installed with the entry point ``stac_generator.extractors``
    * - ``media_handlers``
      - Kwargs to be passed to the media handlers
 
@@ -60,7 +60,7 @@ Sample configuration:
 
    .. code-block:: yaml
 
-      extractor: asset_generator.AssetGenerator
+      extractor: stac_generator.AssetGenerator
       item_descriptions:
         root_directory: /etc/item-generator/item_descriptions/descriptions
       inputs:
@@ -75,10 +75,10 @@ Usage
 
 The tool is called using the `asset-scanner <https://cedadev.github.io/asset-scanner/usage.html>`_
 
-.. program-output:: asset_scanner -h
+.. program-output:: stac_generator -h
 
 Example:
 
    .. code-block:: console
 
-      $ asset_scanner conf/conf.yml
+      $ stac_generator conf/conf.yml

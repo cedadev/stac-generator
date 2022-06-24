@@ -9,7 +9,7 @@ Item Generator
    :hidden:
 
    user_guide/orientation
-   /asset_scanner/processors
+   /stac_generator/processors
 
 
 This library aims to be a generic tool for generating JSON documents which are `STAC <https://github.com/radiantearth/stac-spec/>`_-like.
@@ -51,7 +51,7 @@ Configuration takes the form a YAML formatted file.
      - Description
    * - ``extractor``
      - The python import path to the extractor class. If not specified, it picks up the
-       class installed with the entry point ``asset_scanner.extractors``
+       class installed with the entry point ``stac_generator.extractors``
    * - ``item_descriptions.root_directory``
      - ``REQUIRED`` Path to the top level directory containing your dataset specific pipelines
    * - ``inputs``
@@ -68,7 +68,7 @@ Configuration for the extraction pipelines is done separately. This could be sto
 repository to manage versions and additions from multiple sources. You could then clone or download
 this repository and reference it using the ``item_descriptions.root_directory``.
 These pipeline files are in the form of `item description files <https://cedadev.github.io/asset-scanner/item_descriptions.html>`_.
-These YAML files specify the :ref:`processors <asset_scanner/processors:processors>` to use to extract your desired facets.
+These YAML files specify the :ref:`processors <stac_generator/processors:processors>` to use to extract your desired facets.
 
 .. note::
    The item-generator outputs two things:
@@ -83,10 +83,10 @@ Usage
 
 The tool is called using the `asset-scanner <https://cedadev.github.io/asset-scanner/usage.html>`_
 
-.. program-output:: asset_scanner -h
+.. program-output:: stac_generator -h
 
 Example:
 
    .. code-block:: console
 
-      $ asset_scanner conf/conf.yml
+      $ stac_generator conf/conf.yml

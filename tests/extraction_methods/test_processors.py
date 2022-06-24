@@ -10,9 +10,9 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from asset_scanner.plugins.extraction_methods.iso19115_extract import ISO19115Extract
-from asset_scanner.plugins.extraction_methods.preprocessors import CEDAObservation
-from asset_scanner.plugins.extraction_methods.regex_extract import RegexExtract
+from stac_generator.plugins.extraction_methods.iso19115_extract import ISO19115Extract
+from stac_generator.plugins.extraction_methods.preprocessors import CEDAObservation
+from stac_generator.plugins.extraction_methods.regex_extract import RegexExtract
 
 
 @pytest.fixture
