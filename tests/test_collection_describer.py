@@ -12,33 +12,33 @@ import os
 
 import pytest
 
-from asset_scanner.core.item_describer import ItemDescriptions
+from asset_scanner.core.collection_describer import CollectionDescriptions
 
 ROOT_DESCRIPTIONS = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "test_descriptions"
 )
 
-default_description = {"paths": [], "collections": {}, "facets": {}, "categories": []}
+default_description = {"paths": [], "asset": {}, "item": {}, "collection": {}, "categories": []}
 
 
 @pytest.fixture
 def item_descriptions():
     print(ROOT_DESCRIPTIONS)
-    return ItemDescriptions(ROOT_DESCRIPTIONS)
+    return CollectionDescriptions(ROOT_DESCRIPTIONS)
 
 
-def test_retrieve_posix_description(item_descriptions):
+def test_retrieve_posix_description(collection_descriptions):
     expected = {**default_description, **{"paths": ["/a/b/c"]}}
 
-    description = item_descriptions.get_description("/a/b/c/d/e")
+    description = collection_descriptions.get_description("/a/b/c/d/e")
 
     print(expected)
     print(description.dict())
     assert description.dict() == expected
 
 
-def test_retrieve_remote_description(item_descriptions):
+def test_retrieve_remote_description(collection_descriptions):
     expected = {**default_description, **{"paths": ["gc://a/b/c"]}}
 
-    description = item_descriptions.get_description("gc://a/b/c/d/e")
+    description = collection_descriptions.get_description("gc://a/b/c/d/e")
     assert description.dict() == expected

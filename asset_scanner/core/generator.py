@@ -326,6 +326,6 @@ class BaseGenerator(ABC):
     def process(self, **kwargs) -> None:
         pass
 
-    def output(self, uri: str, data: dict, **kwargs) -> None:
+    def output(self, data: dict, **kwargs) -> None:
         for backend in self.output_plugins:
             backend.export(data, **kwargs)
