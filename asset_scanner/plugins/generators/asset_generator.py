@@ -2,11 +2,11 @@
 """
 
 """
-__author__ = 'Richard Smith'
-__date__ = '01 Jun 2021'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'richard.d.smith@stfc.ac.uk'
+__author__ = "Richard Smith"
+__date__ = "01 Jun 2021"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 # Framework imports
@@ -32,9 +32,7 @@ class AssetGenerator(BaseGenerator):
 
     EXTRACTION_TYPE = ExtractionType.ASSET
 
-    def get_categories(
-        self, uri: str, description: CollectionDescription
-    ) -> list:
+    def get_categories(self, uri: str, description: CollectionDescription) -> list:
         """
         Get category labels
 
@@ -61,26 +59,26 @@ class AssetGenerator(BaseGenerator):
         :return:
         """
 
-        body = {
-            'type': self.EXTRACTION_TYPE.value
-        }
+        body = {"type": self.EXTRACTION_TYPE.value}
 
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)
 
         # extract facets, run post extractions and extract ids
-        extraction_methods_output = self.run_extraction_methods(uri, description, **kwargs)
+        extraction_methods_output = self.run_extraction_methods(
+            uri, description, **kwargs
+        )
         body = dict_merge(body, extraction_methods_output)
 
         body = self.run_post_extraction_methods(body, description, **kwargs)
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        body['categories'] = self.get_categories(uri, description)
-        body['item_id'] = ids["item_id"]
+        body["categories"] = self.get_categories(uri, description)
+        body["item_id"] = ids["item_id"]
 
-        data = {'id': ids["asset_id"], 'body': body}
+        data = {"id": ids["asset_id"], "body": body}
 
-        message = {'item_id': ids["item_id"], 'uri': uri}
+        message = {"item_id": ids["item_id"], "uri": uri}
 
         self.output(data, message=message)

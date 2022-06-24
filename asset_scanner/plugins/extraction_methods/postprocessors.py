@@ -195,14 +195,23 @@ class BBOXProcessor(BasePostProcessor):
 
             try:
                 coordinates = [
-                    [float(source_dict[self.coordinate_keys[0]]), float(source_dict[self.coordinate_keys[1]])],
-                    [float(source_dict[self.coordinate_keys[2]]), float(source_dict[self.coordinate_keys[3]])]
+                    [
+                        float(source_dict[self.coordinate_keys[0]]),
+                        float(source_dict[self.coordinate_keys[1]]),
+                    ],
+                    [
+                        float(source_dict[self.coordinate_keys[2]]),
+                        float(source_dict[self.coordinate_keys[3]]),
+                    ],
                 ]
 
                 if "spatial" not in source_dict:
                     source_dict["spatial"] = {"bbox": {}}
 
-                source_dict["spatial"]["bbox"] = {"type": "envelope", "coordinates": coordinates}
+                source_dict["spatial"]["bbox"] = {
+                    "type": "envelope",
+                    "coordinates": coordinates,
+                }
 
             except KeyError:
                 LOGGER.warning("Unable to convert bbox.", exc_info=True)
@@ -247,13 +256,19 @@ class GeometryPointProcessor(BasePostProcessor):
             try:
 
                 coordinates = [
-                    [float(source_dict[self.coordinate_keys[0]]), float(source_dict[self.coordinate_keys[1]])]
+                    [
+                        float(source_dict[self.coordinate_keys[0]]),
+                        float(source_dict[self.coordinate_keys[1]]),
+                    ]
                 ]
 
                 if "spatial" not in source_dict:
                     source_dict["spatial"] = {"geometry": {}}
 
-                source_dict["spatial"]["geometry"] = {"type": "Point", "coordinates": coordinates}
+                source_dict["spatial"]["geometry"] = {
+                    "type": "Point",
+                    "coordinates": coordinates,
+                }
 
             except KeyError:
                 LOGGER.warning("Unable to convert to point geometry.", exc_info=True)
@@ -304,14 +319,22 @@ class GeometryLineProcessor(BasePostProcessor):
                 coordinates = []
 
                 for coordinate_key in self.coordinate_keys:
-                    coordinates.append([
-                        [float(source_dict[coordinate_key[0]]), float(source_dict[coordinate_key[1]])]
-                    ])
+                    coordinates.append(
+                        [
+                            [
+                                float(source_dict[coordinate_key[0]]),
+                                float(source_dict[coordinate_key[1]]),
+                            ]
+                        ]
+                    )
 
                 if "spatial" not in source_dict:
                     source_dict["spatial"] = {"geometry": {}}
 
-                source_dict["spatial"]["geometry"] = {"type": "Line", "coordinates": coordinates}
+                source_dict["spatial"]["geometry"] = {
+                    "type": "Line",
+                    "coordinates": coordinates,
+                }
 
             except KeyError:
                 LOGGER.warning("Unable to convert to a line geometry.", exc_info=True)
@@ -366,21 +389,36 @@ class GeometryPolygonProcessor(BasePostProcessor):
                 coordinates = []
 
                 for coordinate_key in self.coordinate_keys:
-                    coordinates.append([
-                        [float(source_dict[coordinate_key[0]]), float(source_dict[coordinate_key[1]])]
-                    ])
-                
-                coordinates.append([
-                    [float(source_dict[self.coordinate_keys[0][0]]), float(source_dict[self.coordinate_keys[0][1]])]
-                ])
+                    coordinates.append(
+                        [
+                            [
+                                float(source_dict[coordinate_key[0]]),
+                                float(source_dict[coordinate_key[1]]),
+                            ]
+                        ]
+                    )
+
+                coordinates.append(
+                    [
+                        [
+                            float(source_dict[self.coordinate_keys[0][0]]),
+                            float(source_dict[self.coordinate_keys[0][1]]),
+                        ]
+                    ]
+                )
 
                 if "spatial" not in source_dict:
                     source_dict["spatial"] = {"geometry": {}}
 
-                source_dict["spatial"]["geometry"] = {"type": "Polygon", "coordinates": coordinates}
+                source_dict["spatial"]["geometry"] = {
+                    "type": "Polygon",
+                    "coordinates": coordinates,
+                }
 
             except KeyError:
-                LOGGER.warning("Unable to convert to a polygon geometry.", exc_info=True)
+                LOGGER.warning(
+                    "Unable to convert to a polygon geometry.", exc_info=True
+                )
 
         return source_dict
 
@@ -518,9 +556,7 @@ class DateCombinatorProcessor(BasePostProcessor):
                     "Trying dateutil..."
                 )
             if not isodate:
-                LOGGER.error(
-                    f"Error parsing date from file: {uri}"
-                )
+                LOGGER.error(f"Error parsing date from file: {uri}")
 
             output_key = getattr(self, "output_key", "datetime")
             source_dict[output_key] = isodate or date

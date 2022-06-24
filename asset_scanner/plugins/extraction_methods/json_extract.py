@@ -74,12 +74,12 @@ class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         facet_values = []
 
-        with open(self.filepath, 'r') as file:
+        with open(self.filepath, "r") as file:
             file_data = json.load(file)
 
             for item in file_data:
-                if item['body']['collection_id'] == uri:
-                    values = item['body']['properties'][facet]
+                if item["body"]["collection_id"] == uri:
+                    values = item["body"]["properties"][facet]
                     if isinstance(values, list):
                         facet_values.extend(values)
                     else:
@@ -97,38 +97,36 @@ class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
         datetime = []
 
         for item in item_list:
-            start_datetime.append(item['properties'].get('start_datetime'))
-            end_datetime.append(item['properties'].get('end_datetime'))
-            datetime.append(item['properties'].get('datetime'))
+            start_datetime.append(item["properties"].get("start_datetime"))
+            end_datetime.append(item["properties"].get("end_datetime"))
+            datetime.append(item["properties"].get("datetime"))
 
         start_datetime = list(set(start_datetime))
         end_datetime = list(set(end_datetime))
         datetime = list(set(datetime))
 
-
-
     def get_extent(self, file_id: str) -> dict:
         item_list = []
-        with open(self.filepath, 'r') as file:
+        with open(self.filepath, "r") as file:
             file_data = json.load(file)
 
             for item in file_data:
-                if item['body']['collection_id'] ==  file_id:
+                if item["body"]["collection_id"] == file_id:
                     item_list.append(item)
 
         spatial_extent = self.get_spatial_extent(item_list)
         temporal_extent = self.get_temporal_extent(item_list)
-        
+
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
-        metadata = {'summaries': {}}
+        metadata = {"summaries": {}}
 
         for facet in self.terms:
             values = self.get_facet_values(facet, uri)
             if values:
-                metadata['summaries'][facet] = values
+                metadata["summaries"][facet] = values
 
         # No need to include extents since the example scanner has none.
 

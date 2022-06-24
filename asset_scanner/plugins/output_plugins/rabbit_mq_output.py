@@ -133,15 +133,16 @@ class RabbitMQOutBackend(OutputBackend):
         super().__init__(**kwargs)
 
         self.id_cache = TTLCache(
-            maxsize=self.cache.get('max_size', 10),
-            ttl=self.cache.get('max_age', 30)
+            maxsize=self.cache.get("max_size", 10), ttl=self.cache.get("max_age", 30)
         )
 
         if not hasattr(self, "deduplication"):
-          self.deduplication = False
+            self.deduplication = False
 
         # Create the credentials object
-        credentials = pika.PlainCredentials(self.connection["user"], self.connection["password"])
+        credentials = pika.PlainCredentials(
+            self.connection["user"], self.connection["password"]
+        )
 
         # Start the rabbitMQ connection
         rabbit_connection = pika.BlockingConnection(
@@ -179,12 +180,12 @@ class RabbitMQOutBackend(OutputBackend):
         msg = json.dumps(self.message)
 
         if self.deduplication:
-          # Check if id is in the cache
-          if self.id_cache.get(id):
-              self.deduplicate = True
-          # add a dummy value to the cache of equal to True.
-          self.id_cache.update({id: True})
-        
+            # Check if id is in the cache
+            if self.id_cache.get(id):
+                self.deduplicate = True
+            # add a dummy value to the cache of equal to True.
+            self.id_cache.update({id: True})
+
         properties = self.build_properties(id)
 
         self.channel.basic_publish(

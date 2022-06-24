@@ -65,4 +65,4 @@ class DefaultExtract(PropertiesOutputKeyMixin, BaseProcessor):
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
-      return self.defaults
+        return self.defaults

@@ -77,25 +77,27 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def extract_modified_time(self, stats: os.stat_result):
         try:
-            self.info["modified_time"] = datetime.fromtimestamp(stats.st_mtime).isoformat()
+            self.info["modified_time"] = datetime.fromtimestamp(
+                stats.st_mtime
+            ).isoformat()
         except Exception as e:
             LOGGER.debug(e)
 
     def extract_filename(self, path: str) -> None:
         try:
-            self.info['filename'] = os.path.basename(path)
+            self.info["filename"] = os.path.basename(path)
         except Exception as e:
             LOGGER.debug(e)
 
     def extract_extension(self, path: str) -> None:
         try:
-            self.info['extension'] = os.path.splitext(path)[1]
+            self.info["extension"] = os.path.splitext(path)[1]
         except Exception as e:
             LOGGER.debug(e)
 
     def extract_magic_number(self, path: str) -> None:
         try:
-            self.info['magic_number'] = magic.from_file(path, mime=True)
+            self.info["magic_number"] = magic.from_file(path, mime=True)
         except Exception as e:
             LOGGER.debug(e)
 
@@ -118,12 +120,7 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
             checksum = hash_md5.hexdigest()
 
         # Assuming no errors we can now store the checksum
-        self.info['checksum'] = [
-            {
-                'time': datetime.now(),
-                'checksum': checksum
-            }
-        ]
+        self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
     @accepts_preprocessors
     @accepts_postprocessors
@@ -136,14 +133,14 @@ class PosixStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         """
 
-        LOGGER.info(f'Extracting metadata for: {uri} with checksum: {self.checksum}')
+        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {self.checksum}")
 
         stats = os.stat(uri)
 
-        self.info['uri'] = uri
+        self.info["uri"] = uri
         self.extract_filename(uri)
         self.extract_extension(uri)
-        self.extract_stat('size', stats, 'st_size')
+        self.extract_stat("size", stats, "st_size")
         self.extract_modified_time(stats)
         self.extract_magic_number(uri)
         # self.extract_checksum(uri, self.checksum)

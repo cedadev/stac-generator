@@ -35,7 +35,7 @@ class HashExtract(BaseProcessor):
           - .. fa:: check
 
     Description:
-        Takes list of terms and creates dot seperated string of 
+        Takes list of terms and creates dot seperated string of
         values which is then hashed.
 
     Configuration Options:
@@ -68,7 +68,9 @@ class HashExtract(BaseProcessor):
 
         properties = body["properties"]
 
-        if hasattr(self, "terms") and all([facet in self.terms for facet in properties]):
+        if hasattr(self, "terms") and all(
+            [facet in self.terms for facet in properties]
+        ):
             id_string = ""
 
             for facet in self.terms:
@@ -90,4 +92,4 @@ class HashExtract(BaseProcessor):
             return hash(f"{properties.get('collection_id')}.{properties.get('uri')}")
 
         else:
-            return hash(properties.get('uri'))
+            return hash(properties.get("uri"))

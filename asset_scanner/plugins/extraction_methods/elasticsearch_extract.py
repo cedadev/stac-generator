@@ -69,7 +69,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         super().__init__(**kwargs)
         if "session_kwargs" in self.conf:
             self.es = Elasticsearch(**self.conf["session_kwargs"])
-        
+
         if "index" in self.conf and not hasattr(self, "session_kwargs"):
             self.index = self.conf["index"]
 
@@ -78,14 +78,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         """
         Query to retrieve the BBOX from items
         """
-        return {
-            "bbox": {
-                "geo_bounds": {
-                    "field": facet,    
-                    "wrap_longitude": True  
-                }
-            }
-        }
+        return {"bbox": {"geo_bounds": {"field": facet, "wrap_longitude": True}}}
 
     @staticmethod
     def facet_composite_query(facet: str) -> dict:
@@ -97,15 +90,9 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
             facet: {
                 "composite": {
                     "sources": [
-                        {
-                            facet: {
-                                "terms": {
-                                    "field": f"properties.{facet}.keyword"
-                                }
-                            }
-                        }
+                        {facet: {"terms": {"field": f"properties.{facet}.keyword"}}}
                     ],
-                    "size": 100
+                    "size": 100,
                 }
             }
         }
@@ -115,33 +102,21 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         """
         Query to retrieve the minimum value from docs
         """
-        return {
-            facet: {
-                "min": {"field": f"properties.{facet}"}
-            }
-        }
-    
+        return {facet: {"min": {"field": f"properties.{facet}"}}}
+
     @staticmethod
     def max_query(facet: str) -> dict:
         """
         Query to retrieve the maximum value from docs
         """
-        return {
-            facet: {
-                "max": {"field": f"properties.{facet}"}
-            }
-        }
-    
+        return {facet: {"max": {"field": f"properties.{facet}"}}}
+
     @staticmethod
     def sum_query(facet: str) -> dict:
         """
         Query to retrieve the sum of the values from docs
         """
-        return {
-            facet: {
-                "sum": {"field": f"properties.{facet}"}
-            }
-        }
+        return {facet: {"sum": {"field": f"properties.{facet}"}}}
 
     def extract_facet(self, facets: list):
         """
@@ -156,20 +131,20 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
                 else:
                     value = self.aggregations[facet]["value"]
-                    
+
                 self.metadata[facet] = value
-    
+
     def extract_default_facet(self, facets: list):
         """
         Function to extract the given default facets from the first hit
         """
-        properties = self.hits[0]['_source']["properties"]
+        properties = self.hits[0]["_source"]["properties"]
 
         for facet in facets:
 
             if facet in properties.keys():
                 self.metadata[facet] = properties[facet]
-    
+
     def extract_facet_list(self, facets: list):
         """
         Function to extract the lists of given facets from the aggregation
@@ -185,19 +160,23 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
                     aggregation = items[facet]
 
-                    self.metadata[facet].extend([bucket['key'][facet] for bucket in aggregation["buckets"]])
+                    self.metadata[facet].extend(
+                        [bucket["key"][facet] for bucket in aggregation["buckets"]]
+                    )
 
                     if hasattr(aggregation, "after_key"):
-                        next_query["aggs"] |= self.query["aggs"][facet] 
-                        next_query["aggs"][facet]["composite"]["sources"]["after"] = {facet: aggregation["after_key"][facet]}
-        
+                        next_query["aggs"] |= self.query["aggs"][facet]
+                        next_query["aggs"][facet]["composite"]["sources"]["after"] = {
+                            facet: aggregation["after_key"][facet]
+                        }
+
             if next_query == self.base_query:
                 break
 
             else:
                 result = self.es.search(index=self.index, body=next_query)
-                items = result['aggregations'].items()
-            
+                items = result["aggregations"].items()
+
     def construct_base_query(self, key: str, uri: str) -> dict:
         """
         Base query to filter the results to a single collection
@@ -207,29 +186,13 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         self.base_query = {
             "query": {
                 "bool": {
-                "must_not": [
-                    {
-                    "term": {
-                        "categories.keyword": {
-                        "value": "hidden"
-                        }
-                    }
-                    }
-                ],
-                "must": [
-                    {
-                    "term": {
-                        f"{key}.keyword": {
-                        "value": uri
-                        }
-                    }
-                    }
-                ]
+                    "must_not": [{"term": {"categories.keyword": {"value": "hidden"}}}],
+                    "must": [{"term": {f"{key}.keyword": {"value": uri}}}],
                 }
             },
-            "aggs": {}
+            "aggs": {},
         }
-    
+
     def construct_query(self):
         """
         Function to create the initial elasticsearch query
@@ -239,7 +202,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         if hasattr(self, "bbox"):
             for bbox in self.bbox:
                 self.query["aggs"] |= self.bbox_query(bbox)
-        
+
         if hasattr(self, "min"):
             for min in self.min:
                 self.query["aggs"] |= self.min_query(min)
@@ -247,7 +210,7 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         if hasattr(self, "max"):
             for max in self.max:
                 self.query["aggs"] |= self.max_query(max)
-        
+
         if hasattr(self, "sum"):
             for sum_term in self.sum:
                 self.query["aggs"] |= self.sum_query(sum_term)
@@ -255,17 +218,17 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         if hasattr(self, "list"):
             for list_term in self.list:
                 self.query["aggs"] |= self.facet_composite_query(list_term)
-        
+
     def extract_metadata(self):
         """
         Function to extract the required metadata from the returned query result
         """
         if hasattr(self, "default"):
             self.extract_default_facet(self.default)
-        
+
         if hasattr(self, "bbox"):
             self.extract_facet(self.bbox)
-        
+
         if hasattr(self, "min"):
             self.extract_facet(self.min)
 
@@ -274,11 +237,10 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         if hasattr(self, "sum"):
             self.extract_facet(self.sum)
-        
+
         if hasattr(self, "list"):
             self.extract_facet_list(self.list)
 
-        
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
@@ -295,9 +257,9 @@ class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
         # Run query
         result = self.es.search(index=self.index, body=self.query)
 
-        self.hits = result['hits']["hits"]
+        self.hits = result["hits"]["hits"]
 
-        self.aggregations = result['aggregations']
+        self.aggregations = result["aggregations"]
 
         # Extract metadata
         self.extract_metadata()

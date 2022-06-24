@@ -31,7 +31,9 @@ class CfBackend:
         except IOError:
             return False
 
-    def attr_extraction(self, file: str, attributes: list, backend_kwargs: dict) -> dict:
+    def attr_extraction(
+        self, file: str, attributes: list, backend_kwargs: dict
+    ) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
 

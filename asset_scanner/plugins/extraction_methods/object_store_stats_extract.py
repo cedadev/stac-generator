@@ -73,7 +73,7 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        session_kwargs = getattr(self.conf, 'session_kwargs', {})
+        session_kwargs = getattr(self.conf, "session_kwargs", {})
         self.session = boto3.session.Session(**session_kwargs)
         self.anonymous = not session_kwargs
 
@@ -94,14 +94,14 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def extract_filename(self, path: str) -> None:
         try:
-            self.info['filename'] = os.path.basename(path)
+            self.info["filename"] = os.path.basename(path)
         except Exception as e:
             LOGGER.debug(e)
 
     def extract_extension(self, path: str) -> None:
         try:
-            if os.path.splitext(path)[1] != '':
-                self.info['extension'] = os.path.splitext(path)[1]
+            if os.path.splitext(path)[1] != "":
+                self.info["extension"] = os.path.splitext(path)[1]
         except Exception as e:
             LOGGER.debug(e)
 
@@ -112,15 +112,14 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         if not checksum:
             try:
-                checksum = stats.get('ETag')
+                checksum = stats.get("ETag")
             except Exception as e:
                 LOGGER.debug(e)
                 return
 
         # Assuming no errors we can now store the checksum
         if checksum:
-            self.info['checksum'] = checksum  
-
+            self.info["checksum"] = checksum
 
     @accepts_preprocessors
     @accepts_postprocessors
@@ -133,48 +132,40 @@ class ObjectStoreStatsExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
         """
 
-        LOGGER.info(f'Extracting metadata for: {uri} with checksum: {self.checksum}')
+        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {self.checksum}")
 
-        uri_parse = kwargs.get('uri_parse')
+        uri_parse = kwargs.get("uri_parse")
         if not uri_parse:
             uri_parse = urlparse(uri)
 
         endpoint_url = f"{uri_parse.scheme}://{uri_parse.netloc}"
         url_path = Path(uri_parse.path)
         bucket = url_path.parts[1]
-        object_path = '/'.join(url_path.parts[2:])
+        object_path = "/".join(url_path.parts[2:])
         protocol = uri_parse.scheme
         client_kwargs = {}
         if self.anonymous:
-            client_kwargs['config'] = Config(signature_version=UNSIGNED)
+            client_kwargs["config"] = Config(signature_version=UNSIGNED)
 
-        if protocol in ['https', 'http']:
-            s3 = self.session.client(
-                's3',
-                endpoint_url=endpoint_url,
-                **client_kwargs
-            )
+        if protocol in ["https", "http"]:
+            s3 = self.session.client("s3", endpoint_url=endpoint_url, **client_kwargs)
             try:
-                stats = s3.head_object(
-                    Bucket=bucket,
-                    Key=uri
-                )
+                stats = s3.head_object(Bucket=bucket, Key=uri)
             except ClientError:
                 stats = {}
             stats = Stats.from_boto(stats)
 
         else:
-            file = fs.open(f"{uri}",
-                           anon=True)
+            file = fs.open(f"{uri}", anon=True)
             with file as f:
                 stats = vars(f)
 
-        self.info['uri'] = uri
+        self.info["uri"] = uri
         self.extract_filename(object_path)
         self.extract_extension(object_path)
-        self.extract_stat('size', stats, 'size')
-        self.extract_stat('mtime', stats, 'last_modified')
-        self.extract_stat('magic_number', stats, 'content_type')
+        self.extract_stat("size", stats, "size")
+        self.extract_stat("mtime", stats, "last_modified")
+        self.extract_stat("magic_number", stats, "content_type")
         self.extract_checksum(stats, self.checksum)
 
         return self.info

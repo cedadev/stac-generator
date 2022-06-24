@@ -61,7 +61,9 @@ def load_generator(conf: dict) -> BaseGenerator:
     generator = None
 
     if conf.get("generator"):
-        entry_points = pkg_resources.iter_entry_points("asset_scanner.generators", conf.get("generator"))
+        entry_points = pkg_resources.iter_entry_points(
+            "asset_scanner.generators", conf.get("generator")
+        )
 
         for entry_point in entry_points:
 

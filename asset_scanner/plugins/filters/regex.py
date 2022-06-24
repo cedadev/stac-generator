@@ -43,6 +43,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import re
 from distutils.util import strtobool
 
+
 class RegexFilter:
     def __init__(self, **kwargs):
         self.regex = kwargs["regex"]

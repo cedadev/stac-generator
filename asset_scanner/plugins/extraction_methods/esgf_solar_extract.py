@@ -47,9 +47,9 @@ class ESGFSolrExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        session_kwargs = getattr(self, 'solr_kwargs')
-        self.index = session_kwargs.get('index_node')
-        self.core = session_kwargs.get('solr_core', 'files')
+        session_kwargs = getattr(self, "solr_kwargs")
+        self.index = session_kwargs.get("index_node")
+        self.core = session_kwargs.get("solr_core", "files")
 
     @staticmethod
     def format_item(solr_item):
@@ -67,12 +67,12 @@ class ESGFSolrExtract(PropertiesOutputKeyMixin, BaseProcessor):
         """
         url = f"http://{index}/solr/{core}/select"
         search_params = {
-            'indent': 'on',
-            'q': f'id:{path}',
-            'wt': 'json',
-            'rows': 1,
-            'sort': 'id asc',
-            'cursorMark': '*'
+            "indent": "on",
+            "q": f"id:{path}",
+            "wt": "json",
+            "rows": 1,
+            "sort": "id asc",
+            "cursorMark": "*",
         }
 
         resp = requests.get(url, search_params).json()
@@ -81,55 +81,45 @@ class ESGFSolrExtract(PropertiesOutputKeyMixin, BaseProcessor):
         return metadata
 
     def extract_timestamp(self, metadata: dict):
-        self.info['file_last_modified_timestamp'] = metadata.pop('timestamp')
+        self.info["file_last_modified_timestamp"] = metadata.pop("timestamp")
 
     def extract_size(self, metadata: dict):
-        self.info['size'] = metadata.pop('size')
+        self.info["size"] = metadata.pop("size")
 
     def extract_checksum(self, metadata: dict):
-        self.info['checksum'] = metadata.pop('checksum')
-        self.info['checksum_type'] = metadata.pop('checksum_type')
+        self.info["checksum"] = metadata.pop("checksum")
+        self.info["checksum_type"] = metadata.pop("checksum_type")
 
     def extract_filename(self, metadata: dict):
-        filename = metadata.pop('title')
-        self.info['filename'] = filename
-        self.info['extension'] = os.path.splitext(filename)[1]
+        filename = metadata.pop("title")
+        self.info["filename"] = filename
+        self.info["extension"] = os.path.splitext(filename)[1]
 
     def extract_properties(self, metadata: dict):
-        file_id = metadata.pop('id')
-        self.info['properties'] = metadata
-        self.info['properties']['file_id'] = file_id
+        file_id = metadata.pop("id")
+        self.info["properties"] = metadata
+        self.info["properties"]["file_id"] = file_id
 
     def extract_url(self, metadata: dict):
-        urls = metadata.pop('url')
-        self.info['location'] = urls
-        hrefs = {
-            method: url for (url, _, method) in [
-                link.split('|') for link in urls
-                ]
-            }
+        urls = metadata.pop("url")
+        self.info["location"] = urls
+        hrefs = {method: url for (url, _, method) in [link.split("|") for link in urls]}
 
-        self.info['href'] = hrefs.pop('HTTPServer')
+        self.info["href"] = hrefs.pop("HTTPServer")
         for method, url in hrefs.items():
-            self.info[f'{method}_url'] = url
+            self.info[f"{method}_url"] = url
 
     def extract_ids(self, metadata: dict):
-        self.info['master_id'] = metadata.pop('master_id')
-        self.info['instance_id'] = metadata.pop('instance_id')
-        self.info['tracking_id'] = metadata.pop('tracking_id')
+        self.info["master_id"] = metadata.pop("master_id")
+        self.info["instance_id"] = metadata.pop("instance_id")
+        self.info["tracking_id"] = metadata.pop("tracking_id")
 
     @staticmethod
     def remove_fields(metadata: dict):
         """
         Remove metadata that are not mapped to STAC
         """
-        keys = [
-            'type',
-            'version',
-            '_timestamp',
-            'score',
-            '_version_'
-        ]
+        keys = ["type", "version", "_timestamp", "score", "_version_"]
         for key in keys:
             try:
                 metadata.pop(key)
@@ -141,38 +131,38 @@ class ESGFSolrExtract(PropertiesOutputKeyMixin, BaseProcessor):
         """
         Get additional metadata exclusive to the dataset level of the file.
         """
-        metadata = self.get_metadata(dataset_id, self.index, 'datasets')
+        metadata = self.get_metadata(dataset_id, self.index, "datasets")
         return metadata
 
     def get_item_info(self):
-        dataset_id = self.info['properties']['dataset_id']
+        dataset_id = self.info["properties"]["dataset_id"]
         item_metadata = self.get_item_metadata(dataset_id)
 
         dataset_exclusive_keys = [
-            'access',
-            'height_units',
-            'height_top',
-            'height_bottom',
-            'instance_id',
-            'master_id',
-            'url'
+            "access",
+            "height_units",
+            "height_top",
+            "height_bottom",
+            "instance_id",
+            "master_id",
+            "url",
         ]
 
         for key in dataset_exclusive_keys:
             try:
-                self.info['properties'][key] = item_metadata[key]
+                self.info["properties"][key] = item_metadata[key]
             except KeyError:
                 pass
 
         # If there is geometry data, extract and reformat into bbox
         try:
             bbox = dict(
-                min_lat=item_metadata['south_degrees'],
-                max_lon=item_metadata['west_degrees'],
-                max_lat=item_metadata['north_degrees'],
-                min_lon=item_metadata['east_degrees'],
+                min_lat=item_metadata["south_degrees"],
+                max_lon=item_metadata["west_degrees"],
+                max_lat=item_metadata["north_degrees"],
+                min_lon=item_metadata["east_degrees"],
             )
-            self.info['properties'].update(bbox)
+            self.info["properties"].update(bbox)
         except KeyError:
             pass
 
@@ -181,7 +171,7 @@ class ESGFSolrExtract(PropertiesOutputKeyMixin, BaseProcessor):
     def run(self, uri: str, **kwargs) -> dict:
 
         # Transform the path back to ID form
-        uri = uri.replace('/', '.')
+        uri = uri.replace("/", ".")
 
         LOGGER.info(f"Extracting metadata for: {uri}")
 

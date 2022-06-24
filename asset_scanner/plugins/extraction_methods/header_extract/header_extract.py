@@ -100,13 +100,14 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
     def guess_backend(self, uri: str) -> dict:
 
         if hasattr(self, backend):
-            entry_point = pkg.iter_entry_points("asset_scanner.extraction_methods.header_extract.backends", self.backend)
+            entry_point = pkg.iter_entry_points(
+                "asset_scanner.extraction_methods.header_extract.backends", self.backend
+            )
             backend = entry_point.load()
 
             backend = backend()
             if backend.guess_can_open(uri):
                 return backend
-
 
         backends = self.list_backend()
         for _, backend in backends.items():
@@ -118,7 +119,9 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
         raise (NoSuitableBackendException(f"No backend found for file {uri}"))
 
     @staticmethod
-    def attr_extraction(backend, uri: str, attributes: list, backend_kwargs: dict) -> dict:
+    def attr_extraction(
+        backend, uri: str, attributes: list, backend_kwargs: dict
+    ) -> dict:
         """
         Takes a uri and list of attributes and extracts the metadata from the header.
 
