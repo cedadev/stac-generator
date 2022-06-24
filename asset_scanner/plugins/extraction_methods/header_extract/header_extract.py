@@ -99,7 +99,7 @@ class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
 
     def guess_backend(self, uri: str) -> dict:
 
-        if hasattr(self, backend):
+        if hasattr(self, "backend"):
             entry_point = pkg.iter_entry_points(
                 "asset_scanner.extraction_methods.header_extract.backends", self.backend
             )

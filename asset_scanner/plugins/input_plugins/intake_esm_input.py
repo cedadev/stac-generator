@@ -51,7 +51,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import logging
 from datetime import datetime
-from urllib.parse import urlparse
 
 # Thirdparty imports
 import intake

@@ -10,7 +10,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import argparse
 import logging
-from pydoc import locate
 
 import pkg_resources
 import yaml

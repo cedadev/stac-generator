@@ -32,7 +32,6 @@ from os import listdir
 from os.path import isdir, isfile, join
 
 from asset_scanner.core.generator import BaseGenerator
-from asset_scanner.types.source_media import StorageType
 
 from .base import BaseInputPlugin
 

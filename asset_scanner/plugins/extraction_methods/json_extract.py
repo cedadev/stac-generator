@@ -114,8 +114,8 @@ class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
                 if item["body"]["collection_id"] == file_id:
                     item_list.append(item)
 
-        spatial_extent = self.get_spatial_extent(item_list)
-        temporal_extent = self.get_temporal_extent(item_list)
+        # spatial_extent = self.get_spatial_extent(item_list)
+        # temporal_extent = self.get_temporal_extent(item_list)
 
     @accepts_preprocessors
     @accepts_postprocessors

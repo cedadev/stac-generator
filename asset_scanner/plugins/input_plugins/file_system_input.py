@@ -46,8 +46,6 @@ from typing import TYPE_CHECKING
 
 from tqdm import tqdm
 
-from asset_scanner.types.source_media import StorageType
-
 from .base import BaseInputPlugin
 
 logger = logging.getLogger(__name__)
