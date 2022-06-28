@@ -51,8 +51,7 @@ import os
 from .base import OutputBackend
 
 ESMCAT_VERSION = "0.1.0"
-ASSET_FORMAT = {".nc": "netcdf",
-                ".zarr": "zarr"}
+ASSET_FORMAT = {".nc": "netcdf", ".zarr": "zarr"}
 
 
 class IntakeESMOutputBackend(OutputBackend):
@@ -78,8 +77,8 @@ class IntakeESMOutputBackend(OutputBackend):
 
     def export(self, data, **kwargs):
         """Write data to disk."""
-        import gzip
         import csv
+        import gzip
 
         if not os.path.exists(self.json_path):
             # Create catalog spec file and CSV file with header and first data row
@@ -121,14 +120,12 @@ class IntakeESMOutputBackend(OutputBackend):
         attributes = [{"column_name": key} for key in self.properties(data)]
         ext = data["body"]["extension"]
 
-        spec = {"esmcat_version": ESMCAT_VERSION,
-                "id": self.namespace,
-                "description": self.description,
-                "catalog_file": self.csv_path,
-                "attributes": attributes,
-                "assets": {
-                    "column_name": "path",
-                    "format": ASSET_FORMAT[ext]
-                    }
-                }
+        spec = {
+            "esmcat_version": ESMCAT_VERSION,
+            "id": self.namespace,
+            "description": self.description,
+            "catalog_file": self.csv_path,
+            "attributes": attributes,
+            "assets": {"column_name": "path", "format": ASSET_FORMAT[ext]},
+        }
         return spec
