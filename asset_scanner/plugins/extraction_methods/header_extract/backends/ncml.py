@@ -13,7 +13,7 @@ __contact__ = "huard.david@ouranos.ca"
 from typing import List
 
 import requests.exceptions
-from lxml.etree import XMLParser, fromstring, Element
+from lxml.etree import Element, XMLParser, fromstring
 
 # NcML namespace
 NS = {"ncml": "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"}
