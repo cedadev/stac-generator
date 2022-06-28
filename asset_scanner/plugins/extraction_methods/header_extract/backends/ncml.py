@@ -79,7 +79,9 @@ def get_ncml(filepath: str) -> bytes:
     return get_ncml_from_fs(filepath)
 
 
-def get_ncml_from_thredds(filepath: str, catalog: str = None, dataset: str = None) -> bytes:
+def get_ncml_from_thredds(
+    filepath: str, catalog: str = None, dataset: str = None
+) -> bytes:
     """Read NcML response from THREDDS server.
 
     Parameters
@@ -114,6 +116,7 @@ def get_ncml_from_thredds(filepath: str, catalog: str = None, dataset: str = Non
 def get_ncml_from_fs(filepath: str) -> bytes:
     """Return NcML file description using `ncdump` utility."""
     import subprocess
+
     cmd = ["ncdump", "-hx", filepath]
     proc = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     return proc.stdout.read()
@@ -123,7 +126,7 @@ def to_element(content: bytes) -> Element:
     """Parse NcML file into XML node."""
 
     # Parse XML content - UTF-8 encoded documents need to be read as bytes
-    parser = XMLParser(encoding='UTF-8')
+    parser = XMLParser(encoding="UTF-8")
     return fromstring(content, parser=parser)
 
 
