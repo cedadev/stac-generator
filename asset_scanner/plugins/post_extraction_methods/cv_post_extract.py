@@ -58,8 +58,8 @@ class ControlledVocabularyPostExtract(BaseProcessor):
         import importlib
 
         # Import data model
-        scopes = self.model.split('.')
-        module = '.'.join(scopes[:-1])
+        scopes = self.model.split(".")
+        module = ".".join(scopes[:-1])
 
         module = importlib.import_module(module)
         klass = getattr(module, scopes[-1])
