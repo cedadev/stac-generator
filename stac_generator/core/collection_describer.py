@@ -15,7 +15,7 @@ import logging
 # Python imports
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import yaml
 
@@ -40,8 +40,8 @@ class STACModel(BaseModel):
     """Collections processor description model."""
 
     id: dict = {}
-    extraction_methods: list[dict] = []
-    post_extraction_methods: list[dict] = []
+    extraction_methods: List[dict] = []
+    post_extraction_methods: List[dict] = []
 
 
 class CollectionDescription(BaseModel):
@@ -53,7 +53,7 @@ class CollectionDescription(BaseModel):
     item: Optional[STACModel]
     collection: Optional[STACModel]
 
-    categories: list[Category] = []
+    categories: List[Category] = []
 
     def __repr__(self):
         return yaml.dump(self.dict())
@@ -78,7 +78,7 @@ class CollectionDescriptions:
 
         self._build_tree(root_path, filelist)
 
-    def _build_tree(self, root_path: str, files: list[Path]) -> None:
+    def _build_tree(self, root_path: str, files: List[Path]) -> None:
         """
         Loads the yaml files from the root path and builds the dataset tree
         with references to the yaml files.

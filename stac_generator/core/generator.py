@@ -14,6 +14,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import re
 from abc import ABC, abstractmethod
+from typing import List
 
 from stac_generator.types.generators import ExtractionType
 
@@ -98,7 +99,7 @@ class BaseGenerator(ABC):
 
         return getattr(self, group).get_processor(name, **kwargs)
 
-    def _load_extra_processors(self, processor: dict, key: str) -> list[BaseProcessor]:
+    def _load_extra_processors(self, processor: dict, key: str) -> List[BaseProcessor]:
         """
         Load the post processors for the given processor
 
