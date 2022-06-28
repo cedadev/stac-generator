@@ -16,6 +16,7 @@ import logging
 # Python imports
 from abc import abstractmethod
 from typing import Optional
+
 from stac_generator.core.decorators import accepts_output_key
 
 # Package imports

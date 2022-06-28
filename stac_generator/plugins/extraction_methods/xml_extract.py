@@ -20,7 +20,6 @@ from xml.etree.ElementTree import ParseError
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
 from stac_generator.core.processor import BaseProcessor
 
-
 LOGGER = logging.getLogger(__name__)
 
 

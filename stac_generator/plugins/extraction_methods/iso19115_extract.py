@@ -24,7 +24,6 @@ from stac_generator.core.decorators import accepts_postprocessors, accepts_prepr
 # Package imports
 from stac_generator.core.processor import BaseProcessor
 
-
 LOGGER = logging.getLogger(__name__)
 
 iso19115_ns = {
