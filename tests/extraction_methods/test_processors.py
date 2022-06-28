@@ -31,7 +31,7 @@ def iso19115_processor():
 @pytest.fixture
 def ceda_observation():
     return CEDAObservation(
-        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$filepath"
+        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri"
     )
 
 

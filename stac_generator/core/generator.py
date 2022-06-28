@@ -20,7 +20,7 @@ from stac_generator.types.generators import ExtractionType
 from .collection_describer import CollectionDescription, CollectionDescriptions
 from .handler_picker import HandlerPicker
 from .processor import BaseProcessor
-from .utils import dict_merge, dot2dict, load_plugins
+from .utils import dict_merge, load_plugins
 
 
 class BaseGenerator(ABC):
@@ -128,8 +128,13 @@ class BaseGenerator(ABC):
             processor_inputs["conf"] = processor_conf
 
         output_key = processor.get("output_key", None)
-        if output_key:
-            processor_inputs["output_key"] = output_key
+        if not output_key:
+            output_key = processor_conf.get("output_key", None)
+
+        if not output_key:
+            output_key = self.conf.get("output_key", None)
+
+        processor_inputs["output_key"] = output_key
 
         return self._get_processor(processor_name, key, **processor_inputs)
 
@@ -151,11 +156,6 @@ class BaseGenerator(ABC):
             pre_processors=pre_processors,
             post_processors=post_processors,
         )
-
-        output_key = getattr(extraction_method, "output_key", "properties")
-
-        if output_key and metadata:
-            metadata = dot2dict(output_key, metadata)
 
         return metadata
 

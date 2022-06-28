@@ -20,12 +20,11 @@ from xml.etree.ElementTree import ParseError
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
 from stac_generator.core.processor import BaseProcessor
 
-from .mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
 
 
-class XMLExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class XMLExtract(BaseProcessor):
     """
     .. list-table::
 

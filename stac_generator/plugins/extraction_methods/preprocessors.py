@@ -95,4 +95,7 @@ class CEDAObservation(BasePreProcessor):
                 uuid = url.split("/")[-1]
                 kwargs["uuid"] = uuid
 
+        print("preprocessor uri: ", uri)
+        print("preprocessor kwargs: ", kwargs)
+
         return uri, kwargs

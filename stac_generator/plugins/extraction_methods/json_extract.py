@@ -21,13 +21,10 @@ from stac_generator.core.decorators import accepts_postprocessors, accepts_prepr
 from stac_generator.core.processor import BaseProcessor
 from stac_generator.core.types import SpatialExtent, TemporalExtent
 
-# Package imports
-from .mixins import PropertiesOutputKeyMixin
-
 LOGGER = logging.getLogger(__name__)
 
 
-class JSONExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class JSONExtract(BaseProcessor):
     """
 
     .. list-table::

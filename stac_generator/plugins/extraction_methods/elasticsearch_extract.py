@@ -24,12 +24,11 @@ from stac_generator.core.decorators import accepts_postprocessors, accepts_prepr
 # Package imports
 from stac_generator.core.processor import BaseProcessor
 
-from .mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ElasticsearchExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class ElasticsearchExtract(BaseProcessor):
     """
     Description:
         Using an ID. Generate a summary of information for higher level entities.

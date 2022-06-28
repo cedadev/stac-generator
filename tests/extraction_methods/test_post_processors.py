@@ -40,7 +40,9 @@ def facet_map_processor():
 
 @pytest.fixture
 def bbox_processor():
-    return postprocessors.BBOXProcessor(key_list=["west", "south", "east", "north"])
+    return postprocessors.BBOXProcessor(
+        coordinate_keys=["west", "south", "east", "north"]
+    )
 
 
 @pytest.fixture
@@ -149,12 +151,25 @@ def test_facet_map_processor(facet_map_processor, fpath, source_dict):
 def test_bbox_processor(bbox_processor, fpath):
     source_dict = {"north": "42.0", "south": "38.0", "east": "-28.0", "west": "-37.0"}
 
-    expected = [
-        float(source_dict["west"]),
-        float(source_dict["south"]),
-        float(source_dict["east"]),
-        float(source_dict["north"]),
-    ]
+    expected = {
+        "bbox": {
+            "type": "envelope",
+            "coordinates": [
+                [
+                    float(source_dict["west"]),
+                    float(source_dict["south"]),
+                ],
+                [
+                    float(source_dict["east"]),
+                    float(source_dict["north"]),
+                ],
+            ],
+        },
+        "north": "42.0",
+        "south": "38.0",
+        "east": "-28.0",
+        "west": "-37.0",
+    }
 
     output = bbox_processor.run(fpath, source_dict=source_dict)
     assert output == expected
@@ -205,9 +220,9 @@ def test_date_combinator_non_destructive(fpath):
 
 def test_date_combinator_different_output_key(fpath):
     """
-    Test can set different output key
+    Test can set different key
     """
-    processor = postprocessors.DateCombinatorProcessor(output_key="test")
+    processor = postprocessors.DateCombinatorProcessor(key="test")
 
     source_dict = {"year": "1850", "month": "02", "day": "01"}
 

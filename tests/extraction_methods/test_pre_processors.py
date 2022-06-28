@@ -34,14 +34,14 @@ def test_filename_reducer_posix(filename_reducer):
     input = "/a/b/c/d.txt"
     expected = "d.txt"
 
-    args, kwargs = filename_reducer.run(input)
-    assert args[0] == expected
+    uri, _ = filename_reducer.run(input)
+    assert uri == expected
 
 
 @pytest.fixture
 def ceda_observation():
     return CEDAObservation(
-        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$filepath"
+        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri"
     )
 
 
@@ -49,5 +49,5 @@ def test_ceda_observation(ceda_observation):
     input = "/badc/faam/data/2005/b070-jan-06"
     expected = "6f6d4b4fc7a042568cce7eccc6e9b6f2"
 
-    args, kwargs = ceda_observation.run(input)
+    _, kwargs = ceda_observation.run(input)
     assert kwargs["uuid"] == expected

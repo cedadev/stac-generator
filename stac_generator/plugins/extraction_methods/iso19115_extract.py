@@ -24,7 +24,6 @@ from stac_generator.core.decorators import accepts_postprocessors, accepts_prepr
 # Package imports
 from stac_generator.core.processor import BaseProcessor
 
-from .mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +37,7 @@ iso19115_ns = {
 }
 
 
-class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
+class ISO19115Extract(BaseProcessor):
     """
     .. list-table::
 
@@ -106,10 +105,15 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
+        print("processor uri: ", uri)
+        print("processor kwargs: ", kwargs)
+
         # Build the template
         url = Template(self.url_template)
+        print(self.url_template)
+        print("iso extract kwargs: ", kwargs)
         try:
-            url = url.substitute(uri)
+            url = url.substitute(kwargs)
         except KeyError:
             LOGGER.warning(
                 f"URL templating failed. Template: {self.url_template} key not found in kwargs: {uri}"
@@ -122,6 +126,8 @@ class ISO19115Extract(PropertiesOutputKeyMixin, BaseProcessor):
         if not response.status_code == 200:
             LOGGER.debug(f"Request {url} failed with response: {response.error}")
             return {}
+
+        print(response.text)
 
         iso_record = ET.fromstring(response.text)
 

@@ -18,13 +18,10 @@ import logging
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
 from stac_generator.core.processor import BaseProcessor
 
-# Package imports
-from .mixins import PropertiesOutputKeyMixin
-
 LOGGER = logging.getLogger(__name__)
 
 
-class DefaultExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class DefaultExtract(BaseProcessor):
     """
 
     .. list-table::

@@ -15,7 +15,6 @@ import pkg_resources as pkg
 
 from stac_generator.core.decorators import accepts_postprocessors
 from stac_generator.core.processor import BaseProcessor
-from stac_generator.plugins.extraction_methods.mixins import PropertiesOutputKeyMixin
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ class NoSuitableBackendException(Exception):
     ...
 
 
-class HeaderExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class HeaderExtract(BaseProcessor):
     """
 
     .. list-table::

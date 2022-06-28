@@ -16,6 +16,7 @@ import logging
 # Python imports
 from abc import abstractmethod
 from typing import Optional
+from stac_generator.core.decorators import accepts_output_key
 
 # Package imports
 from stac_generator.core.processor import BaseProcessor
@@ -26,6 +27,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class BasePostProcessor(BaseProcessor):
+    @accepts_output_key
     @abstractmethod
     def run(
         self,
@@ -160,7 +162,7 @@ class ISODateProcessor(BasePostProcessor):
 class BBOXProcessor(BasePostProcessor):
     """
 
-    Processor Name: ``stac_bbox``
+    Processor Name: ``bbox``
 
     Description:
         Accepts a dictionary of coordinate values and converts to `RFC 7946, section 5 <https://tools.ietf.org/html/rfc7946#section-5>`_
@@ -174,7 +176,7 @@ class BBOXProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - method: stac_bbox
+            - method: bbox
               inputs:
                 coordinate_keys:
                    - west
@@ -205,10 +207,7 @@ class BBOXProcessor(BasePostProcessor):
                     ],
                 ]
 
-                if "spatial" not in source_dict:
-                    source_dict["spatial"] = {"bbox": {}}
-
-                source_dict["spatial"]["bbox"] = {
+                source_dict["bbox"] = {
                     "type": "envelope",
                     "coordinates": coordinates,
                 }
@@ -222,7 +221,7 @@ class BBOXProcessor(BasePostProcessor):
 class GeometryPointProcessor(BasePostProcessor):
     """
 
-    Processor Name: ``stac_point_geometry``
+    Processor Name: ``point_geometry``
 
     Description:
         Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
@@ -236,7 +235,7 @@ class GeometryPointProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: stac_point_geometry
+            - name: point_geometry
               inputs:
                 coordinate_keys:
                    - lon
@@ -256,16 +255,11 @@ class GeometryPointProcessor(BasePostProcessor):
             try:
 
                 coordinates = [
-                    [
-                        float(source_dict[self.coordinate_keys[0]]),
-                        float(source_dict[self.coordinate_keys[1]]),
-                    ]
+                    float(source_dict[self.coordinate_keys[0]]),
+                    float(source_dict[self.coordinate_keys[1]]),
                 ]
 
-                if "spatial" not in source_dict:
-                    source_dict["spatial"] = {"geometry": {}}
-
-                source_dict["spatial"]["geometry"] = {
+                source_dict["geometry"] = {
                     "type": "Point",
                     "coordinates": coordinates,
                 }
@@ -279,7 +273,7 @@ class GeometryPointProcessor(BasePostProcessor):
 class GeometryLineProcessor(BasePostProcessor):
     """
 
-    Processor Name: ``stac_line_geometry``
+    Processor Name: ``line_geometry``
 
     Description:
         Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
@@ -293,7 +287,7 @@ class GeometryLineProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: stac_line_geometry
+            - name: line_geometry
               inputs:
                 coordinate_keys:
                 -
@@ -321,17 +315,12 @@ class GeometryLineProcessor(BasePostProcessor):
                 for coordinate_key in self.coordinate_keys:
                     coordinates.append(
                         [
-                            [
-                                float(source_dict[coordinate_key[0]]),
-                                float(source_dict[coordinate_key[1]]),
-                            ]
+                            float(source_dict[coordinate_key[0]]),
+                            float(source_dict[coordinate_key[1]]),
                         ]
                     )
 
-                if "spatial" not in source_dict:
-                    source_dict["spatial"] = {"geometry": {}}
-
-                source_dict["spatial"]["geometry"] = {
+                source_dict["geometry"] = {
                     "type": "Line",
                     "coordinates": coordinates,
                 }
@@ -345,7 +334,7 @@ class GeometryLineProcessor(BasePostProcessor):
 class GeometryPolygonProcessor(BasePostProcessor):
     """
 
-    Processor Name: ``stac_polygon_geometry``
+    Processor Name: ``polygon_geometry``
 
     Description:
         Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
@@ -359,17 +348,15 @@ class GeometryPolygonProcessor(BasePostProcessor):
     .. code-block:: yaml
 
         post_processors:
-            - name: stac_polygon_geometry
+            - name: polygon_geometry
               inputs:
                 coordinate_keys:
                 -
                   - lon_1
                   - lat_1
                 -
-                  - min_lon_2
-                  - max_lat_2
-                  - max_lon_2
-                  - min_lat_2
+                  - lon_2
+                  - lat_2
                 -
                   - lon_3
                   - lat_3
@@ -391,26 +378,20 @@ class GeometryPolygonProcessor(BasePostProcessor):
                 for coordinate_key in self.coordinate_keys:
                     coordinates.append(
                         [
-                            [
-                                float(source_dict[coordinate_key[0]]),
-                                float(source_dict[coordinate_key[1]]),
-                            ]
+                            float(source_dict[coordinate_key[0]]),
+                            float(source_dict[coordinate_key[1]]),
                         ]
                     )
 
+                # Add the first point to the end to complete the shape
                 coordinates.append(
                     [
-                        [
-                            float(source_dict[self.coordinate_keys[0][0]]),
-                            float(source_dict[self.coordinate_keys[0][1]]),
-                        ]
+                        float(source_dict[self.coordinate_keys[0][0]]),
+                        float(source_dict[self.coordinate_keys[0][1]]),
                     ]
                 )
 
-                if "spatial" not in source_dict:
-                    source_dict["spatial"] = {"geometry": {}}
-
-                source_dict["spatial"]["geometry"] = {
+                source_dict["geometry"] = {
                     "type": "Polygon",
                     "coordinates": coordinates,
                 }
@@ -430,12 +411,12 @@ class StringJoinProcessor(BasePostProcessor):
 
     Description:
         Accepts a dictionary. String values are popped from the dictionary and
-        are put back into the dictionary with the ``output_key`` specified.
+        are put back into the dictionary with the ``key`` specified.
 
     Configuration Options:
         - ``key_list``: ``REQUIRED`` list of keys to convert to bbox array. Ordering is respected.
         - ``delimiter``: ``REQUIRED`` text delimiter to put between strings
-        - ``output_key``: ``REQUIRED`` name of the key you would like to output
+        - ``key``: ``REQUIRED`` name of the key you would like to output
 
     Example Configuration:
 
@@ -450,7 +431,7 @@ class StringJoinProcessor(BasePostProcessor):
                    - month
                    - day
                 delimiter: "-"
-                output_key: datetime
+                key: datetime
 
     """
 
@@ -464,7 +445,7 @@ class StringJoinProcessor(BasePostProcessor):
 
             try:
                 string_elements = [str(source_dict.pop(key)) for key in self.key_list]
-                source_dict[self.output_key] = self.delimiter.join(string_elements)
+                source_dict[self.key] = self.delimiter.join(string_elements)
             except KeyError:
                 LOGGER.warning(f"Unable merge strings. file: {uri}", exc_info=True)
 
@@ -495,7 +476,7 @@ class DateCombinatorProcessor(BasePostProcessor):
 
     Configuration Options:
         - ``destructive``: Whether the keys are removed from the output when combined. ``DEFAULT: true``
-        - ``output_key``: Name of the key you would like to output. ``DEFAULT: datetime``
+        - ``key``: Name of the key you would like to output. ``DEFAULT: datetime``
         - ``format``: Format string to parse date to isodate. Date template is: ``${year}-${month}-${day}T${hour}:${minute}:${second}``
           The format string is passed to `datetime.datetime.strptime <https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime>`_
 
@@ -508,7 +489,7 @@ class DateCombinatorProcessor(BasePostProcessor):
               inputs:
                 destructive: true
                 format: '%Y-%m'
-                output_key: datetime
+                key: datetime
 
     """
 
@@ -558,8 +539,8 @@ class DateCombinatorProcessor(BasePostProcessor):
             if not isodate:
                 LOGGER.error(f"Error parsing date from file: {uri}")
 
-            output_key = getattr(self, "output_key", "datetime")
-            source_dict[output_key] = isodate or date
+            key = getattr(self, "key", "datetime")
+            source_dict[key] = isodate or date
 
             # Clear out keys if destructive
             if getattr(self, "destructive", True):

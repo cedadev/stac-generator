@@ -20,15 +20,15 @@ ROOT_DESCRIPTIONS = os.path.join(
 
 default_description = {
     "paths": [],
-    "asset": {},
-    "item": {},
-    "collection": {},
+    "asset": None,
+    "item": None,
+    "collection": None,
     "categories": [],
 }
 
 
 @pytest.fixture
-def item_descriptions():
+def collection_descriptions():
     print(ROOT_DESCRIPTIONS)
     return CollectionDescriptions(ROOT_DESCRIPTIONS)
 
@@ -38,8 +38,6 @@ def test_retrieve_posix_description(collection_descriptions):
 
     description = collection_descriptions.get_description("/a/b/c/d/e")
 
-    print(expected)
-    print(description.dict())
     assert description.dict() == expected
 
 
@@ -47,4 +45,5 @@ def test_retrieve_remote_description(collection_descriptions):
     expected = {**default_description, **{"paths": ["gc://a/b/c"]}}
 
     description = collection_descriptions.get_description("gc://a/b/c/d/e")
+
     assert description.dict() == expected

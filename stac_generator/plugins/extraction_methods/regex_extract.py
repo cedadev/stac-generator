@@ -19,13 +19,10 @@ import re
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
 from stac_generator.core.processor import BaseProcessor
 
-# Package imports
-from .mixins import PropertiesOutputKeyMixin
-
 LOGGER = logging.getLogger(__name__)
 
 
-class RegexExtract(PropertiesOutputKeyMixin, BaseProcessor):
+class RegexExtract(BaseProcessor):
     """
 
     .. list-table::
