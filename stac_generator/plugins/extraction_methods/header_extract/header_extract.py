@@ -61,7 +61,7 @@ class HeaderExtract(BaseProcessor):
                   - institution
                   - sensor
                   - platform
-                backend:
+                backend: xarray
                 backend_kwargs:
                   decode_times: False
 
