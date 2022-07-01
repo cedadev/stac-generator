@@ -129,6 +129,7 @@ class BaseGenerator(ABC):
             processor_inputs["conf"] = processor_conf
 
         output_key = processor.get("output_key", None)
+
         if not output_key:
             output_key = processor_conf.get("output_key", None)
 
@@ -141,8 +142,8 @@ class BaseGenerator(ABC):
 
     def _run_extraction_method(self, extraction_method: dict, uri: str) -> dict:
         """Run the specified extraction method."""
-
         # Load the processors
+        print(extraction_method)
         processor = self._load_processor(extraction_method, "extraction_methods")
         pre_processors = self._load_extra_processors(
             extraction_method, "pre_processors"
@@ -150,6 +151,8 @@ class BaseGenerator(ABC):
         post_processors = self._load_extra_processors(
             extraction_method, "post_processors"
         )
+
+        print(processor)
 
         # Retrieve the metadata
         metadata = processor.run(

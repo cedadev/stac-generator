@@ -26,7 +26,7 @@ from stac_generator.types.generators import ExtractionType
 LOGGER = logging.getLogger(__name__)
 
 
-class ItemGenerator(BaseGenerator):
+class CollectionGenerator(BaseGenerator):
 
     EXTRACTION_TYPE = ExtractionType.COLLECTION
 

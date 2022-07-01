@@ -177,7 +177,7 @@ class RabbitMQOutBackend(OutputBackend):
         :param data: expected data as header dict
         """
         id = data["id"]
-        msg = json.dumps(self.message)
+        msg = json.dumps(kwargs["message"])
 
         if self.deduplication:
             # Check if id is in the cache

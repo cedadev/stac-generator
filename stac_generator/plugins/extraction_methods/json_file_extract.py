@@ -17,14 +17,18 @@ import json
 import logging
 from typing import Optional
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+)
 from stac_generator.core.processor import BaseProcessor
 from stac_generator.core.types import SpatialExtent, TemporalExtent
 
 LOGGER = logging.getLogger(__name__)
 
 
-class JSONExtract(BaseProcessor):
+class JsonFileExtract(BaseProcessor):
     """
 
     .. list-table::
@@ -55,6 +59,7 @@ class JSONExtract(BaseProcessor):
 
             - method: json
               inputs:
+                filepath: /path/to/file.json
                 terms:
                   - mip_era
 
@@ -107,6 +112,7 @@ class JSONExtract(BaseProcessor):
         # spatial_extent = self.get_spatial_extent(item_list)
         # temporal_extent = self.get_temporal_extent(item_list)
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:

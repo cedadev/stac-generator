@@ -21,7 +21,11 @@ from datetime import datetime
 
 import magic
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+)
 from stac_generator.core.processor import BaseProcessor
 
 LOGGER = logging.getLogger(__name__)
@@ -120,6 +124,7 @@ class PosixStatsExtract(BaseProcessor):
         # Assuming no errors we can now store the checksum
         self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:

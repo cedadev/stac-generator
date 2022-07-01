@@ -15,7 +15,11 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import logging
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+)
 from stac_generator.core.processor import BaseProcessor
 
 LOGGER = logging.getLogger(__name__)
@@ -57,6 +61,7 @@ class DefaultExtract(BaseProcessor):
 
     """
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:

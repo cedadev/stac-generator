@@ -35,7 +35,7 @@ def accepts_preprocessors(func):
     """
 
     @wraps(func)
-    def wrapper(fself, uri, **kwargs):
+    def wrapper(func_self, uri, **kwargs):
 
         pre_processors = kwargs.get("pre_processors", [])
 
@@ -43,11 +43,9 @@ def accepts_preprocessors(func):
 
         for pprocessor in pre_processors:
             # Modify the input arguments
-            print("pre preprocessor uri: ", uri)
-            print(" pre preprocessor kwargs: ", kwargs)
             uri, kwargs = pprocessor.run(uri, **kwargs)
 
-        response = func(fself, uri, **kwargs)
+        response = func(func_self, uri, **kwargs)
         return response
 
     return wrapper
@@ -105,11 +103,9 @@ def accepts_output_key(func):
         # Call the main processor
         response = func(*args, **kwargs)
 
-        if hasattr(kwargs, "output_key") and kwargs["output_key"]:
-            print("processor output_key: ", kwargs["output_key"])
-            response = dot2dict(kwargs["output_key"], response)
+        if hasattr(args[0], "output_key") and args[0].output_key:
+            response = dot2dict(args[0].output_key, response)
 
-        print("after dot2dict: ", response)
         return response
 
     return wrapper

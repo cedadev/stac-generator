@@ -99,21 +99,22 @@ class HeaderExtract(BaseProcessor):
     def guess_backend(self, uri: str) -> dict:
 
         if hasattr(self, "backend"):
-            entry_point = pkg.iter_entry_points(
+            entry_points = pkg.iter_entry_points(
                 "stac_generator.extraction_methods.header_extract.backends",
                 self.backend,
             )
-            backend = entry_point.load()
 
-            backend = backend()
-            if backend.guess_can_open(uri):
+            backend = None
+            if len(entry_points) > 0:
+                backend = entry_points[0].load()
+
+            if backend and backend().guess_can_open(uri):
                 return backend
 
         backends = self.list_backend()
         for _, backend in backends.items():
 
-            backend = backend()
-            if backend.guess_can_open(uri):
+            if backend().guess_can_open(uri):
                 return backend
 
         raise (NoSuitableBackendException(f"No backend found for file {uri}"))

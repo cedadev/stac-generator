@@ -28,7 +28,6 @@ class BaseProcessor(ABC):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    @accepts_output_key
     @abstractmethod
     def run(self, uri: str) -> dict:
         """

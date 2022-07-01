@@ -28,7 +28,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 class BasePostProcessor(BaseProcessor):
-    @accepts_output_key
     @abstractmethod
     def run(
         self,
@@ -64,6 +63,7 @@ class FacetMapProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -119,6 +119,7 @@ class ISODateProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -187,6 +188,7 @@ class BBOXProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -244,6 +246,7 @@ class GeometryPointProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -300,6 +303,7 @@ class GeometryLineProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -363,6 +367,7 @@ class GeometryPolygonProcessor(BasePostProcessor):
                   - lat_3
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -436,6 +441,7 @@ class StringJoinProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -494,6 +500,7 @@ class DateCombinatorProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,
@@ -579,6 +586,7 @@ class FacetPrefixProcessor(BasePostProcessor):
 
     """
 
+    @accepts_output_key
     def run(
         self,
         uri: str,

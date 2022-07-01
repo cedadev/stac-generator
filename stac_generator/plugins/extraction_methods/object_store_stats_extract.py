@@ -27,7 +27,11 @@ from botocore import UNSIGNED
 from botocore.config import Config
 from botocore.exceptions import ClientError
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+)
 from stac_generator.core.processor import BaseProcessor
 from stac_generator.core.utils import Stats
 
@@ -119,6 +123,7 @@ class ObjectStoreStatsExtract(BaseProcessor):
         if checksum:
             self.info["checksum"] = checksum
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:

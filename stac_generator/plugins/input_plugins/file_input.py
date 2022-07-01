@@ -59,5 +59,5 @@ class FileInputPlugin(BaseInputPlugin):
         for file in self.file_list:
             with open(file) as f:
                 for line in f:
-                    filepath = json.loads(line)
-                    generator.process(filepath)
+                    data = json.loads(line)
+                    generator.process(**data)

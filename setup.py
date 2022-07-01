@@ -28,7 +28,7 @@ setup(
         "rabbitmq": ["pika"],
         "thredds": ["siphon"],
     },
-    python_requires=">=3.5",
+    python_requires=">=3.7",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
@@ -59,6 +59,9 @@ setup(
             "iso19115 = stac_generator.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
             "xml = stac_generator.plugins.extraction_methods.xml_extract:XMLExtract",
             "elasticsearch = stac_generator.plugins.extraction_methods.elasticsearch_extract:ElasticsearchExtract",
+            "json_file = stac_generator.plugins.extraction_methods.json_file_extract.JsonFileExtract",
+            "posix_stats = stac_generator.plugins.extraction_methods.posix_stats_extract.PosixStatsExtract",
+            "object_store_stats = stac_generator.plugins.extraction_methods.object_store_stats_extract.ObjectStoreStatsExtract",
         ],
         "stac_generator.post_extraction_methods": [
             "vocab = stac_generator.plugins.post_extraction_methods.vocab_extract:VocabExtract",

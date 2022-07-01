@@ -104,13 +104,9 @@ class ISO19115Extract(BaseProcessor):
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
-        print("processor uri: ", uri)
-        print("processor kwargs: ", kwargs)
-
         # Build the template
         url = Template(self.url_template)
-        print(self.url_template)
-        print("iso extract kwargs: ", kwargs)
+
         try:
             url = url.substitute(kwargs)
         except KeyError:
@@ -125,8 +121,6 @@ class ISO19115Extract(BaseProcessor):
         if not response.status_code == 200:
             LOGGER.debug(f"Request {url} failed with response: {response.error}")
             return {}
-
-        print(response.text)
 
         iso_record = ET.fromstring(response.text)
 

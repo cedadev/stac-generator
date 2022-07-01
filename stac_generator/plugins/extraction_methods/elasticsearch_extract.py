@@ -19,7 +19,11 @@ from collections import defaultdict
 # Third party imports
 from elasticsearch import Elasticsearch
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+)
 
 # Package imports
 from stac_generator.core.processor import BaseProcessor
@@ -240,6 +244,7 @@ class ElasticsearchExtract(BaseProcessor):
         if hasattr(self, "list"):
             self.extract_facet_list(self.list)
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:

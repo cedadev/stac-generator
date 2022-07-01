@@ -52,7 +52,6 @@ class FileoutOutputBackend(OutputBackend):
         self.filepath = self.filepath.rstrip("/")
 
     def export(self, data: dict, **kwargs) -> None:
-
         if hasattr(self, "deduplicate"):
             return
 
@@ -62,4 +61,4 @@ class FileoutOutputBackend(OutputBackend):
             filepath = self.filepath
 
         with open(f"{filepath}", "a") as file:
-            file.write(f"{json.dumps(data)}\n")
+            file.write(f"{json.dumps(kwargs['message'])}\n")
