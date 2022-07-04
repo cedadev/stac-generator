@@ -12,7 +12,7 @@ import logging
 
 import pydantic
 
-from asset_scanner.core.decorators import accepts_postprocessors, accepts_preprocessors
+from asset_scanner.core.decorators import accepts_postprocessors
 from asset_scanner.core.processor import BaseProcessor
 
 LOGGER = logging.getLogger(__name__)
