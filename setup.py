@@ -64,6 +64,7 @@ setup(
             "controlled_vocabulary = asset_scanner.plugins.post_extraction_methods.cv_post_extract:ControlledVocabularyPostExtract",
         ],
         "asset_scanner.extraction_methods.header_extract.backends": [
+            "ncml = asset_scanner.plugins.extraction_methods.header_extract.backends.ncml:NcMLBackend",
             "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
             "cf = asset_scanner.plugins.extraction_methods.header_extract.backends.cf:CfBackend",
         ],
