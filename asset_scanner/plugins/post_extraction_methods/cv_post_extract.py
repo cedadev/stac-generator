@@ -2,7 +2,7 @@
 
 __author__ = "David Huard"
 __date__ = "June 2022"
-__copyright__ = "Copyright 2018 Ouranos"
+__copyright__ = "Copyright 2022 Ouranos"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "huard.david@ouranos.ca"
 
