@@ -16,7 +16,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List
 
-from stac_generator.types.generators import ExtractionType
+from stac_generator.types.generators import GeneratorType
 
 from .collection_describer import CollectionDescription, CollectionDescriptions
 from .handler_picker import HandlerPicker
@@ -30,7 +30,7 @@ class BaseGenerator(ABC):
 
     Attributes:
 
-        EXTRACTION_TYPE:
+        TYPE:
             Defines the stac level the extraction is occuring at.
 
         DEFAULT_ID_EXTRACTION_METHODS:
@@ -39,7 +39,8 @@ class BaseGenerator(ABC):
 
     """
 
-    EXTRACTION_TYPE = None
+    TYPE = None
+    PARENT_TYPE = None
 
     DEFAULT_ID_EXTRACTION_METHODS = {
         "asset_id": {"method": "hash", "inputs": {"terms": ["uri"]}},
@@ -125,8 +126,8 @@ class BaseGenerator(ABC):
         processor_inputs = processor.get("inputs", {})
 
         processor_conf = self.conf.get(key, {}).get(processor_name, {})
-        if processor_conf:
-            processor_inputs["conf"] = processor_conf
+
+        processor_inputs["conf"] = processor_conf
 
         output_key = processor.get("output_key", None)
 
@@ -138,12 +139,17 @@ class BaseGenerator(ABC):
 
         processor_inputs["output_key"] = output_key
 
+        processor_inputs["TYPE"] = self.TYPE
+
+        processor_inputs["PARENT_TYPE"] = self.PARENT_TYPE
+
         return self._get_processor(processor_name, key, **processor_inputs)
 
-    def _run_extraction_method(self, extraction_method: dict, uri: str) -> dict:
+    def _run_extraction_method(
+        self, extraction_method: dict, uri: str, **kwargs
+    ) -> dict:
         """Run the specified extraction method."""
         # Load the processors
-        print(extraction_method)
         processor = self._load_processor(extraction_method, "extraction_methods")
         pre_processors = self._load_extra_processors(
             extraction_method, "pre_processors"
@@ -152,13 +158,12 @@ class BaseGenerator(ABC):
             extraction_method, "post_processors"
         )
 
-        print(processor)
-
         # Retrieve the metadata
         metadata = processor.run(
             uri,
             pre_processors=pre_processors,
             post_processors=post_processors,
+            **kwargs
         )
 
         return metadata
@@ -215,14 +220,14 @@ class BaseGenerator(ABC):
         :return: result from the processing
         """
         # Execute facet extraction functions
-        generator_description = getattr(description, self.EXTRACTION_TYPE.value)
+        generator_description = getattr(description, self.TYPE.value)
 
         if generator_description:
             body = {}
 
             for extraction_method in generator_description.extraction_methods:
 
-                metadata = self._run_extraction_method(extraction_method, uri)
+                metadata = self._run_extraction_method(extraction_method, uri, **kwargs)
 
                 # Merge the extracted metadata with the metadata already retrieved
                 if metadata:
@@ -252,7 +257,7 @@ class BaseGenerator(ABC):
         """
 
         # Execute facet extraction functions
-        generator_description = getattr(description, self.EXTRACTION_TYPE.value)
+        generator_description = getattr(description, self.TYPE.value)
 
         if generator_description:
 
@@ -288,7 +293,7 @@ class BaseGenerator(ABC):
             collection_id_description, body
         )
 
-        if self.EXTRACTION_TYPE in [ExtractionType.ASSET, ExtractionType.ITEM]:
+        if self.TYPE in [GeneratorType.ASSET, GeneratorType.ITEM]:
             item_description = description.item
 
             if item_description.id:
@@ -307,7 +312,7 @@ class BaseGenerator(ABC):
 
             ids["item_id"] = self._run_id_extraction_method(item_id_description, body)
 
-        if self.EXTRACTION_TYPE in [ExtractionType.ASSET]:
+        if self.TYPE in [GeneratorType.ASSET]:
             asset_description = description.asset
 
             if asset_description.id:

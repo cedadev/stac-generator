@@ -21,14 +21,14 @@ import logging
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
-from stac_generator.types.generators import ExtractionType
+from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
 
 
 class CollectionGenerator(BaseGenerator):
 
-    EXTRACTION_TYPE = ExtractionType.COLLECTION
+    TYPE = GeneratorType.COLLECTION
 
     def process(self, uri: str, **kwargs) -> None:
         """
@@ -39,7 +39,7 @@ class CollectionGenerator(BaseGenerator):
         :return:
         """
 
-        body = {"type": self.EXTRACTION_TYPE.value}
+        body = {"type": self.TYPE.value}
 
         # Get dataset description file
 
@@ -55,6 +55,6 @@ class CollectionGenerator(BaseGenerator):
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        data = {"id": ids["collection_id"], "body": body}
+        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
 
         self.output(data)

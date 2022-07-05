@@ -136,7 +136,7 @@ class PosixStatsExtract(BaseProcessor):
 
         """
 
-        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {self.checksum}")
+        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}")
 
         stats = os.stat(uri)
 

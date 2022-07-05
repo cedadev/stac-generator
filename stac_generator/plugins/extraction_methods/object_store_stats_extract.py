@@ -75,7 +75,7 @@ class ObjectStoreStatsExtract(BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        session_kwargs = getattr(self.conf, "session_kwargs", {})
+        session_kwargs = getattr(self, "session_kwargs", {})
         self.session = boto3.session.Session(**session_kwargs)
         self.anonymous = not session_kwargs
 
@@ -135,7 +135,9 @@ class ObjectStoreStatsExtract(BaseProcessor):
 
         """
 
-        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {self.checksum}")
+        LOGGER.info(
+            f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}"
+        )
 
         uri_parse = kwargs.get("uri_parse")
         if not uri_parse:

@@ -10,8 +10,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
-from stac_generator.core.decorators import accepts_output_key
-
 
 class BaseProcessor(ABC):
     """
@@ -24,8 +22,13 @@ class BaseProcessor(ABC):
         Set the kwargs to generate instance attributes of the same name
         :param kwargs:
         """
+        # Set default processor settings
+        self._set_attrs(kwargs["conf"])
+        # Override with specific processor settings
+        self._set_attrs(kwargs)
 
-        for k, v in kwargs.items():
+    def _set_attrs(self, conf: dict) -> None:
+        for k, v in conf.items():
             setattr(self, k, v)
 
     @abstractmethod

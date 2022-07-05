@@ -16,7 +16,7 @@ import logging
 from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
-from stac_generator.types.generators import ExtractionType
+from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +29,8 @@ class AssetGenerator(BaseGenerator):
     passed to its ``process`` method.
     """
 
-    EXTRACTION_TYPE = ExtractionType.ASSET
+    TYPE = GeneratorType.ASSET
+    PARENT_TYPE = GeneratorType.ITEM
 
     def get_categories(self, uri: str, description: CollectionDescription) -> list:
         """
@@ -58,7 +59,7 @@ class AssetGenerator(BaseGenerator):
         :return:
         """
 
-        body = {"type": self.EXTRACTION_TYPE.value}
+        body = {"type": self.TYPE.value}
 
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)
@@ -76,8 +77,11 @@ class AssetGenerator(BaseGenerator):
         body["categories"] = self.get_categories(uri, description)
         body["item_id"] = ids["item_id"]
 
-        data = {"id": ids["asset_id"], "body": body}
+        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
 
-        message = {"item_id": ids["item_id"], "uri": uri}
+        message = {
+            f"{self.PARENT_TYPE.value}_id": ids[f"{self.PARENT_TYPE.value}_id"],
+            "uri": uri,
+        }
 
         self.output(data, message=message)

@@ -65,7 +65,7 @@ class JsonFileExtract(BaseProcessor):
 
     """
 
-    def get_facet_values(self, facet: str, uri: str) -> list:
+    def get_facet_values(self, facet: str, id: str) -> list:
 
         facet_values = []
 
@@ -73,12 +73,15 @@ class JsonFileExtract(BaseProcessor):
             file_data = json.load(file)
 
             for item in file_data:
-                if item["body"]["collection_id"] == uri:
+                if item["body"][f"{self.TYPE.value}_id"] == id:
                     values = item["body"]["properties"][facet]
+
                     if isinstance(values, list):
                         facet_values.extend(values)
+
                     else:
                         facet_values.append(values)
+
         return list(set(facet_values))
 
     @staticmethod
@@ -117,12 +120,12 @@ class JsonFileExtract(BaseProcessor):
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
-        metadata = {"summaries": {}}
+        metadata = {}
 
         for facet in self.terms:
-            values = self.get_facet_values(facet, uri)
+            values = self.get_facet_values(facet, kwargs[f"{self.TYPE.value}_id"])
             if values:
-                metadata["summaries"][facet] = values
+                metadata[facet] = values
 
         # No need to include extents since the example scanner has none.
 

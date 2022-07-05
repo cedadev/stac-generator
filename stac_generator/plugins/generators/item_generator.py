@@ -22,14 +22,15 @@ from string import Template
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
-from stac_generator.types.generators import ExtractionType
+from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
 
 
 class ItemGenerator(BaseGenerator):
 
-    EXTRACTION_TYPE = ExtractionType.ITEM
+    TYPE = GeneratorType.ITEM
+    PARENT_TYPE = GeneratorType.COLLECTION
 
     def process_template(self, uri: str, **kwargs):
         """
@@ -63,7 +64,7 @@ class ItemGenerator(BaseGenerator):
         :return:
         """
 
-        body = {"type": self.EXTRACTION_TYPE.value}
+        body = {"type": self.TYPE.value}
 
         # Get dataset description file
 
@@ -82,8 +83,11 @@ class ItemGenerator(BaseGenerator):
         body["collection_id"] = ids["collection_id"]
         body["item_id"] = ids["item_id"]
 
-        data = {"id": ids["item_id"], "body": body}
+        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
 
-        message = {"collection_id": ids["collection_id"], "uri": uri}
+        message = {
+            f"{self.PARENT_TYPE.value}_id": ids[f"{self.PARENT_TYPE.value}_id"],
+            "uri": uri,
+        }
 
         self.output(data, message=message)

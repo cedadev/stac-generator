@@ -70,11 +70,8 @@ class ElasticsearchExtract(BaseProcessor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if "session_kwargs" in self.conf:
-            self.es = Elasticsearch(**self.conf["session_kwargs"])
-
-        if "index" in self.conf and not hasattr(self, "session_kwargs"):
-            self.index = self.conf["index"]
+        if hasattr(self, "session_kwargs"):
+            self.es = Elasticsearch(**self.session_kwargs)
 
     @staticmethod
     def bbox_query(facet: str) -> dict:
@@ -248,9 +245,6 @@ class ElasticsearchExtract(BaseProcessor):
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
-
-        if hasattr(self, "session_kwargs"):
-            self.es = Elasticsearch(**self.session_kwargs)
 
         self.metadata = defaultdict(list)
 

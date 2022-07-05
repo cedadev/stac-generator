@@ -11,8 +11,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import enum
 
 
-class ExtractionType(enum.Enum):
-    """Enum values for extraction classes"""
+class GeneratorType(enum.Enum):
+    """Enum values for generator classes"""
 
     ASSET = "asset"
     ITEM = "item"
