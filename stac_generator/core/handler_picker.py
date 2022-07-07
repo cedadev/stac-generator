@@ -13,9 +13,9 @@ from typing import Optional, Union
 
 import pkg_resources
 
-LOGGER = logging.getLogger(__name__)
-
 from .processor import BaseProcessor
+
+LOGGER = logging.getLogger(__name__)
 
 
 class HandlerPicker:

@@ -12,9 +12,11 @@ import logging
 from functools import lru_cache
 
 import pkg_resources as pkg
-from stac_generator.core.collection_describer import CollectionDescription
 
-from stac_generator.core.decorators import accepts_postprocessors
+from stac_generator.core.decorators import (
+    accepts_postprocessors,
+    expected_terms_postprocessors,
+)
 from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
