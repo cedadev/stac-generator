@@ -16,12 +16,12 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseIdExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class DefaultExtract(BaseProcessor):
+class DefaultExtract(BaseIdExtractionMethod):
     """
 
     .. list-table::
@@ -53,10 +53,6 @@ class DefaultExtract(BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(
-        self,
-        body: dict,
-        **kwargs,
-    ) -> dict:
+    def run(self, body: dict) -> dict:
 
         return self.value

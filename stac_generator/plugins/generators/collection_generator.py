@@ -29,6 +29,7 @@ LOGGER = logging.getLogger(__name__)
 class CollectionGenerator(BaseGenerator):
 
     TYPE = GeneratorType.COLLECTION
+    SUBTYPE = GeneratorType.ITEM
 
     def process(self, uri: str, **kwargs) -> None:
         """
@@ -44,6 +45,9 @@ class CollectionGenerator(BaseGenerator):
         # Get dataset description file
 
         description = self.collection_descriptions.get_description(uri)
+
+        if self.SUBTYPE:
+            kwargs["subtype_terms"] = self.expected_terms(self.SUBTYPE, description)
 
         # extract data
         extraction_methods_output = self.run_extraction_methods(

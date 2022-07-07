@@ -19,13 +19,14 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class DefaultExtract(BaseProcessor):
+class DefaultExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -67,3 +68,14 @@ class DefaultExtract(BaseProcessor):
     def run(self, uri: str, **kwargs) -> dict:
 
         return self.defaults
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return list(self.defaults.keys())

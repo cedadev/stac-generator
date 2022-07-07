@@ -25,13 +25,14 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class PosixStatsExtract(BaseProcessor):
+class PosixStatsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -136,7 +137,9 @@ class PosixStatsExtract(BaseProcessor):
 
         """
 
-        LOGGER.info(f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}")
+        LOGGER.info(
+            f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}"
+        )
 
         stats = os.stat(uri)
 
@@ -149,3 +152,14 @@ class PosixStatsExtract(BaseProcessor):
         # self.extract_checksum(uri, self.checksum)
 
         return self.info
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return ["filename", "extension", "size", "modified_time", "magic_number"]

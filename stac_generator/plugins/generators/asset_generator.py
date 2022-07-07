@@ -29,8 +29,8 @@ class AssetGenerator(BaseGenerator):
     passed to its ``process`` method.
     """
 
+    SURTYPE = GeneratorType.ITEM
     TYPE = GeneratorType.ASSET
-    PARENT_TYPE = GeneratorType.ITEM
 
     def get_categories(self, uri: str, description: CollectionDescription) -> list:
         """
@@ -80,7 +80,7 @@ class AssetGenerator(BaseGenerator):
         data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
 
         message = {
-            f"{self.PARENT_TYPE.value}_id": ids[f"{self.PARENT_TYPE.value}_id"],
+            f"{self.SURTYPE.value}_id": ids[f"{self.SURTYPE.value}_id"],
             "uri": uri,
         }
 

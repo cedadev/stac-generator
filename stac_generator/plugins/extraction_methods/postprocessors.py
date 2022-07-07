@@ -14,28 +14,16 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Python imports
-from abc import abstractmethod
 from typing import Optional
 
 from stac_generator.core.decorators import accepts_output_key
 
 # Package imports
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BasePostProcessor
 
 from .utils import DATE_TEMPLATE, isoformat_date
 
 LOGGER = logging.getLogger(__name__)
-
-
-class BasePostProcessor(BaseProcessor):
-    @abstractmethod
-    def run(
-        self,
-        uri: str,
-        source_dict: Optional[dict] = None,
-        **kwargs,
-    ) -> dict:
-        pass
 
 
 class FacetMapProcessor(BasePostProcessor):
@@ -67,8 +55,7 @@ class FacetMapProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: Optional[dict] = None,
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ) -> dict:
         output = {}
         if source_dict:
@@ -82,6 +69,19 @@ class FacetMapProcessor(BasePostProcessor):
                     output[k] = v
 
         return output
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return [self.term_map.get(item, item) for item in term_list]
 
 
 class ISODateProcessor(BasePostProcessor):
@@ -123,7 +123,7 @@ class ISODateProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: Optional[dict] = None,
+        source_dict: Optional[dict] = {},
         **kwargs,
     ) -> dict:
         """
@@ -160,6 +160,19 @@ class ISODateProcessor(BasePostProcessor):
 
         return source_dict
 
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list
+
 
 class BBOXProcessor(BasePostProcessor):
     """
@@ -192,8 +205,7 @@ class BBOXProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: dict = {},
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
 
         if source_dict:
@@ -219,6 +231,19 @@ class BBOXProcessor(BasePostProcessor):
                 LOGGER.warning("Unable to convert bbox.", exc_info=True)
 
         return source_dict
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list.append("bbox")
 
 
 class GeometryPointProcessor(BasePostProcessor):
@@ -250,8 +275,7 @@ class GeometryPointProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: dict = {},
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
 
         if source_dict:
@@ -272,6 +296,19 @@ class GeometryPointProcessor(BasePostProcessor):
                 LOGGER.warning("Unable to convert to point geometry.", exc_info=True)
 
         return source_dict
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list.append("geometry")
 
 
 class GeometryLineProcessor(BasePostProcessor):
@@ -307,8 +344,7 @@ class GeometryLineProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: dict = {},
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
 
         if source_dict:
@@ -334,6 +370,19 @@ class GeometryLineProcessor(BasePostProcessor):
                 LOGGER.warning("Unable to convert to a line geometry.", exc_info=True)
 
         return source_dict
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list.append("geometry")
 
 
 class GeometryPolygonProcessor(BasePostProcessor):
@@ -371,8 +420,7 @@ class GeometryPolygonProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: dict = {},
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
 
         if source_dict:
@@ -408,6 +456,19 @@ class GeometryPolygonProcessor(BasePostProcessor):
                 )
 
         return source_dict
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list.append("geometry")
 
 
 class StringJoinProcessor(BasePostProcessor):
@@ -445,8 +506,7 @@ class StringJoinProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: dict = {},
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
         if source_dict:
 
@@ -457,6 +517,19 @@ class StringJoinProcessor(BasePostProcessor):
                 LOGGER.warning(f"Unable merge strings. file: {uri}", exc_info=True)
 
         return source_dict
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list.append(self.key)
 
 
 class DateCombinatorProcessor(BasePostProcessor):
@@ -504,8 +577,7 @@ class DateCombinatorProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: Optional[dict] = None,
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ):
         if source_dict:
 
@@ -557,6 +629,25 @@ class DateCombinatorProcessor(BasePostProcessor):
 
         return source_dict
 
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        term_list.append(getattr(self, "key", "datetime"))
+
+        if getattr(self, "destructive", True):
+            for key in ["year", "month", "day", "hour", "minute", "second"]:
+                term_list.remove(key)
+
+        return term_list
+
 
 class FacetPrefixProcessor(BasePostProcessor):
     """
@@ -590,8 +681,7 @@ class FacetPrefixProcessor(BasePostProcessor):
     def run(
         self,
         uri: str,
-        source_dict: Optional[dict] = None,
-        **kwargs,
+        source_dict: Optional[dict] = {},
     ) -> dict:
         output = {}
         if source_dict:
@@ -603,3 +693,19 @@ class FacetPrefixProcessor(BasePostProcessor):
                     output[k] = v
 
         return output
+
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return [
+            f"{self.prefix}.{item}" if item in self.terms else item
+            for item in term_list
+        ]

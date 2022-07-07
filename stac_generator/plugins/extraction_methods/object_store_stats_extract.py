@@ -31,14 +31,15 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 from stac_generator.core.utils import Stats
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ObjectStoreStatsExtract(BaseProcessor):
+class ObjectStoreStatsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -169,8 +170,19 @@ class ObjectStoreStatsExtract(BaseProcessor):
         self.extract_filename(object_path)
         self.extract_extension(object_path)
         self.extract_stat("size", stats, "size")
-        self.extract_stat("mtime", stats, "last_modified")
+        self.extract_stat("modified_time", stats, "last_modified")
         self.extract_stat("magic_number", stats, "content_type")
-        self.extract_checksum(stats, self.checksum)
+        # self.extract_checksum(stats, self.checksum)
 
         return self.info
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]

@@ -19,12 +19,12 @@ import logging
 import requests
 
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BasePostExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class VocabExtract(BaseProcessor):
+class VocabExtract(BasePostExtractionMethod):
     """
 
     .. list-table::
@@ -107,3 +107,13 @@ class VocabExtract(BaseProcessor):
         body = body | {"vocabs": vocabs, "properties": new_properties}
 
         return body
+
+    def expected_terms(self, term_list) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return term_list

@@ -9,14 +9,13 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import Optional, Union
 
 import pkg_resources
 
 LOGGER = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
-    from .processor import BaseProcessor
+from .processor import BaseProcessor
 
 
 class HandlerPicker:
@@ -33,7 +32,7 @@ class HandlerPicker:
             }
     """
 
-    def __init__(self, entry_point_key: Union[List, str]):
+    def __init__(self, entry_point_key: Union[list, str]):
         """
         Entry points to load from in the setup.py
 
@@ -45,7 +44,7 @@ class HandlerPicker:
             self.handlers = self._get_entrypoints(entry_point_key)
 
     @staticmethod
-    def _get_entrypoints(group) -> Dict:
+    def _get_entrypoints(group) -> dict:
         """Get entrypoints for given group
 
         :param group: The named entry group
@@ -58,7 +57,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get_processor(self, name: str, **kwargs) -> Optional["BaseProcessor"]:
+    def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
         """
         Get the processor by name
 
@@ -71,7 +70,7 @@ class HandlerPicker:
         entry_point = self.handlers.get(name)
 
         if not entry_point:
-            LOGGER.error(f"Failed to load processor: {name}")
+            LOGGER.error("Failed to load processor: %s", name)
             return
 
         # Try to load the processor

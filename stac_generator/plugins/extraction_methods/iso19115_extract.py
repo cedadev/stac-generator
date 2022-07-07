@@ -19,10 +19,14 @@ from xml.etree import ElementTree as ET
 # Third party imports
 import requests
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
+from stac_generator.core.decorators import (
+    accepts_postprocessors,
+    accepts_preprocessors,
+    expected_terms_postprocessors,
+)
 
 # Package imports
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +40,7 @@ iso19115_ns = {
 }
 
 
-class ISO19115Extract(BaseProcessor):
+class ISO19115Extract(BaseExtractionMethod):
     """
     .. list-table::
 
@@ -90,7 +94,7 @@ class ISO19115Extract(BaseProcessor):
               inputs:
                 url_template: 'api.catalogue.ceda.ac.uk/export/xml/$uri'
                 extraction_keys:
-                  - method: start_datetime
+                  - name: start_datetime
                     key: './/gml:beginPosition'
               pre_processors:
                 - method: ceda_observation
@@ -137,3 +141,14 @@ class ISO19115Extract(BaseProcessor):
                 metadata[name] = value.text
 
         return metadata
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return [extraction_key.name for extraction_key in self.extraction_keys]

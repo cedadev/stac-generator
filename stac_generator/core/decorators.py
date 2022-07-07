@@ -36,7 +36,6 @@ def accepts_preprocessors(func):
 
     @wraps(func)
     def wrapper(func_self, uri, **kwargs):
-
         pre_processors = kwargs.get("pre_processors", [])
 
         # Remove the reference to self
@@ -106,6 +105,39 @@ def accepts_output_key(func):
         if hasattr(args[0], "output_key") and args[0].output_key:
             response = dot2dict(args[0].output_key, response)
 
+        return response
+
+    return wrapper
+
+
+def expected_terms_postprocessors(func):
+    """
+    Allows postprocessors to work on the output from the main
+    processor.  Uses the key ``post_processors`` from the processor
+    description.
+
+    :param filepath: Path to the file
+    :param source_media: The source media type
+    :param source_dict: The output dict from the wrapped processor
+    :param post_processors: List of post processors to run
+    :param kwargs: Additional kwargs passed to post processor
+
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Call the main processor
+        response = func(*args, **kwargs)
+
+        post_processors = kwargs.get("post_processors", [])
+
+        # Remove the reference to self from the first processor.
+        args = args[1:]
+
+        for pprocessor in post_processors:
+
+            # Modify the response from the main processor
+            response = pprocessor.expected_terms(*args, source_dict=response, **kwargs)
         return response
 
     return wrapper

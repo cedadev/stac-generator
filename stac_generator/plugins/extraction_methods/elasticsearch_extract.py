@@ -23,15 +23,16 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
 
 # Package imports
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ElasticsearchExtract(BaseProcessor):
+class ElasticsearchExtract(BaseExtractionMethod):
     """
     Description:
         Using an ID. Generate a summary of information for higher level entities.
@@ -263,3 +264,31 @@ class ElasticsearchExtract(BaseProcessor):
         self.extract_metadata()
 
         return self.metadata
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        expected_terms = []
+
+        if hasattr(self, "bbox"):
+            expected_terms += self.bbox
+
+        if hasattr(self, "min"):
+            expected_terms += self.min
+
+        if hasattr(self, "max"):
+            expected_terms += self.max
+
+        if hasattr(self, "sum"):
+            expected_terms += self.sum
+
+        if hasattr(self, "list"):
+            expected_terms += self.list
+
+        return expected_terms

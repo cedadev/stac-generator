@@ -24,13 +24,14 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ESGFSolrExtract(BaseProcessor):
+class ESGFSolrExtract(BaseExtractionMethod):
     """
     Extracts metadata from files held in ESGF Solr.
 
@@ -59,7 +60,7 @@ class ESGFSolrExtract(BaseProcessor):
         Solr returns metadata as lists, convert the single item
         list to item.
         """
-        if type(solr_item) == list and len(solr_item) == 1:
+        if isinstance(solr_item, list) and len(solr_item) == 1:
             return solr_item[0]
         return solr_item
 
@@ -137,6 +138,9 @@ class ESGFSolrExtract(BaseProcessor):
         return metadata
 
     def get_item_info(self):
+        """
+        Get item information.
+        """
         dataset_id = self.info["properties"]["dataset_id"]
         item_metadata = self.get_item_metadata(dataset_id)
 
@@ -176,7 +180,7 @@ class ESGFSolrExtract(BaseProcessor):
         # Transform the path back to ID form
         uri = uri.replace("/", ".")
 
-        LOGGER.info(f"Extracting metadata for: {uri}")
+        LOGGER.info("Extracting metadata for: %s", uri)
 
         metadata = self.get_metadata(uri, self.index, self.core)
 
@@ -192,3 +196,14 @@ class ESGFSolrExtract(BaseProcessor):
         self.get_item_info()
 
         return self.info
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return ["esgf solar terms"]

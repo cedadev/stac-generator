@@ -12,9 +12,10 @@ import logging
 from functools import lru_cache
 
 import pkg_resources as pkg
+from stac_generator.core.collection_describer import CollectionDescription
 
 from stac_generator.core.decorators import accepts_postprocessors
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class NoSuitableBackendException(Exception):
     ...
 
 
-class HeaderExtract(BaseProcessor):
+class HeaderExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -135,3 +136,14 @@ class HeaderExtract(BaseProcessor):
         """
 
         return backend.attr_extraction(uri, attributes, backend_kwargs)
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return self.attributes

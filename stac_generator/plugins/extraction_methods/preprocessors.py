@@ -11,7 +11,6 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import abc
 import logging
 import os
 from string import Template
@@ -20,15 +19,9 @@ from string import Template
 import requests
 
 # Package imports
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BasePreProcessor
 
 LOGGER = logging.getLogger(__name__)
-
-
-class BasePreProcessor(BaseProcessor):
-    @abc.abstractmethod
-    def run(self, uri: str, **kwargs) -> dict:
-        pass
 
 
 class ReducePathtoName(BasePreProcessor):

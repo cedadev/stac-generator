@@ -17,13 +17,18 @@ from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ParseError
 
 # Package imports
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+    expected_terms_postprocessors,
+)
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class XMLExtract(BaseProcessor):
+class XMLExtract(BaseExtractionMethod):
     """
     .. list-table::
 
@@ -78,12 +83,13 @@ class XMLExtract(BaseProcessor):
               inputs:
                 filter_expr: '\.manifest$'
                 extraction_keys:
-                  - method: start_datetime
+                  - name: start_datetime
                     key: './/gml:beginPosition'
 
     # noqa: W605
     """
 
+    @accepts_output_key
     @accepts_preprocessors
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
@@ -110,6 +116,17 @@ class XMLExtract(BaseProcessor):
                 metadata[name] = v
 
         return metadata
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return [extraction_key.name for extraction_key in self.extraction_keys]
 
 
 if __name__ == "__main__":

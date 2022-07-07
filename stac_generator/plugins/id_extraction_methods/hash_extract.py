@@ -17,12 +17,12 @@ import hashlib
 import logging
 
 from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseIdExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class HashExtract(BaseProcessor):
+class HashExtract(BaseIdExtractionMethod):
     """
 
     .. list-table::
@@ -60,11 +60,7 @@ class HashExtract(BaseProcessor):
 
     @accepts_preprocessors
     @accepts_postprocessors
-    def run(
-        self,
-        body: dict,
-        **kwargs,
-    ) -> dict:
+    def run(self, body: dict) -> dict:
 
         properties = body["properties"]
 

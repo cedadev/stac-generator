@@ -21,14 +21,15 @@ from stac_generator.core.decorators import (
     accepts_output_key,
     accepts_postprocessors,
     accepts_preprocessors,
+    expected_terms_postprocessors,
 )
-from stac_generator.core.processor import BaseProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 from stac_generator.core.types import SpatialExtent, TemporalExtent
 
 LOGGER = logging.getLogger(__name__)
 
 
-class JsonFileExtract(BaseProcessor):
+class JsonFileExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -123,10 +124,23 @@ class JsonFileExtract(BaseProcessor):
         metadata = {}
 
         for facet in self.terms:
-            values = self.get_facet_values(facet, kwargs[f"{self.TYPE.value}_id"])
+            values = self.get_facet_values(
+                facet, getattr(self, f"{self.TYPE.value}_id")
+            )
             if values:
                 metadata[facet] = values
 
         # No need to include extents since the example scanner has none.
 
         return metadata
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return self.terms

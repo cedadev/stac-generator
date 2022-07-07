@@ -29,8 +29,9 @@ LOGGER = logging.getLogger(__name__)
 
 class ItemGenerator(BaseGenerator):
 
+    SURTYPE = GeneratorType.COLLECTION
     TYPE = GeneratorType.ITEM
-    PARENT_TYPE = GeneratorType.COLLECTION
+    SUBTYPE = GeneratorType.ASSET
 
     def process_template(self, uri: str, **kwargs):
         """
@@ -70,6 +71,9 @@ class ItemGenerator(BaseGenerator):
 
         description = self.collection_descriptions.get_description(uri)
 
+        if self.SUBTYPE:
+            kwargs["subtype_terms"] = self.expected_terms(self.SUBTYPE, description)
+
         # extract data
         extraction_methods_output = self.run_extraction_methods(
             uri, description, **kwargs
@@ -86,7 +90,7 @@ class ItemGenerator(BaseGenerator):
         data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
 
         message = {
-            f"{self.PARENT_TYPE.value}_id": ids[f"{self.PARENT_TYPE.value}_id"],
+            f"{self.SURTYPE.value}_id": ids[f"{self.SURTYPE.value}_id"],
             "uri": uri,
         }
 

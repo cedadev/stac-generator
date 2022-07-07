@@ -9,6 +9,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
+from typing import Optional
 
 
 class BaseProcessor(ABC):
@@ -23,7 +24,7 @@ class BaseProcessor(ABC):
         :param kwargs:
         """
         # Set default processor settings
-        self._set_attrs(kwargs["conf"])
+        self._set_attrs(kwargs["default_conf"])
         # Override with specific processor settings
         self._set_attrs(kwargs)
 
@@ -31,12 +32,67 @@ class BaseProcessor(ABC):
         for k, v in conf.items():
             setattr(self, k, v)
 
+
+class BaseExtractionMethod(BaseProcessor):
     @abstractmethod
-    def run(self, uri: str) -> dict:
-        """
-        The action of running the processor and returning an output
-        :param uri: URI for object
-        :param kwargs: free kwargs passed to the processor.
-        :return: dict
-        """
+    def run(
+        self,
+        uri: str,
+        body: dict,
+        **kwargs,
+    ) -> dict:
+        pass
+
+    @abstractmethod
+    def expected_terms(self, **kwargs) -> list:
+        pass
+
+
+class BasePostExtractionMethod(BaseProcessor):
+    @abstractmethod
+    def run(
+        self,
+        uri: str,
+        body: dict,
+        **kwargs,
+    ) -> dict:
+        pass
+
+    @abstractmethod
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> dict:
+        pass
+
+
+class BaseIdExtractionMethod(BaseProcessor):
+    @abstractmethod
+    def run(
+        self,
+        body: dict,
+    ) -> dict:
+        pass
+
+
+class BasePreProcessor(BaseProcessor):
+    @abstractmethod
+    def run(self, uri: str, **kwargs) -> dict:
+        pass
+
+
+class BasePostProcessor(BaseProcessor):
+    @abstractmethod
+    def run(
+        self,
+        uri: str,
+        source_dict: Optional[dict] = {},
+    ) -> dict:
+        pass
+
+    @abstractmethod
+    def expected_terms(
+        self,
+        term_list: Optional[list] = [],
+    ) -> dict:
         pass
