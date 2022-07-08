@@ -49,6 +49,7 @@ setup(
             "file_out = stac_generator.plugins.output_plugins.file_out:FileoutOutputBackend",
             "json_out = stac_generator.plugins.output_plugins.json_out:JsonOutputBackend",
             "rabbitmq_out = stac_generator.plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
+            "intake_esm_out = stac_generator.plugins.output_plugins.intake_esm_out:IntakeESMOutputBackend",
         ],
         "stac_generator.plugin_filters": [
             "path_regex = stac_generator.plugins.filters.path_regex:PathRegexFilter",
@@ -64,14 +65,15 @@ setup(
             "object_store_stats = stac_generator.plugins.extraction_methods.object_store_stats_extract:ObjectStoreStatsExtract",
         ],
         "stac_generator.post_extraction_methods": [
-            "vocab = stac_generator.plugins.post_extraction_methods.vocab_extract:VocabExtract",
+            "vocab = stac_generator.plugins.post_extraction_methods.vocab_post_extract:VocabPostExtract",
+            "controlled_vocabulary = stac_generator.plugins.post_extraction_methods.cv_post_extract:ControlledVocabularyPostExtract",
         ],
         "stac_generator.id_extraction_methods": [
             "default = stac_generator.plugins.id_extraction_methods.default_extract:DefaultExtract",
             "hash = stac_generator.plugins.id_extraction_methods.hash_extract:HashExtract",
         ],
         "stac_generator.extraction_methods.header_extract.backends": [
-            "ncml = asset_scanner.plugins.extraction_methods.header_extract.backends.ncml:NcMLBackend",
+            "ncml = stac_generator.plugins.extraction_methods.header_extract.backends.ncml:NcMLBackend",
             "xarray = stac_generator.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
             "cf = stac_generator.plugins.extraction_methods.header_extract.backends.cf:CfBackend",
         ],
