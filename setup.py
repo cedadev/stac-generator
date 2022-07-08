@@ -49,6 +49,7 @@ setup(
             "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
             "json_out = asset_scanner.plugins.output_plugins.json_out:JsonOutputBackend",
             "rabbitmq_out = asset_scanner.plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
+            "intake_esm_out = asset_scanner.plugins.output_plugins.intake_esm_out:IntakeESMOutputBackend",
         ],
         "asset_scanner.plugin_filters": [
             "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
