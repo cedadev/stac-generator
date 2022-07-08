@@ -28,13 +28,21 @@ as a source.
         <https://unidata.github.io/siphon/latest/api/catalog.html#siphon.catalog.TDSCatalog>`_
 
 
-Example Configuration:
+Example Configuration with OPENDAP:
     .. code-block:: yaml
 
         inputs:
             - method: thredds
               uri: test-url
               object_path_attr: access_urls.OPENDAP
+
+Example Configuration with NCML:
+    .. code-block:: yaml
+
+        inputs:
+            - name: thredds
+              uri: test-url
+              object_path_attr: access_urls.NCML
 
 """
 __author__ = "Mathieu Provencher"

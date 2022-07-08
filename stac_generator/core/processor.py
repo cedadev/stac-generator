@@ -39,7 +39,6 @@ class BaseExtractionMethod(BaseProcessor):
     def run(
         self,
         uri: str,
-        body: dict,
         **kwargs,
     ) -> dict:
         pass
