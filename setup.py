@@ -61,6 +61,7 @@ setup(
         ],
         "asset_scanner.post_extraction_methods": [
             "vocab = asset_scanner.plugins.post_extraction_methods.vocab_post_extract:VocabPostExtract",
+            "controlled_vocabulary = asset_scanner.plugins.post_extraction_methods.cv_post_extract:ControlledVocabularyPostExtract",
         ],
         "asset_scanner.extraction_methods.header_extract.backends": [
             "ncml = asset_scanner.plugins.extraction_methods.header_extract.backends.ncml:NcMLBackend",
