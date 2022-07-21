@@ -10,13 +10,13 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from stac_generator.plugins.postprocessors.iso_date import ISODatePostProcessor
-from stac_generator.plugins.postprocessors.facet_map import FacetMapPostProcessor
 from stac_generator.plugins.postprocessors.bbox import BBOXPostProcessor
-from stac_generator.plugins.postprocessors.facet_prefix import FacetPrefixPostProcessor
 from stac_generator.plugins.postprocessors.date_combinator import (
     DateCombinatorPostProcessor,
 )
+from stac_generator.plugins.postprocessors.facet_map import FacetMapPostProcessor
+from stac_generator.plugins.postprocessors.facet_prefix import FacetPrefixPostProcessor
+from stac_generator.plugins.postprocessors.iso_date import ISODatePostProcessor
 
 
 @pytest.fixture

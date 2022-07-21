@@ -11,10 +11,10 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import pytest
 
 from stac_generator.plugins.extraction_methods.iso19115 import ISO19115Extract
+from stac_generator.plugins.extraction_methods.regex import RegexExtract
 from stac_generator.plugins.preprocessors.ceda_observation import (
     CEDAObservationPreProcessor,
 )
-from stac_generator.plugins.extraction_methods.regex import RegexExtract
 
 
 @pytest.fixture

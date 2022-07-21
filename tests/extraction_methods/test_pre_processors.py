@@ -10,10 +10,10 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
+from stac_generator.plugins.preprocessors.basename import BasenamePreProcessor
 from stac_generator.plugins.preprocessors.ceda_observation import (
     CEDAObservationPreProcessor,
 )
-from stac_generator.plugins.preprocessors.basename import BasenamePreProcessor
 
 
 @pytest.fixture
