@@ -71,9 +71,6 @@ class ItemGenerator(BaseGenerator):
 
         description = self.collection_descriptions.get_description(uri)
 
-        if self.SUBTYPE:
-            kwargs["subtype_terms"] = self.expected_terms(self.SUBTYPE, description)
-
         # extract data
         extraction_methods_output = self.run_extraction_methods(
             uri, description, **kwargs
