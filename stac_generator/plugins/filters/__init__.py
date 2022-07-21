@@ -8,7 +8,7 @@ If more than one filter is specified, all tests must pass before processing
 will continue.
 
 Plugin filters are loaded as named entry points with the namespace:
-``stac_generator.plugin_filters``
+``stac_generator.filters``
 """
 __author__ = "Richard Smith"
 __date__ = "20 Sep 2021"

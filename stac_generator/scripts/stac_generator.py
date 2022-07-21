@@ -86,10 +86,10 @@ def main():
 
     generator = load_generator(conf)
 
-    input_plugins = load_plugins(conf, "stac_generator.input_plugins", "inputs")
+    input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
 
-    for input in input_plugins:
-        input.run(generator)
+    for input_plugin in input_plugins:
+        input_plugin.run(generator)
 
 
 if __name__ == "__main__":

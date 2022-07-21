@@ -10,7 +10,13 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from stac_generator.plugins.extraction_methods import postprocessors
+from stac_generator.plugins.postprocessors.iso_date import ISODatePostProcessor
+from stac_generator.plugins.postprocessors.facet_map import FacetMapPostProcessor
+from stac_generator.plugins.postprocessors.bbox import BBOXPostProcessor
+from stac_generator.plugins.postprocessors.facet_prefix import FacetPrefixPostProcessor
+from stac_generator.plugins.postprocessors.date_combinator import (
+    DateCombinatorPostProcessor,
+)
 
 
 @pytest.fixture
@@ -25,29 +31,27 @@ def source_dict():
 
 @pytest.fixture
 def isodate_processor():
-    return postprocessors.ISODateProcessor(date_keys=["date"])
+    return ISODatePostProcessor(date_keys=["date"])
 
 
 @pytest.fixture
 def isodate_processor_with_format():
-    return postprocessors.ISODateProcessor(date_keys=["date"], format="%Y%m")
+    return ISODatePostProcessor(date_keys=["date"], format="%Y%m")
 
 
 @pytest.fixture
 def facet_map_processor():
-    return postprocessors.FacetMapProcessor(term_map={"date": "start_date"})
+    return FacetMapPostProcessor(term_map={"date": "start_date"})
 
 
 @pytest.fixture
 def bbox_processor():
-    return postprocessors.BBOXProcessor(
-        coordinate_keys=["west", "south", "east", "north"]
-    )
+    return BBOXPostProcessor(coordinate_keys=["west", "south", "east", "north"])
 
 
 @pytest.fixture
 def facet_prefix_processor():
-    return postprocessors.FacetPrefixProcessor(prefix="CMIP6", terms=["date"])
+    return FacetPrefixPostProcessor(prefix="CMIP6", terms=["date"])
 
 
 def test_isodate_processor(isodate_processor, fpath, source_dict):
@@ -179,7 +183,7 @@ def test_date_combinator_no_year(fpath, caplog):
     """
     Test that not providing a year results in an error logged
     """
-    processor = postprocessors.DateCombinatorProcessor()
+    processor = DateCombinatorPostProcessor()
 
     source_dict = {"month": "02", "day": "01"}
 
@@ -192,7 +196,7 @@ def test_date_combinator(fpath):
     """
     Test can join and produce correct string
     """
-    processor = postprocessors.DateCombinatorProcessor()
+    processor = DateCombinatorPostProcessor()
 
     source_dict = {"year": "1850", "month": "02", "day": "01"}
 
@@ -207,7 +211,7 @@ def test_date_combinator_non_destructive(fpath):
     """
     Test that data is preserved in non-destrictive mode
     """
-    processor = postprocessors.DateCombinatorProcessor(destructive=False)
+    processor = DateCombinatorPostProcessor(destructive=False)
 
     source_dict = {"year": "1850", "month": "02", "day": "01"}
 
@@ -222,7 +226,7 @@ def test_date_combinator_different_output_key(fpath):
     """
     Test can set different key
     """
-    processor = postprocessors.DateCombinatorProcessor(key="test")
+    processor = DateCombinatorPostProcessor(key="test")
 
     source_dict = {"year": "1850", "month": "02", "day": "01"}
 
@@ -237,7 +241,7 @@ def test_date_combinator_format_string(fpath):
     """
     Test can use format string
     """
-    processor = postprocessors.DateCombinatorProcessor(format="%Y-%m")
+    processor = DateCombinatorPostProcessor(format="%Y-%m")
 
     source_dict = {
         "year": "1850",
@@ -253,7 +257,7 @@ def test_date_combinator_format_string(fpath):
 
 def test_date_combinator_no_kwargs(fpath):
     """Check that the processor can run with no kwargs."""
-    processor = postprocessors.DateCombinatorProcessor()
+    processor = DateCombinatorPostProcessor()
 
     source_dict = {"year": "1850", "month": "02", "day": "01"}
 
@@ -275,7 +279,7 @@ def test_date_combinator_ym_no_format(fpath, caplog):
         Should produce an error log
     """
 
-    processor = postprocessors.DateCombinatorProcessor()
+    processor = DateCombinatorPostProcessor()
 
     source_dict = {
         "year": "1850",

@@ -71,6 +71,7 @@ class BaseIdExtractionMethod(BaseProcessor):
     def run(
         self,
         body: dict,
+        **kwargs,
     ) -> dict:
         pass
 
@@ -87,6 +88,7 @@ class BasePostProcessor(BaseProcessor):
         self,
         uri: str,
         source_dict: Optional[dict] = {},
+        **kwargs,
     ) -> dict:
         pass
 

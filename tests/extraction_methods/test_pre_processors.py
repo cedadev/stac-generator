@@ -10,44 +10,44 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from stac_generator.plugins.extraction_methods.preprocessors import (
-    CEDAObservation,
-    ReducePathtoName,
+from stac_generator.plugins.preprocessors.ceda_observation import (
+    CEDAObservationPreProcessor,
 )
+from stac_generator.plugins.preprocessors.basename import BasenamePreProcessor
 
 
 @pytest.fixture
-def filename_reducer():
+def basename():
     """
-    Create filename_reducer instance
+    Create basename instance
     :return:
     """
-    return ReducePathtoName()
+    return BasenamePreProcessor()
 
 
-def test_filename_reducer_posix(filename_reducer):
+def test_basename_posix(basename):
     """
     Check that pre-processor extracts the filename from the POSIX path
-    :param filename_reducer:
+    :param basename:
     :return:
     """
-    input = "/a/b/c/d.txt"
+    input_path = "/a/b/c/d.txt"
     expected = "d.txt"
 
-    uri, _ = filename_reducer.run(input)
+    uri, _ = basename.run(input_path)
     assert uri == expected
 
 
 @pytest.fixture
 def ceda_observation():
-    return CEDAObservation(
+    return CEDAObservationPreProcessor(
         url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri"
     )
 
 
 def test_ceda_observation(ceda_observation):
-    input = "/badc/faam/data/2005/b070-jan-06"
+    input_path = "/badc/faam/data/2005/b070-jan-06"
     expected = "6f6d4b4fc7a042568cce7eccc6e9b6f2"
 
-    _, kwargs = ceda_observation.run(input)
+    _, kwargs = ceda_observation.run(input_path)
     assert kwargs["uuid"] == expected

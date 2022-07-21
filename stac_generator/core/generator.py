@@ -51,7 +51,7 @@ class BaseGenerator(ABC):
 
     def __init__(self, conf: dict):
         self.conf = conf
-        self.output_plugins = self.load_output_plugins()
+        self.outputs = self.load_outputs()
         self.collection_descriptions = (
             CollectionDescriptions(conf["collection_descriptions"]["root_directory"])
             if "collection_descriptions" in conf
@@ -123,6 +123,18 @@ class BaseGenerator(ABC):
 
         return loaded_pprocessors
 
+    def _get_output_key(self, processor: dict, processor_conf: dict, key: str):
+
+        output_key = processor.get("output_key", None)
+
+        if not output_key:
+            output_key = processor_conf.get("output_key", None)
+
+        if not output_key:
+            output_key = self.conf.get("output_key", None)
+
+        return output_key
+
     def _load_processor(self, processor: dict, key: str, **kwargs) -> BaseProcessor:
 
         processor_name = processor["method"]
@@ -137,15 +149,9 @@ class BaseGenerator(ABC):
 
         processor_inputs["default_conf"] = default_conf
 
-        output_key = processor.get("output_key", None)
-
-        if not output_key:
-            output_key = processor_conf.get("output_key", None)
-
-        if not output_key:
-            output_key = self.conf.get("output_key", None)
-
-        processor_inputs["output_key"] = output_key
+        processor_inputs["output_key"] = self._get_output_key(
+            processor, processor_conf, key
+        )
 
         processor_inputs["TYPE"] = self.TYPE
 
@@ -418,13 +424,13 @@ class BaseGenerator(ABC):
     def load_processors(self, entrypoint: str) -> HandlerPicker:
         return HandlerPicker(entrypoint)
 
-    def load_output_plugins(self) -> list:
-        return load_plugins(self.conf, "stac_generator.output_plugins", "outputs")
+    def load_outputs(self) -> list:
+        return load_plugins(self.conf, "stac_generator.outputs", "outputs")
 
     @abstractmethod
     def process(self, uri: str, **kwargs) -> None:
         pass
 
     def output(self, data: dict, **kwargs) -> None:
-        for backend in self.output_plugins:
+        for backend in self.outputs:
             backend.export(data, **kwargs)
