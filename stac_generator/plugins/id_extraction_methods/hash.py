@@ -55,6 +55,13 @@ class HashIdExtract(BaseIdExtractionMethod):
 
     """
 
+    def flatten_dict(self, start_dict: dict):
+        final_dict = {}
+        for k, v in start_dict:
+            if isinstance(v, dict):
+                final_dict = final_dict | self.flatten_dict(v)
+            final_dict[k] = v
+
     def hash(self, id_string: str):
         return hashlib.md5(id_string.encode("utf-8")).hexdigest()
 
@@ -65,7 +72,7 @@ class HashIdExtract(BaseIdExtractionMethod):
         properties = body["properties"]
 
         if hasattr(self, "terms") and all(
-            [facet in self.terms for facet in properties]
+            [facet in properties for facet in self.terms]
         ):
             id_string = ""
 
@@ -79,8 +86,7 @@ class HashIdExtract(BaseIdExtractionMethod):
                 if isinstance(vals, (list)):
                     id_string = ".".join((id_string, f"multi_{facet}"))
 
-            # remove initial '.'
-            id_string[1:]
+            id_string = id_string[1:]
 
             return hash(id_string)
 

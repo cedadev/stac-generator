@@ -18,16 +18,12 @@ scale application.
     * - ``filepath``
       - ``str``
       - ``REQUIRED`` Path to output file(s), either directory or specific file to write.
-      - ``namespace``
-      - ``str``
-      - Can be used by downstream processors to capture specific outputs.
 
 Example Configuration:
     .. code-block:: yaml
 
         outputs:
             - method: json_out
-              namespace: header
               filepath: location_to_destination_file
 
 """

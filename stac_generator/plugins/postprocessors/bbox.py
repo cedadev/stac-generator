@@ -16,7 +16,7 @@ from stac_generator.core.processor import BasePostProcessor
 LOGGER = logging.getLogger(__name__)
 
 
-class BBOXPostProcessor(BasePostProcessor):
+class BboxPostProcessor(BasePostProcessor):
     """
 
     Processor Name: ``bbox``

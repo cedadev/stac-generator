@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from stac_generator.plugins.postprocessors.bbox import BBOXPostProcessor
+from stac_generator.plugins.postprocessors.bbox import BboxPostProcessor
 from stac_generator.plugins.postprocessors.date_combinator import (
     DateCombinatorPostProcessor,
 )
@@ -46,7 +46,7 @@ def facet_map_processor():
 
 @pytest.fixture
 def bbox_processor():
-    return BBOXPostProcessor(coordinate_keys=["west", "south", "east", "north"])
+    return BboxPostProcessor(coordinate_keys=["west", "south", "east", "north"])
 
 
 @pytest.fixture

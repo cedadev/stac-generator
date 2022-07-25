@@ -14,9 +14,6 @@ Useful for testing and debugging.
     * - Option
       - Value Type
       - Description
-    * - ``namespace``
-      - ``str``
-      - Can be used by downstream processors to separate outputs.
 
 Example configuration:
     .. code-block:: yaml

@@ -133,6 +133,9 @@ class BaseGenerator(ABC):
         if not output_key:
             output_key = self.conf.get("output_key", None)
 
+        if not output_key:
+            output_key = "properties"
+
         return output_key
 
     def _load_processor(self, processor: dict, key: str, **kwargs) -> BaseProcessor:
