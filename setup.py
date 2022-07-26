@@ -56,6 +56,7 @@ setup(
         ],
         "stac_generator.extraction_methods": [
             "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
+            "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
             "header = stac_generator.plugins.extraction_methods.header.header:HeaderExtract",
             "iso19115 = stac_generator.plugins.extraction_methods.iso19115:ISO19115Extract",
             "xml = stac_generator.plugins.extraction_methods.xml:XMLExtract",
