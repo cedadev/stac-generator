@@ -166,7 +166,7 @@ class ObjectStoreStatsExtract(BaseExtractionMethod):
             with file as f:
                 stats = vars(f)
 
-        self.info["uri"] = uri
+        self.info = {"uri": uri}
         self.extract_filename(object_path)
         self.extract_extension(object_path)
         self.extract_stat("size", stats, "size")

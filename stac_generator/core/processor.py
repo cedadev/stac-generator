@@ -24,7 +24,7 @@ class BaseProcessor(ABC):
         :param kwargs:
         """
         # Set default processor settings
-        if hasattr(kwargs, "default_conf"):
+        if "default_conf" in kwargs:
             self._set_attrs(kwargs["default_conf"])
         # Override with specific processor settings
         self._set_attrs(kwargs)

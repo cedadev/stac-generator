@@ -40,7 +40,7 @@ setup(
             "intake_esm = stac_generator.plugins.inputs.intake_esm:IntakeESMInput",
             "rabbitmq = stac_generator.plugins.inputs.rabbit_mq:RabbitMQInput",
             "thredds = stac_generator.plugins.inputs.thredds:ThreddsInput",
-            "json_file = stac_generator.plugins.inputs.json_file:FileInput",
+            "text_file = stac_generator.plugins.inputs.text_file:TextFileInput",
             "solr = stac_generator.plugins.inputs.solr:SolrInput",
         ],
         "stac_generator.outputs": [

@@ -1,11 +1,11 @@
 """
-JSON File
+Text File
 ---------
 
 Takes file or directory path, uses the dictionary
 in the file(s) to pass into the extractor.
 
-**Plugin name:** ``json_file``
+**Plugin name:** ``text_file``
 
 .. list-table::
     :header-rows: 1
@@ -21,7 +21,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - method: json_file
+            - method: text_file
               filepath: input_file(s)_location
 
 """
@@ -35,7 +35,7 @@ from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.input import BaseInput
 
 
-class JsonFileInput(BaseInput):
+class TextFileInput(BaseInput):
     """
     Use external file(s) as input to enter data to pass to
     the processor.
