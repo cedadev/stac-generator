@@ -36,6 +36,10 @@ class BaseInput(ABC):
 
         return True
 
+    def start(self, generator: BaseGenerator):
+        self.run(generator)
+        generator.finished()
+
     @abstractmethod
     def run(self, generator: BaseGenerator):
         ...

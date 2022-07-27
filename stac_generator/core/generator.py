@@ -435,5 +435,10 @@ class BaseGenerator(ABC):
         pass
 
     def output(self, data: dict, **kwargs) -> None:
-        for backend in self.outputs:
-            backend.export(data, **kwargs)
+        for output in self.outputs:
+            output.export(data, **kwargs)
+
+    def finished(self, **kwargs) -> None:
+        for output in self.outputs:
+            if hasattr(output, "finished"):
+                output.finished(**kwargs)
