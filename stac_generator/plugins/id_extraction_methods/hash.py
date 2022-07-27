@@ -62,8 +62,9 @@ class HashIdExtract(BaseIdExtractionMethod):
                 final_dict = final_dict | self.flatten_dict(v)
             final_dict[k] = v
 
-    def hash(self, id_string: str):
-        return hashlib.md5(id_string.encode("utf-8")).hexdigest()
+    def hash_id(self, id_string: str):
+        hash_id = hashlib.md5(id_string.encode("utf-8")).hexdigest()
+        return hash_id
 
     @accepts_preprocessors
     @accepts_postprocessors
@@ -84,14 +85,19 @@ class HashIdExtract(BaseIdExtractionMethod):
                     id_string = ".".join((id_string, vals))
 
                 if isinstance(vals, (list)):
-                    id_string = ".".join((id_string, f"multi_{facet}"))
+                    if len(vals) == 1:
+                        id_string = ".".join((id_string, vals[0]))
+                    else:
+                        id_string = ".".join((id_string, f"multi_{facet}"))
 
             id_string = id_string[1:]
 
-            return hash(id_string)
+            return self.hash_id(id_string)
 
         elif "collection_id" in self.terms:
-            return hash(f"{properties.get('collection_id')}.{properties.get('uri')}")
+            return self.hash_id(
+                f"{properties.get('collection_id')}.{properties.get('uri')}"
+            )
 
         else:
-            return hash(properties.get("uri"))
+            return self.hash_id(properties.get("uri"))
