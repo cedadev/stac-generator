@@ -45,12 +45,12 @@ setup(
         ],
         "stac_generator.outputs": [
             "standard_out = stac_generator.plugins.outputs.standard_out:StandardOutOutput",
-            "standard_out_bulk = stac_generator.plugins.outputs.standard_out_bulk:StandardOutBulkOutput",
+            "standard_out_bulk = stac_generator.plugins.bulk_outputs.standard_out:StandardOutBulkOutput",
             "elasticsearch = stac_generator.plugins.outputs.elasticsearch:ElasticsearchOutput",
             "text_file = stac_generator.plugins.outputs.text_file:TextFileOutput",
             "json_file = stac_generator.plugins.outputs.json_file:JsonFileOutput",
             "rabbitmq = stac_generator.plugins.outputs.rabbit_mq:RabbitMQOutput",
-            "rabbitmq_bulk = stac_generator.plugins.outputs.rabbit_mq_bulk:RabbitMQBulkOutput",
+            "rabbitmq_bulk = stac_generator.plugins.bulk_outputs.rabbit_mq:RabbitMQBulkOutput",
             "intake_esm = stac_generator.plugins.outputs.intake_esm:IntakeESMOutput",
         ],
         "stac_generator.filters": [

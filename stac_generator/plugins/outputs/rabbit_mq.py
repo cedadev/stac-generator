@@ -129,6 +129,10 @@ from stac_generator.core.output import BaseOutput
 
 
 class RabbitMQOutput(BaseOutput):
+    """
+    RabbitMQ output for sending grouped messages.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

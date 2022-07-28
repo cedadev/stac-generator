@@ -36,7 +36,7 @@ from stac_generator.core.output import BaseOutput
 
 class StandardOutBulkOutput(BaseOutput):
     """
-    Simple print backend which can be used
+    Simple bulk print backend which can be used
     for testing and debugging.
     """
 
@@ -46,18 +46,21 @@ class StandardOutBulkOutput(BaseOutput):
         self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
 
     def clear_cache(self):
+        """
+        Print out cached data.
+        """
         print(
             "This is a bulk one",
-            json.dumps(list(self.message_cache.items()), indent=4),
+            json.dumps(dict(self.message_cache.items()), indent=4),
         )
 
         self.message_cache.clear()
 
     def export(self, data: dict, **kwargs):
         """
-        Export the data to rabbit.
+        Print the data if cache is full.
 
-        :param data: expected data as header dict
+        :param data: expected data
         """
         id = data["id"]
         # add to cache
@@ -70,10 +73,3 @@ class StandardOutBulkOutput(BaseOutput):
             # empty cache
 
             self.clear_cache()
-
-    def finished(self, **kwargs):
-        """
-        Empty cache when input has finished.
-        """
-
-        self.clear_cache()

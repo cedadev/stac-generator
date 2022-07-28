@@ -105,7 +105,7 @@ class BaseGenerator(ABC):
         self, processor: dict, key: str, **kwargs
     ) -> List[BaseProcessor]:
         """
-        Load the post processors for the given processor
+        Load the pre or post processors for the given processor
 
         :param processor: Configuration for the processor including any post processor
         :param key: The name of the key which holds the list of extra processors
@@ -123,12 +123,20 @@ class BaseGenerator(ABC):
 
         return loaded_pprocessors
 
-    def _get_output_key(self, processor: dict, processor_conf: dict, key: str):
+    def _get_output_key(self, processor: dict, default_conf: dict):
+        """
+        Get the most relevant output_key
 
+        :param processor: Configuration for the processor
+        :param default_conf: Default configuration
+        :param key: The name of the key which holds the list of extra processors
+
+        :return: list of loaded processors.
+        """
         output_key = processor.get("output_key", None)
 
         if not output_key:
-            output_key = processor_conf.get("output_key", None)
+            output_key = default_conf.get("output_key", None)
 
         if not output_key:
             output_key = self.conf.get("output_key", None)
@@ -139,22 +147,23 @@ class BaseGenerator(ABC):
         return output_key
 
     def _load_processor(self, processor: dict, key: str, **kwargs) -> BaseProcessor:
+        """
+        Load the given processor
 
+        :param processor: Configuration for the processor
+        :param key: The name of the key which holds the list of extra processors
+
+        :return: loaded processor
+        """
         processor_name = processor["method"]
 
         processor_inputs = processor.get("inputs", {})
 
-        default_conf = kwargs
-
-        processor_conf = self.conf.get(key, {}).get(processor_name, {})
-
-        default_conf.update(processor_conf)
+        default_conf = kwargs | self.conf.get(key, {}).get(processor_name, {})
 
         processor_inputs["default_conf"] = default_conf
 
-        processor_inputs["output_key"] = self._get_output_key(
-            processor, processor_conf, key
-        )
+        processor_inputs["output_key"] = self._get_output_key(processor, default_conf)
 
         processor_inputs["TYPE"] = self.TYPE
 
@@ -425,20 +434,44 @@ class BaseGenerator(ABC):
         return expected_terms
 
     def load_processors(self, entrypoint: str) -> HandlerPicker:
+        """
+        Load processors from entrypoint.
+
+        :param uri: entrypoint for processors
+
+        :return: HandlerPicker for processors
+        """
         return HandlerPicker(entrypoint)
 
     def load_outputs(self) -> list:
+        """
+        Load output plugins.
+
+        :return: list of output plugins
+        """
         return load_plugins(self.conf, "stac_generator.outputs", "outputs")
 
     @abstractmethod
     def process(self, uri: str, **kwargs) -> None:
-        pass
+        """
+        Run generator.
+
+        :param uri: uri for object
+        """
 
     def output(self, data: dict, **kwargs) -> None:
+        """
+        Run all configured outputs export methods.
+
+        :param data: data to be output
+        """
         for output in self.outputs:
             output.export(data, **kwargs)
 
-    def finished(self, **kwargs) -> None:
+    def finished(self) -> None:
+        """
+        Run bulk outputs finshed method to clear remaining cached messages.
+        """
         for output in self.outputs:
             if hasattr(output, "finished"):
-                output.finished(**kwargs)
+                output.finished()

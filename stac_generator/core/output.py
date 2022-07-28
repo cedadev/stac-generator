@@ -10,6 +10,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
+from cachetools import Cache
+
 
 class BaseOutput(ABC):
     def __init__(self, **kwargs):
@@ -24,3 +26,20 @@ class BaseOutput(ABC):
     @abstractmethod
     def export(self, data, **kwargs):
         pass
+
+
+class BaseBulkOutput(BaseOutput):
+    def __init__(self, **kwargs):
+        """
+        Create Cache
+        :param kwargs:
+        """
+        super().__init__(**kwargs)
+        self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
+
+    @abstractmethod
+    def clear_cache(self):
+        pass
+
+    def finished(self):
+        self.clear_cache()

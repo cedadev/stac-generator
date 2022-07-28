@@ -2,9 +2,10 @@
 RabbitMQ Output
 -----------------
 
-Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file objects.
+Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for parent
+generation messages.
 
-**Plugin name:** ``rabbitmq_out``
+**Plugin name:** ``rabbitmq_out_bulk``
 
 .. list-table::
     :header-rows: 1
@@ -37,6 +38,9 @@ Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file o
     * - ``queues``
       - ``list``
       - ``REQUIRED`` Queue parameters. `queues`_
+    * - ``max_cache_size``
+      - ``int``
+      - Maximum number of messages before cache is emptied.
 
 
 exchange
@@ -81,21 +85,6 @@ List of queue objects. Each queue object comprises:
       - dict
       - kwargs passed to `pika.channel.Channel.basic_consume <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.basic_consume>`_
 
-header_conf
-^^^^^^^^^^^
-
-Configuration for the header options for rabbit.
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - x-delay
-      - int
-      - Message delay in milliseconds use in kwargs passed to `pika.spec.Basicproperties.headers <https://pika.readthedocs.io/en/stable/modules/spec.html?highlight=headers#pika.spec.BasicProperties>`_
-
 Example Configuration:
 
     .. code-block:: yaml
@@ -121,10 +110,14 @@ import json
 import pika
 from cachetools import Cache
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.output import BaseBulkOutput
 
 
-class RabbitMQBulkOutput(BaseOutput):
+class RabbitMQBulkOutput(BaseBulkOutput):
+    """
+    RabbitMQ Bulk output for sending grouped messages.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -153,6 +146,20 @@ class RabbitMQBulkOutput(BaseOutput):
             exchange_type=self.exchange["type"],
         )
 
+    def clear_cache(self, **kwargs):
+        """
+        Export the data to rabbit.
+
+        :param data: expected data as header dict
+        """
+        self.channel.basic_publish(
+            exchange=self.exchange["name"],
+            body=json.dumps(dict(self.message_cache.items())),
+            routing_key=self.exchange.get("routing_key", ""),
+        )
+
+        self.message_cache.clear()
+
     def export(self, data: dict, **kwargs):
         """
         Export the data to rabbit.
@@ -166,11 +173,4 @@ class RabbitMQBulkOutput(BaseOutput):
 
         if self.message_cache.currsize >= getattr(self, "cache_max_size", 100):
             # empty cache
-
-            self.channel.basic_publish(
-                exchange=self.exchange["name"],
-                body=json.dumps(list(self.message_cache.items())),
-                routing_key=self.exchange.get("routing_key", ""),
-            )
-
-            self.message_cache.clear()
+            self.clear_cache()
