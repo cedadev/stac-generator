@@ -138,14 +138,20 @@ class RabbitMQOutput(BaseOutput):
             exchange_type=self.exchange["type"],
         )
 
-    def export(self, data: dict, **kwargs):
+    def export(self, data: dict) -> None:
         """
         Export the data to rabbit.
 
         :param data: expected data as header dict
         """
+
+        message = {
+            f"{data['surtype'].value}_id": data[f"{data['surtype'].value}_id"],
+            "uri": data["uri"],
+        }
+
         self.channel.basic_publish(
             exchange=self.exchange["name"],
-            body=json.dumps(kwargs["message"]),
+            body=json.dumps(message),
             routing_key=self.exchange.get("routing_key", ""),
         )

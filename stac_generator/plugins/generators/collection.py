@@ -56,6 +56,12 @@ class CollectionGenerator(BaseGenerator):
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
+        data = {
+            "id": ids[f"{self.TYPE.value}_id"],
+            "type": self.TYPE.value,
+            "subtype": self.SUBTYPE.value,
+            "uri": uri,
+            "body": body,
+        }
 
         self.output(data)

@@ -48,7 +48,7 @@ class JsonFileOutput(BaseOutput):
         super().__init__(**kwargs)
         self.filepath = self.filepath.rstrip("/")
 
-    def export(self, data, **kwargs):
+    def export(self, data: dict) -> None:
 
         if os.path.isdir(self.filepath):
             filepath = f"{self.filepath}/json_out.json"

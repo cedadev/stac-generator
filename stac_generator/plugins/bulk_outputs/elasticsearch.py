@@ -43,12 +43,13 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 from typing import Dict
 
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.bulk_output import BaseBulkOutput
 from stac_generator.core.utils import Coordinates, load_yaml
 
 
-class ElasticsearchOutput(BaseOutput):
+class ElasticsearchBulkOutput(BaseBulkOutput):
     """
     Connects to an elasticsearch instance and exports the
     documents to elasticsearch.
@@ -128,14 +129,28 @@ class ElasticsearchOutput(BaseOutput):
 
         return data
 
-    def export(self, data: dict) -> None:
+    def action_iterator(self, data_list: list) -> dict:
+        """
+        Generate an iterator of elasticsearch actions.
 
-        data = self.clean(data)
+        :param data_list: List of output data
 
-        index_kwargs = {
-            "index": self.index_name,
-            "id": data["id"],
-            "body": {"doc": data["body"], "doc_as_upsert": True},
-        }
+        :returns: elasticsearch action
+        """
+        for data in data_list:
+            data = self.clean(data)
 
-        self.es.update(**index_kwargs)
+            yield {
+                "_op_type": "update",
+                "_index": self.index_name,
+                "_type": "document",
+                "_id": data["id"],
+                "doc": data["body"],
+                "doc_as_upsert": True,
+            }
+
+    def export(self, data_list: list) -> None:
+        """
+        Export using elasticsearch bulk helper.
+        """
+        bulk(self.es, self.action_iterator(data_list))

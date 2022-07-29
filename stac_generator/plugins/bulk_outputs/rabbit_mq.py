@@ -108,9 +108,8 @@ Example Configuration:
 import json
 
 import pika
-from cachetools import Cache
 
-from stac_generator.core.output import BaseBulkOutput
+from stac_generator.core.bulk_output import BaseBulkOutput
 
 
 class RabbitMQBulkOutput(BaseBulkOutput):
@@ -120,10 +119,6 @@ class RabbitMQBulkOutput(BaseBulkOutput):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        # Add 1
-        self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
-
         # Create the credentials object
         credentials = pika.PlainCredentials(
             self.connection["user"], self.connection["password"]
@@ -146,31 +141,29 @@ class RabbitMQBulkOutput(BaseBulkOutput):
             exchange_type=self.exchange["type"],
         )
 
-    def clear_cache(self, **kwargs):
+    def data_to_cache(self, data: dict) -> None:
+        """
+        Convert the data into a data to  be stored in cache.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+        return {
+            data["body"][f"{data['surtype']}_id"]: {
+                f"{data['surtype']}_id": data["body"][f"{data['surtype']}_id"],
+                "uri": data["uri"],
+            }
+        }
+
+    def export(self, data_list: list):
         """
         Export the data to rabbit.
 
         :param data: expected data as header dict
         """
+
         self.channel.basic_publish(
             exchange=self.exchange["name"],
-            body=json.dumps(dict(self.message_cache.items())),
+            body=json.dumps(data_list),
             routing_key=self.exchange.get("routing_key", ""),
         )
-
-        self.message_cache.clear()
-
-    def export(self, data: dict, **kwargs):
-        """
-        Export the data to rabbit.
-
-        :param data: expected data as header dict
-        """
-        id = data["id"]
-
-        # add to cache
-        self.message_cache.update({id: kwargs["message"]})
-
-        if self.message_cache.currsize >= getattr(self, "cache_max_size", 100):
-            # empty cache
-            self.clear_cache()

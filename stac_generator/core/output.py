@@ -10,13 +10,16 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
-from cachetools import Cache
-
 
 class BaseOutput(ABC):
+    """
+    Base class to define an output
+    """
+
     def __init__(self, **kwargs):
         """
         Set the kwargs to generate instance attributes of the same name
+
         :param kwargs:
         """
 
@@ -24,22 +27,19 @@ class BaseOutput(ABC):
             setattr(self, k, v)
 
     @abstractmethod
-    def export(self, data, **kwargs):
-        pass
-
-
-class BaseBulkOutput(BaseOutput):
-    def __init__(self, **kwargs):
+    def export(self, data: dict) -> None:
         """
-        Create Cache
+        Output the data.
+
+        :param data: data from processor to be output.
         :param kwargs:
         """
-        super().__init__(**kwargs)
-        self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
 
-    @abstractmethod
-    def clear_cache(self):
-        pass
+    def run(self, data: dict) -> None:
+        """
+        Run the output.
 
-    def finished(self):
-        self.clear_cache()
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+        self.export(data)

@@ -3,10 +3,10 @@
 Standard Out
 ------------
 
-An output backend which outputs the generated metadata to standard out.
+An bulk output which outputs the generated metadata to standard out.
 Useful for testing and debugging.
 
-**Plugin name:** ``standard_out``
+**Plugin name:** ``standard_out_bulk``
 
 .. list-table::
     :header-rows: 1
@@ -19,7 +19,8 @@ Example configuration:
     .. code-block:: yaml
 
         outputs:
-            - method: standard_out
+            - method: standard_out_bulk
+              cache_max_size: 10
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
@@ -31,10 +32,10 @@ import json
 
 from cachetools import Cache
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.bulk_output import BaseBulkOutput
 
 
-class StandardOutBulkOutput(BaseOutput):
+class StandardOutBulkOutput(BaseBulkOutput):
     """
     Simple bulk print backend which can be used
     for testing and debugging.
@@ -45,31 +46,10 @@ class StandardOutBulkOutput(BaseOutput):
 
         self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
 
-    def clear_cache(self):
-        """
-        Print out cached data.
-        """
-        print(
-            "This is a bulk one",
-            json.dumps(dict(self.message_cache.items()), indent=4),
-        )
-
-        self.message_cache.clear()
-
-    def export(self, data: dict, **kwargs):
+    def export(self, data_list: list):
         """
         Print the data if cache is full.
 
         :param data: expected data
         """
-        id = data["id"]
-        # add to cache
-        self.message_cache.update({id: data})
-
-        # check cache is full
-        cache_size = self.message_cache.currsize
-
-        if cache_size >= getattr(self, "cache_max_size", 100):
-            # empty cache
-
-            self.clear_cache()
+        print(json.dumps(data_list, indent=4))

@@ -16,6 +16,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List
 
+from stac_generator.core.bulk_output import BaseBulkOutput
 from stac_generator.types.generators import GeneratorType
 
 from .collection_describer import CollectionDescription, CollectionDescriptions
@@ -39,9 +40,9 @@ class BaseGenerator(ABC):
 
     """
 
-    SURTYPE = None
-    TYPE = None
-    SUBTYPE = None
+    SURTYPE = GeneratorType.NONE
+    TYPE = GeneratorType.NONE
+    SUBTYPE = GeneratorType.NONE
 
     DEFAULT_ID_EXTRACTION_METHODS = {
         "asset_id": {"method": "hash", "inputs": {"terms": ["uri"]}},
@@ -459,19 +460,19 @@ class BaseGenerator(ABC):
         :param uri: uri for object
         """
 
-    def output(self, data: dict, **kwargs) -> None:
+    def output(self, data: dict) -> None:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         """
         for output in self.outputs:
-            output.export(data, **kwargs)
+            output.run(data)
 
     def finished(self) -> None:
         """
-        Run bulk outputs finshed method to clear remaining cached messages.
+        Run clear cache of remaining data for bulk outputs.
         """
         for output in self.outputs:
-            if hasattr(output, "finished"):
-                output.finished()
+            if isinstance(output, BaseBulkOutput):
+                output.clear_cache()
