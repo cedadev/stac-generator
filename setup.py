@@ -4,7 +4,7 @@ with open("README.md") as readme_file:
     _long_description = readme_file.read()
 
 setup(
-    name="asset_scanner",
+    name="stac_generator",
     version="1.0.2",
     description="Framework to provide plugin architecture to allow the scanning of assets to extract metadata and facets.",
     author="Richard Smith",
@@ -14,7 +14,7 @@ setup(
     license="BSD - See asset_extractor/LICENSE file for details",
     packages=find_packages(),
     test_suite="tests",
-    package_data={"asset_scanner": ["LICENSE"]},
+    package_data={"stac_generator": ["LICENSE"]},
     install_requires=["pyyaml", "ceda-directory-tree", "tqdm", "pydantic"],
     extras_require={
         "docs": [
@@ -28,58 +28,75 @@ setup(
         "rabbitmq": ["pika"],
         "thredds": ["siphon"],
     },
-    python_requires=">=3.5",
+    python_requires=">=3.7",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "asset_scanner = asset_scanner.scripts.asset_scanner:main",
+            "stac_generator = stac_generator.scripts.stac_generator:main",
         ],
-        "asset_scanner.input_plugins": [
-            "file_system = asset_scanner.plugins.input_plugins.file_system_input:FileSystemInputPlugin",
-            "object_store = asset_scanner.plugins.input_plugins.object_store_input:ObjectStoreInputPlugin",
-            "intake_esm = asset_scanner.plugins.input_plugins.intake_esm_input:IntakeESMInputPlugin",
-            "rabbitmq_in = asset_scanner.plugins.input_plugins.rabbit_mq_input:RabbitMQInputPlugin",
-            "thredds = asset_scanner.plugins.input_plugins.thredds_input:ThreddsInputPlugin",
-            "file_input = asset_scanner.plugins.input_plugins.file_input:FileInputPlugin",
-            "solr_input = asset_scanner.plugins.input_plugins.solr_input:SolrInputPlugin",
+        "stac_generator.inputs": [
+            "file_system = stac_generator.plugins.inputs.file_system:FileSystemInput",
+            "object_store = stac_generator.plugins.inputs.object_store:ObjectStoreInput",
+            "intake_esm = stac_generator.plugins.inputs.intake_esm:IntakeESMInput",
+            "rabbitmq = stac_generator.plugins.inputs.rabbit_mq:RabbitMQInput",
+            "thredds = stac_generator.plugins.inputs.thredds:ThreddsInput",
+            "text_file = stac_generator.plugins.inputs.text_file:TextFileInput",
+            "solr = stac_generator.plugins.inputs.solr:SolrInput",
         ],
-        "asset_scanner.output_plugins": [
-            "standard_out = asset_scanner.plugins.output_plugins.standard_out:StdoutOutputBackend",
-            "elasticsearch = asset_scanner.plugins.output_plugins.elasticsearch_backend:ElasticsearchOutputBackend",
-            "file_out = asset_scanner.plugins.output_plugins.file_out:FileoutOutputBackend",
-            "json_out = asset_scanner.plugins.output_plugins.json_out:JsonOutputBackend",
-            "rabbitmq_out = asset_scanner.plugins.output_plugins.rabbit_mq_output:RabbitMQOutBackend",
-            "intake_esm_out = asset_scanner.plugins.output_plugins.intake_esm_out:IntakeESMOutputBackend",
+        "stac_generator.outputs": [
+            "standard_out = stac_generator.plugins.outputs.standard_out:StandardOutOutput",
+            "elasticsearch = stac_generator.plugins.outputs.elasticsearch:ElasticsearchOutput",
+            "text_file = stac_generator.plugins.outputs.text_file:TextFileOutput",
+            "json_file = stac_generator.plugins.outputs.json_file:JsonFileOutput",
+            "rabbitmq = stac_generator.plugins.outputs.rabbit_mq:RabbitMQOutput",
+            "intake_esm = stac_generator.plugins.outputs.intake_esm:IntakeESMOutput",
         ],
-        "asset_scanner.plugin_filters": [
-            "path_regex = asset_scanner.plugins.filters.path_regex:PathRegexFilter",
+        "stac_generator.filters": [
+            "path_regex = stac_generator.plugins.filters.path_regex:PathRegexFilter",
         ],
-        "asset_scanner.facet_extractors": [
-            "regex = asset_scanner.plugins.extraction_methods.regex_extract:RegexExtract",
-            "header_extract = asset_scanner.plugins.extraction_methods.header_extract.header_extract:HeaderExtract",
-            "iso19115 = asset_scanner.plugins.extraction_methods.iso19115_extract:ISO19115Extract",
-            "xml_extract = asset_scanner.plugins.extraction_methods.xml_extract:XMLExtract",
+        "stac_generator.extraction_methods": [
+            "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
+            "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
+            "header = stac_generator.plugins.extraction_methods.header.header:HeaderExtract",
+            "iso19115 = stac_generator.plugins.extraction_methods.iso19115:ISO19115Extract",
+            "xml = stac_generator.plugins.extraction_methods.xml:XMLExtract",
+            "elasticsearch = stac_generator.plugins.extraction_methods.elasticsearch:ElasticsearchExtract",
+            "json_file = stac_generator.plugins.extraction_methods.json_file:JsonFileExtract",
+            "posix_stats = stac_generator.plugins.extraction_methods.posix_stats:PosixStatsExtract",
+            "object_store_stats = stac_generator.plugins.extraction_methods.object_store_stats:ObjectStoreStatsExtract",
         ],
-        "asset_scanner.post_extraction_methods": [
-            "vocab = asset_scanner.plugins.post_extraction_methods.vocab_post_extract:VocabPostExtract",
-            "controlled_vocabulary = asset_scanner.plugins.post_extraction_methods.cv_post_extract:ControlledVocabularyPostExtract",
+        "stac_generator.post_extraction_methods": [
+            "ceda_vocabulary = stac_generator.plugins.post_extraction_methods.ceda_vocabulary:CEDAVocabularyPostExtract",
+            "controlled_vocabulary = stac_generator.plugins.post_extraction_methods.controlled_vocabulary:ControlledVocabularyPostExtract",
         ],
-        "asset_scanner.extraction_methods.header_extract.backends": [
-            "ncml = asset_scanner.plugins.extraction_methods.header_extract.backends.ncml:NcMLBackend",
-            "xarray = asset_scanner.plugins.extraction_methods.header_extract.backends.xarray:XarrayBackend",
-            "cf = asset_scanner.plugins.extraction_methods.header_extract.backends.cf:CfBackend",
+        "stac_generator.id_extraction_methods": [
+            "default = stac_generator.plugins.id_extraction_methods.default:DefaultIdExtract",
+            "hash = stac_generator.plugins.id_extraction_methods.hash:HashIdExtract",
         ],
-        "asset_scanner.pre_processors": [
-            "filename_reducer = asset_scanner.plugins.extraction_methods.preprocessors:ReducePathtoName",
-            "ceda_observation = asset_scanner.plugins.extraction_methods.preprocessors:CEDAObservation",
+        "stac_generator.extraction_methods.header.backends": [
+            "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
+            "xarray = stac_generator.plugins.extraction_methods.header.backends.xarray:XarrayBackend",
+            "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",
         ],
-        "asset_scanner.post_processors": [
-            "isodate_processor = asset_scanner.plugins.extraction_methods.postprocessors:ISODateProcessor",
-            "facet_map = asset_scanner.plugins.extraction_methods.postprocessors:FacetMapProcessor",
-            "stac_bbox = asset_scanner.plugins.extraction_methods.postprocessors:BBOXProcessor",
-            "string_join = asset_scanner.plugins.extraction_methods.postprocessors:StringJoinProcessor",
-            "date_combinator = asset_scanner.plugins.extraction_methods.postprocessors:DateCombinatorProcessor",
-            "facet_prefix = asset_scanner.plugins.extraction_methods.postprocessors:FacetPrefixProcessor",
+        "stac_generator.pre_processors": [
+            "basename = stac_generator.plugins.preprocessors.basename:BasenamePreProcessor",
+            "ceda_observation = stac_generator.plugins.preprocessors.ceda_observation:CEDAObservationPreProcessor",
+        ],
+        "stac_generator.post_processors": [
+            "isodate = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
+            "facet_map = stac_generator.plugins.postprocessors.facet_map:FacetMapPostProcessor",
+            "stac_bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
+            "geometry_line = stac_generator.plugins.postprocessors.geometry_line:GeometryLinePostProcessor",
+            "geometry_point = stac_generator.plugins.postprocessors.geometry_point:GeometryPointPostProcessor",
+            "geometry_polygon = stac_generator.plugins.postprocessors.geometry_polygon:GeometryPolygonPostProcessor",
+            "string_join = stac_generator.plugins.postprocessors.string_join:StringJoinPostProcessor",
+            "date_combinator = stac_generator.plugins.postprocessors.date_combinator:DateCombinatorPostProcessor",
+            "facet_prefix = stac_generator.plugins.postprocessors.facet_prefix:FacetPrefixPostProcessor",
+        ],
+        "stac_generator.generators": [
+            "asset = stac_generator.plugins.generators.asset:AssetGenerator",
+            "item = stac_generator.plugins.generators.item:ItemGenerator",
+            "collection = stac_generator.plugins.generators.collection:CollectionGenerator",
         ],
     },
 )

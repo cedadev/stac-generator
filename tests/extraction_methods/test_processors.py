@@ -10,9 +10,11 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pytest
 
-from asset_scanner.plugins.extraction_methods.iso19115_extract import ISO19115Extract
-from asset_scanner.plugins.extraction_methods.preprocessors import CEDAObservation
-from asset_scanner.plugins.extraction_methods.regex_extract import RegexExtract
+from stac_generator.plugins.extraction_methods.iso19115 import ISO19115Extract
+from stac_generator.plugins.extraction_methods.regex import RegexExtract
+from stac_generator.plugins.preprocessors.ceda_observation import (
+    CEDAObservationPreProcessor,
+)
 
 
 @pytest.fixture
@@ -30,8 +32,8 @@ def iso19115_processor():
 
 @pytest.fixture
 def ceda_observation():
-    return CEDAObservation(
-        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$filepath"
+    return CEDAObservationPreProcessor(
+        url_template="http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri"
     )
 
 

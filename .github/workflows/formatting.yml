@@ -22,4 +22,4 @@ jobs:
     - name: Flake8 with annotations
       uses: TrueBrain/actions-flake8@v2.1
       with:
-        path: asset_scanner
+        path: stac_generator
