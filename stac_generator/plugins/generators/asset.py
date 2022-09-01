@@ -11,6 +11,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
+from datetime import datetime
 
 # Framework imports
 from stac_generator.core.collection_describer import CollectionDescription
@@ -59,7 +60,11 @@ class AssetGenerator(BaseGenerator):
         :return:
         """
 
-        body = {"type": self.TYPE.value}
+        body = {
+            "type": self.TYPE.value,
+            "mod_time": datetime.now().strftime("%Y%m%dT%H%M%SZ"),
+            "agregated": False,
+        }
 
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)

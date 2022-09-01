@@ -64,6 +64,7 @@ setup(
             "json_file = stac_generator.plugins.extraction_methods.json_file:JsonFileExtract",
             "posix_stats = stac_generator.plugins.extraction_methods.posix_stats:PosixStatsExtract",
             "object_store_stats = stac_generator.plugins.extraction_methods.object_store_stats:ObjectStoreStatsExtract",
+            "path_parts = stac_generator.plugins.extraction_methods.path_parts:PathPartsExtract",
         ],
         "stac_generator.post_extraction_methods": [
             "ceda_vocabulary = stac_generator.plugins.post_extraction_methods.ceda_vocabulary:CEDAVocabularyPostExtract",

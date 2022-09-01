@@ -18,6 +18,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
+from datetime import datetime
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
@@ -40,7 +41,10 @@ class CollectionGenerator(BaseGenerator):
         :return:
         """
 
-        body = {"type": self.TYPE.value}
+        body = {
+            "type": self.TYPE.value,
+            "mod_time": datetime.now().strftime("%Y%m%dT%H%M%SZ"),
+        }
 
         # Get dataset description file
 
