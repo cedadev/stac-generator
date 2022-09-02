@@ -32,24 +32,6 @@ class AssetGenerator(BaseGenerator):
     SURTYPE = GeneratorType.ITEM
     TYPE = GeneratorType.ASSET
 
-    def get_categories(self, uri: str, description: CollectionDescription) -> list:
-        """
-        Get category labels
-
-        :param uri: uri for object
-        :param description: CollectionDescription
-        :return:
-
-        """
-        categories = set()
-
-        for conf in description.categories:
-            label = self._get_category(uri, **conf.dict())
-            if label:
-                categories.add(label)
-
-        return list(categories) or ["data"]
-
     def process(self, uri: str, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
@@ -74,7 +56,6 @@ class AssetGenerator(BaseGenerator):
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        body["categories"] = self.get_categories(uri, description)
         body["item_id"] = ids["item_id"]
 
         data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}

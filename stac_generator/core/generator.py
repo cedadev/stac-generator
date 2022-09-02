@@ -12,7 +12,6 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import re
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -73,24 +72,6 @@ class BaseGenerator(ABC):
         self.id_extraction_methods = self.load_processors(
             entrypoint="stac_generator.id_extraction_methods"
         )
-
-    @staticmethod
-    def _get_category(string, label, regex):
-        """
-
-        :param string:
-        :param label:
-        :param regex:
-        :return:
-
-        """
-
-        m = re.search(regex, string)
-
-        if not m:
-            label = None
-
-        return label
 
     def _get_processor(self, name: str, group: str, **kwargs) -> BaseProcessor:
         """
