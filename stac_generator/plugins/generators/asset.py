@@ -13,7 +13,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Framework imports
-from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
