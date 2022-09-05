@@ -86,13 +86,13 @@ def accepts_postprocessors(func):
 def accepts_output_key(func):
     """
     Allows postprocessors to work on the output from the main
-    processor.  Uses the key ``post_processors`` from the processor
+    processor.  Uses the key ``output_key`` from the processor
     description.
 
     :param filepath: Path to the file
     :param source_media: The source media type
     :param source_dict: The output dict from the wrapped processor
-    :param post_processors: List of post processors to run
+    :param output_key: dot seperated list for dict to be put in
     :param kwargs: Additional kwargs passed to post processor
 
     """
