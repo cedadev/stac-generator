@@ -88,10 +88,12 @@ class HashIdExtract(BaseIdExtractionMethod):
 
             id_string = id_string[1:]
 
-            return hash(id_string)
+            return self.hash(id_string)
 
         elif "collection_id" in self.terms:
-            return hash(f"{properties.get('collection_id')}.{properties.get('uri')}")
+            return self.hash(
+                f"{properties.get('collection_id')}.{properties.get('uri')}"
+            )
 
         else:
-            return hash(properties.get("uri"))
+            return self.hash(properties.get("uri"))
