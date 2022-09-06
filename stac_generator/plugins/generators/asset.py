@@ -63,7 +63,7 @@ class AssetGenerator(BaseGenerator):
         body = {
             "type": self.TYPE.value,
             "mod_time": datetime.now().strftime("%Y%m%dT%H%M%SZ"),
-            "agregated": False,
+            "aggregated": False,
         }
 
         # Get dataset description file
