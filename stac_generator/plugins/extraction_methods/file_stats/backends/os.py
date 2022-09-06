@@ -21,18 +21,10 @@ from datetime import datetime
 
 import magic
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
-from stac_generator.core.processor import BaseExtractionMethod
-
 LOGGER = logging.getLogger(__name__)
 
 
-class PosixStatsExtract(BaseExtractionMethod):
+class OsStats:
     """
 
     .. list-table::
@@ -125,9 +117,10 @@ class PosixStatsExtract(BaseExtractionMethod):
         # Assuming no errors we can now store the checksum
         self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
+    def guess_can_open(self, uri: str, **kwargs) -> bool:
+        """Return a boolean on whether this backend can open that file."""
+        return os.path.exists(uri)
+
     def run(self, uri: str, **kwargs) -> dict:
         """
 
@@ -152,14 +145,3 @@ class PosixStatsExtract(BaseExtractionMethod):
         # self.extract_checksum(uri, self.checksum)
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["filename", "extension", "size", "modified_time", "magic_number"]

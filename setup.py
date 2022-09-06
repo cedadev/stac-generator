@@ -58,6 +58,7 @@ setup(
             "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
             "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
             "header = stac_generator.plugins.extraction_methods.header.header:HeaderExtract",
+            "file_stats = stac_generator.plugins.extraction_methods.file_stats.file_stats:FileStatsExtract",
             "iso19115 = stac_generator.plugins.extraction_methods.iso19115:ISO19115Extract",
             "xml = stac_generator.plugins.extraction_methods.xml:XMLExtract",
             "elasticsearch = stac_generator.plugins.extraction_methods.elasticsearch:ElasticsearchExtract",
@@ -77,6 +78,11 @@ setup(
             "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
             "xarray = stac_generator.plugins.extraction_methods.header.backends.xarray:XarrayBackend",
             "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",
+        ],
+        "stac_generator.extraction_methods.file_stats.backends": [
+            "boto = stac_generator.plugins.extraction_methods.file_stats.backends.boto:BotoStats",
+            "fsspec = stac_generator.plugins.extraction_methods.file_stats.backends.fsspec:FsSpecStats",
+            "os = stac_generator.plugins.extraction_methods.file_stats.backends.os:OsStats",
         ],
         "stac_generator.pre_processors": [
             "basename = stac_generator.plugins.preprocessors.basename:BasenamePreProcessor",

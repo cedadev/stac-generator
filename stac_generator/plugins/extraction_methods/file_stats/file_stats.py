@@ -1,6 +1,6 @@
 # encoding: utf-8
 """
-Collection of functions which can be used to extract metadata from file headers
+Collection of functions which can be used to extract file stats information
 """
 __author__ = "Richard Smith"
 __date__ = "27 May 2021"
@@ -28,27 +28,25 @@ class NoSuitableBackendException(Exception):
     ...
 
 
-class HeaderExtract(BaseExtractionMethod):
+class FileStatsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
 
         * - Processor Name
-          - ``header``
+          - ``file_stats``
         * - Accepts Pre-processors
           - .. fa:: times
         * - Accepts Post-processors
           - .. fa:: check
 
     Description:
-        Takes a uri string and a list of attributes
-        and returns a dictionary of the values extracted from the
-        file header.
+        Takes a uri string and returns a dictionary of
+        the file stats extracted.
 
     Configuration Options:
-        - ``attributes``: A list of attributes to match for from the file header
         - ``backend``: Specify which backend
-        - ``backend_kwargs``: A dictionary of kwargs for the extractor
+        - ``backend_kwargs``: A dictionary of kwargs for the backend
         - ``post_processors``: List of post_processors to apply
         - ``output_key``: When the metadata is returned, this key determines
           where the metadata is fit in the response. Dot separated
@@ -58,29 +56,25 @@ class HeaderExtract(BaseExtractionMethod):
     Example configuration:
         .. code-block:: yaml
 
-            - method: header
+            - method: file_stats
               inputs:
-                attributes:
-                  - institution
-                  - sensor
-                  - platform
-                backend: xarray
-                backend_kwargs:
-                  decode_times: False
+                backend: os
 
     """
 
     @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
 
+        backend_kwargs = getattr(self, "backend_kwargs", {})
+
         try:
-            backend = self.guess_backend(uri)
+            backend = self.guess_backend(uri, **backend_kwargs)
         except NoSuitableBackendException:
-            LOGGER.warning(f"Header extract backend not found for {uri}")
+            LOGGER.warning(f"File stat extract backend not found for {uri}")
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = self.attr_extraction(backend, uri, self.attributes, self.backend_kwargs)
+        data = backend.run(uri, **self.backend_kwargs)
 
         return data
 
@@ -89,7 +83,7 @@ class HeaderExtract(BaseExtractionMethod):
     def list_backend() -> dict:
         backend_entrypoints = {}
         for pkg_ep in pkg.iter_entry_points(
-            "stac_generator.extraction_methods.header.backends"
+            "stac_generator.extraction_methods.file_stats.backends"
         ):
             name = pkg_ep.name
             try:
@@ -102,14 +96,17 @@ class HeaderExtract(BaseExtractionMethod):
     def guess_backend(self, uri: str) -> dict:
 
         if hasattr(self, "backend"):
-            entry_points = pkg.iter_entry_points(
-                "stac_generator.extraction_methods.header.backends",
-                self.backend,
+            entry_points = list(
+                pkg.iter_entry_points(
+                    "stac_generator.extraction_methods.file_stats.backends",
+                    self.backend,
+                )
             )
 
             backend = None
             if len(entry_points) > 0:
                 backend = entry_points[0].load()
+                print(backend)
 
             if backend and backend().guess_can_open(uri):
                 return backend
@@ -122,23 +119,6 @@ class HeaderExtract(BaseExtractionMethod):
 
         raise (NoSuitableBackendException(f"No backend found for file {uri}"))
 
-    @staticmethod
-    def attr_extraction(
-        backend, uri: str, attributes: list, backend_kwargs: dict
-    ) -> dict:
-        """
-        Takes a uri and list of attributes and extracts the metadata from the header.
-
-        :param file: file-like object
-        :param attributes: Header attributes to extract
-        :param kwargs: kwargs to send to xarray.open_dataset(). e.g. engine to
-        specify different engines to use with grib data.
-
-        :return: dictionary of extracted attributes
-        """
-
-        return backend.attr_extraction(uri, attributes, backend_kwargs)
-
     @expected_terms_postprocessors
     def expected_terms(self, **kwargs) -> list:
         """
@@ -148,4 +128,4 @@ class HeaderExtract(BaseExtractionMethod):
         :return: list
         """
 
-        return self.attributes
+        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]
