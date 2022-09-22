@@ -27,7 +27,7 @@ from stac_generator.core.processor import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class CatagoriesExtract(BaseExtractionMethod):
+class CategoriesExtract(BaseExtractionMethod):
     """
 
     .. list-table::
