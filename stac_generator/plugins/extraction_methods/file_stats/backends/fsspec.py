@@ -21,25 +21,12 @@ from typing import Optional
 from urllib.parse import urlparse
 
 # Third-party imports
-import boto3
 import fsspec as fs
-from botocore import UNSIGNED
-from botocore.config import Config
-from botocore.exceptions import ClientError
-
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
-from stac_generator.core.processor import BaseExtractionMethod
-from stac_generator.core.utils import Stats
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ObjectStoreStatsExtract(BaseExtractionMethod):
+class FsSpecStats:
     """
 
     .. list-table::
@@ -73,12 +60,6 @@ class ObjectStoreStatsExtract(BaseExtractionMethod):
                 uri_parse: urlparse
 
     """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        session_kwargs = getattr(self, "session_kwargs", {})
-        self.session = boto3.session.Session(**session_kwargs)
-        self.anonymous = not session_kwargs
 
     def extract_stat(self, name: str, stats: dict, attribute: str) -> None:
         """
@@ -124,9 +105,28 @@ class ObjectStoreStatsExtract(BaseExtractionMethod):
         if checksum:
             self.info["checksum"] = checksum
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
+    def guess_can_open(self, uri: str, **kwargs) -> bool:
+        """Return a boolean on whether this backend can open that file."""
+        uri_parse = kwargs.get("uri_parse")
+        if not uri_parse:
+            uri_parse = urlparse(uri)
+
+        url_path = Path(uri_parse.path)
+        self.object_path = "/".join(url_path.parts[2:])
+
+        try:
+            with fs.open(uri, anon=True) as f:
+                print(f)
+                self.stats = vars(f)
+            return True
+
+        except FileNotFoundError:
+            print("file not found error")
+            return False
+
+        except:
+            print("other error")
+
     def run(self, uri: str, **kwargs) -> dict:
         """
 
@@ -140,49 +140,12 @@ class ObjectStoreStatsExtract(BaseExtractionMethod):
             f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}"
         )
 
-        uri_parse = kwargs.get("uri_parse")
-        if not uri_parse:
-            uri_parse = urlparse(uri)
-
-        endpoint_url = f"{uri_parse.scheme}://{uri_parse.netloc}"
-        url_path = Path(uri_parse.path)
-        bucket = url_path.parts[1]
-        object_path = "/".join(url_path.parts[2:])
-        protocol = uri_parse.scheme
-        client_kwargs = {}
-        if self.anonymous:
-            client_kwargs["config"] = Config(signature_version=UNSIGNED)
-
-        if protocol in ["https", "http"]:
-            s3 = self.session.client("s3", endpoint_url=endpoint_url, **client_kwargs)
-            try:
-                stats = s3.head_object(Bucket=bucket, Key=uri)
-            except ClientError:
-                stats = {}
-            stats = Stats.from_boto(stats)
-
-        else:
-            file = fs.open(f"{uri}", anon=True)
-            with file as f:
-                stats = vars(f)
-
         self.info = {"uri": uri}
-        self.extract_filename(object_path)
-        self.extract_extension(object_path)
-        self.extract_stat("size", stats, "size")
-        self.extract_stat("modified_time", stats, "last_modified")
-        self.extract_stat("magic_number", stats, "content_type")
+        self.extract_filename(self.object_path)
+        self.extract_extension(self.object_path)
+        self.extract_stat("size", self.stats, "size")
+        self.extract_stat("modified_time", self.stats, "last_modified")
+        self.extract_stat("magic_number", self.stats, "content_type")
         # self.extract_checksum(stats, self.checksum)
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]
