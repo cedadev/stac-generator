@@ -29,6 +29,7 @@ class StringJoinPostProcessor(BasePostProcessor):
         - ``key_list``: ``REQUIRED`` list of keys to convert to bbox array. Ordering is respected.
         - ``delimiter``: ``REQUIRED`` text delimiter to put between strings
         - ``key``: ``REQUIRED`` name of the key you would like to output
+        - ``destructive``: Optional boolean false to retain original terms. ``DEFAULT``: True
 
     Example Configuration:
 
@@ -47,6 +48,11 @@ class StringJoinPostProcessor(BasePostProcessor):
 
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not hasattr(self, "destructive"):
+            self.destructive = True
+
     def run(
         self,
         uri: str,
@@ -56,8 +62,18 @@ class StringJoinPostProcessor(BasePostProcessor):
         if source_dict:
 
             try:
-                string_elements = [str(source_dict.pop(key)) for key in self.key_list]
+
+                if self.destructive:
+                    string_elements = [
+                        str(source_dict.pop(key)) for key in self.key_list
+                    ]
+                else:
+                    string_elements = [
+                        str(source_dict.get(key)) for key in self.key_list
+                    ]
+
                 source_dict[self.key] = self.delimiter.join(string_elements)
+
             except KeyError:
                 LOGGER.warning(f"Unable merge strings. file: {uri}", exc_info=True)
 
