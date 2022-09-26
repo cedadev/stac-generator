@@ -136,7 +136,7 @@ class OsStats:
 
         stats = os.stat(uri)
 
-        self.info = {"uri": uri}
+        self.info = {"uri": getattr(self, "prefix", "") + uri}
         self.extract_filename(uri)
         self.extract_extension(uri)
         self.extract_stat("size", stats, "st_size")
