@@ -57,6 +57,7 @@ setup(
         "stac_generator.extraction_methods": [
             "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
             "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
+            "categories = stac_generator.plugins.extraction_methods.categories:CategoriesExtract",
             "header = stac_generator.plugins.extraction_methods.header.header:HeaderExtract",
             "file_stats = stac_generator.plugins.extraction_methods.file_stats.file_stats:FileStatsExtract",
             "iso19115 = stac_generator.plugins.extraction_methods.iso19115:ISO19115Extract",
@@ -90,7 +91,7 @@ setup(
             "ceda_observation = stac_generator.plugins.preprocessors.ceda_observation:CEDAObservationPreProcessor",
         ],
         "stac_generator.post_processors": [
-            "isodate = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
+            "iso_date = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
             "facet_map = stac_generator.plugins.postprocessors.facet_map:FacetMapPostProcessor",
             "stac_bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
             "geometry_line = stac_generator.plugins.postprocessors.geometry_line:GeometryLinePostProcessor",

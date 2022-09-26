@@ -14,7 +14,6 @@ import logging
 from datetime import datetime
 
 # Framework imports
-from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
@@ -32,24 +31,6 @@ class AssetGenerator(BaseGenerator):
 
     SURTYPE = GeneratorType.ITEM
     TYPE = GeneratorType.ASSET
-
-    def get_categories(self, uri: str, description: CollectionDescription) -> list:
-        """
-        Get category labels
-
-        :param uri: uri for object
-        :param description: CollectionDescription
-        :return:
-
-        """
-        categories = set()
-
-        for conf in description.categories:
-            label = self._get_category(uri, **conf.dict())
-            if label:
-                categories.add(label)
-
-        return list(categories) or ["data"]
 
     def process(self, uri: str, **kwargs) -> None:
         """
@@ -79,7 +60,6 @@ class AssetGenerator(BaseGenerator):
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        body["categories"] = self.get_categories(uri, description)
         body["item_id"] = ids["item_id"]
 
         data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
