@@ -124,7 +124,7 @@ class FsSpecStats:
             print("file not found error")
             return False
 
-        except:
+        except Exception:
             print("other error")
 
     def run(self, uri: str, **kwargs) -> dict:

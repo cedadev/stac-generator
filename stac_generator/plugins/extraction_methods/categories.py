@@ -64,6 +64,7 @@ class CategoriesExtract(BaseExtractionMethod):
                   - label: hidden
                     regex: /\/.
 
+    # noqa: W605
     """
 
     def get_category(self, uri, label, regex):
