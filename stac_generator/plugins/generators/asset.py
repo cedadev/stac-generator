@@ -45,6 +45,7 @@ class AssetGenerator(BaseGenerator):
             "type": self.TYPE.value,
             "mod_time": datetime.now().strftime("%Y%m%dT%H%M%SZ"),
             "status": "new",
+            "properties": {"uri": uri},
         }
 
         # Get dataset description file
