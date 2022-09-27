@@ -222,18 +222,13 @@ class RabbitMQInput(BaseInput):
             )
         )
 
-        # Get the exchanges to bind
-        exchange = self.exchange_conf.get("exchange")
-        dest_exchange = self.exchange_conf.get("destination_exchange")
-
         # Create a new channel
         channel = connection.channel()
 
-        # Declare exchanges
-        if exchange:
-            channel.exchange_declare(
-                exchange=exchange["name"], exchange_type=exchange["type"]
-            )
+        channel.exchange_declare(
+            exchange=self.exchange_conf["name"],
+            exchange_type=self.exchange_conf["type"],
+        )
 
         # Declare queue and bind queue to the dest exchange
         for queue in self.queues_conf:
@@ -243,7 +238,7 @@ class RabbitMQInput(BaseInput):
 
             channel.queue_declare(queue=queue["name"], **declare_kwargs)
             channel.queue_bind(
-                exchange=exchange["name"], queue=queue["name"], **bind_kwargs
+                exchange=self.exchange_conf["name"], queue=queue["name"], **bind_kwargs
             )
 
             # Set callback
