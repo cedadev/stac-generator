@@ -11,6 +11,8 @@ chardet==4.0.0
 ceda-directory-tree==1.0.0
 docutils==0.16
 elasticsearch==7.13.1
+fsspec==2021.10.0
+gcsfs==2021.10.0
 idna==2.10
 imagesize==1.2.0
 Jinja2==3.0.1
@@ -18,10 +20,12 @@ jmespath==0.10.0
 MarkupSafe==2.0.1
 multidict==5.1.0
 packaging==20.9
+pika==1.2.0
 pydantic==1.8.2
 Pygments==2.9.0
 pyparsing==2.4.7
 python-dateutil==2.8.2
+python-magic==0.4.25
 pytz==2021.1
 PyYAML==5.4.1
 requests==2.25.1
@@ -38,6 +42,7 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-programoutput==0.17
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
+tqdm==4.62.3
 typing-extensions==4.0.0
 urllib3==1.26.5
 yarl==1.6.3
