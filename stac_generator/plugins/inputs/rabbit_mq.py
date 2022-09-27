@@ -234,12 +234,14 @@ class RabbitMQInput(BaseInput):
             channel.exchange_declare(
                 exchange=src_exchange["name"], exchange_type=src_exchange["type"]
             )
-        channel.exchange_declare(
-            exchange=dest_exchange["name"], exchange_type=dest_exchange["type"]
-        )
+
+        if dest_exchange:
+            channel.exchange_declare(
+                exchange=dest_exchange["name"], exchange_type=dest_exchange["type"]
+            )
 
         # Bind source exchange to dest exchange
-        if src_exchange:
+        if src_exchange and dest_exchange:
             channel.exchange_bind(
                 destination=dest_exchange["name"], source=src_exchange["name"]
             )
