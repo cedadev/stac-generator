@@ -74,7 +74,7 @@ class FileStatsExtract(BaseExtractionMethod):
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = backend.run(uri, **self.backend_kwargs)
+        data = backend.run(uri, **backend_kwargs)
 
         return data
 
