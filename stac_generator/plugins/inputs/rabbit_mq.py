@@ -175,6 +175,8 @@ class RabbitMQInput(BaseInput):
         # Decode the byte string to utf-8
         body = body.decode("utf-8")
 
+        LOGGER.info(f"message recieved: {body}")
+
         try:
             msg = json.loads(body)
 
@@ -307,10 +309,11 @@ class RabbitMQInput(BaseInput):
         uri = message["uri"]
 
         if self.should_process(uri):
+            LOGGER.info(f"Input processing: {uri} message: {message}")
+
             self.acknowledge_message(ch, method.delivery_tag, connection)
             generator.process(**message)
 
-            LOGGER.info(f"Input processing: {uri}")
         else:
             LOGGER.info(f"Input skipping: {uri}")
 
