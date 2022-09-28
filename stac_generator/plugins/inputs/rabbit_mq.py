@@ -306,13 +306,13 @@ class RabbitMQInput(BaseInput):
             return
 
         # Extract uri
-        uri = message["uri"]
+        uri = message.pop("uri")
 
         if self.should_process(uri):
             LOGGER.info(f"Input processing: {uri} message: {message}")
 
             self.acknowledge_message(ch, method.delivery_tag, connection)
-            generator.process(**message)
+            generator.process(uri, **message)
 
         else:
             LOGGER.info(f"Input skipping: {uri}")
