@@ -178,6 +178,9 @@ class RabbitMQInput(BaseInput):
         try:
             msg = json.loads(body)
 
+            if not hasattr(msg, "uri"):
+                msg["uri"] = msg["filepath"]
+
             return msg
 
         except json.JSONDecodeError:
@@ -301,7 +304,7 @@ class RabbitMQInput(BaseInput):
             return
 
         # Extract uri
-        uri = message["filepath"]
+        uri = message["uri"]
 
         if self.should_process(uri):
             self.acknowledge_message(ch, method.delivery_tag, connection)
