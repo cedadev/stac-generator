@@ -301,7 +301,7 @@ class RabbitMQInput(BaseInput):
             return
 
         # Extract uri
-        uri = message["uri"]
+        uri = message["filepath"]
 
         if self.should_process(uri):
             self.acknowledge_message(ch, method.delivery_tag, connection)
