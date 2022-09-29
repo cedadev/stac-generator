@@ -44,7 +44,7 @@ class PathPartsExtract(BaseExtractionMethod):
         of top level parts.
 
     Configuration Options:
-        - ``skip``: The number of path parts to skip
+        - ``skip``: The number of path parts to skip. ``default: 1``
         - ``pre_processors``: List of pre-processors to apply
         - ``post_processors``: List of post_processors to apply
         - ``output_key``: When the metadata is returned, this key determines
@@ -66,7 +66,7 @@ class PathPartsExtract(BaseExtractionMethod):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not hasattr(self, "skip"):
-            self.skip = 0
+            self.skip = 1
 
     @accepts_output_key
     @accepts_preprocessors
