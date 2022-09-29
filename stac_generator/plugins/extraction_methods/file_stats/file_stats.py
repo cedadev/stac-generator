@@ -68,13 +68,13 @@ class FileStatsExtract(BaseExtractionMethod):
         backend_kwargs = getattr(self, "backend_kwargs", {})
 
         try:
-            backend = self.guess_backend(uri, **backend_kwargs)
+            backend = self.guess_backend(uri)
         except NoSuitableBackendException:
             LOGGER.warning(f"File stat extract backend not found for {uri}")
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = backend.run(uri, **backend_kwargs)
+        data = backend().run(uri, **backend_kwargs)
 
         return data
 

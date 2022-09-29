@@ -175,7 +175,7 @@ class RabbitMQInput(BaseInput):
         # Decode the byte string to utf-8
         body = body.decode("utf-8")
 
-        LOGGER.info(f"message recieved: {body}")
+        LOGGER.info("RabbitMQ message recieved: %s", body)
 
         try:
             msg = json.loads(body)
@@ -265,7 +265,7 @@ class RabbitMQInput(BaseInput):
         :param delivery_tag: Message id
         """
 
-        LOGGER.debug(f"Acknowledging message: {delivery_tag}")
+        LOGGER.debug("Acknowledging message: %s", delivery_tag)
         if channel.is_open:
             channel.basic_ack(delivery_tag)
 
@@ -309,13 +309,13 @@ class RabbitMQInput(BaseInput):
         uri = message.pop("uri")
 
         if self.should_process(uri):
-            LOGGER.info(f"Input processing: {uri} message: {message}")
+            LOGGER.info("Input processing: %s message: %s", uri, message)
 
             self.acknowledge_message(ch, method.delivery_tag, connection)
             generator.process(uri, **message)
 
         else:
-            LOGGER.info(f"Input skipping: {uri}")
+            LOGGER.info("Input skipping: %s", uri)
 
     def run(self, generator: BaseGenerator):
 

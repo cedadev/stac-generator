@@ -119,7 +119,11 @@ class OsStats:
 
     def guess_can_open(self, uri: str, **kwargs) -> bool:
         """Return a boolean on whether this backend can open that file."""
-        return os.path.exists(uri)
+
+        result = os.path.exists(uri)
+        LOGGER.info("OS stats backend check: %s", result)
+
+        return result
 
     def run(self, uri: str, **kwargs) -> dict:
         """
@@ -131,7 +135,9 @@ class OsStats:
         """
 
         LOGGER.info(
-            f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}"
+            "OS stats: Extracting metadata for: %s with checksum: %s",
+            uri,
+            getattr(self, "checksum", None),
         )
 
         stats = os.stat(uri)

@@ -55,6 +55,7 @@ class AssetGenerator(BaseGenerator):
         extraction_methods_output = self.run_extraction_methods(
             uri, description, **kwargs
         )
+
         body = dict_merge(body, extraction_methods_output)
 
         body = self.run_post_extraction_methods(body, description, **kwargs)
