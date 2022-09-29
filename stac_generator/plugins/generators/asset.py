@@ -43,7 +43,7 @@ class AssetGenerator(BaseGenerator):
 
         body = {
             "type": self.TYPE.value,
-            "mod_time": datetime.now().strftime("%Y-%m-%dT%H%:M:%S"),
+            "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             "status": "new",
             "properties": {"uri": uri},
         }
