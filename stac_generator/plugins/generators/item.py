@@ -68,7 +68,7 @@ class ItemGenerator(BaseGenerator):
 
         body = {
             "type": self.TYPE.value,
-            "mod_time": datetime.now().strftime"%Y-%m-%dT%H%:M:%S.%fZ"),
+            "mod_time": datetime.now().strftime("%Y-%m-%dT%H%:M:%S"),
             "status": "new",
         }
 
