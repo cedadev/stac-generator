@@ -14,6 +14,7 @@ from functools import lru_cache
 import pkg_resources as pkg
 
 from stac_generator.core.decorators import (
+    accepts_output_key,
     accepts_postprocessors,
     expected_terms_postprocessors,
 )
@@ -63,6 +64,7 @@ class FileStatsExtract(BaseExtractionMethod):
     """
 
     @accepts_postprocessors
+    @accepts_output_key
     def run(self, uri: str, **kwargs) -> dict:
 
         backend_kwargs = getattr(self, "backend_kwargs", {})
