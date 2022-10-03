@@ -122,6 +122,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
+import ast
 import functools
 import json
 import logging
@@ -180,22 +181,24 @@ class RabbitMQInput(BaseInput):
         try:
             msg = json.loads(body)
 
-            if not hasattr(msg, "uri"):
-                msg["uri"] = msg["filepath"]
-
-            return msg
-
         except json.JSONDecodeError:
-            # Assume the message is in the old format and split on :
-            split_line = body.strip().split(":")
+            try:
+                msg = ast.literal_eval(body)
 
-            msg = {
-                "datetime": ":".join(split_line[:3]),
-                "uri": split_line[3],
-                "action": split_line[4],
-                "filesize": split_line[5],
-                "message": ":".join(split_line[6:]),
-            }
+            except (ValueError, SyntaxError):
+                # Assume the message is in the old format and split on :
+                split_line = body.strip().split(":")
+
+                msg = {
+                    "datetime": ":".join(split_line[:3]),
+                    "uri": split_line[3],
+                    "action": split_line[4],
+                    "filesize": split_line[5],
+                    "message": ":".join(split_line[6:]),
+                }
+
+        if not hasattr(msg, "uri"):
+            msg["uri"] = msg["filepath"]
 
         return msg
 
