@@ -234,8 +234,9 @@ class RabbitMQInput(BaseInput):
         channel = connection.channel()
 
         channel.exchange_declare(
-            exchange=self.exchange_conf["name"],
-            exchange_type=self.exchange_conf["type"],
+            exchange=self.exchange_conf.get("name", "stac"),
+            exchange_type=self.exchange_conf.get("type", "topic"),
+            **self.exchange_conf.get("kwargs", {}),
         )
 
         # Declare queue and bind queue to the dest exchange
