@@ -51,6 +51,13 @@ class AssetGenerator(BaseGenerator):
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)
 
+        # Get the description path, used for item generation
+        relevant_paths = [path for path in description.paths if uri.startswith(path)]
+
+        description_path = max(relevant_paths, key=lambda x: x.count("/"))
+
+        body["description_path"] = description_path
+
         # extract facets, run post extractions and extract ids
         extraction_methods_output = self.run_extraction_methods(
             uri, description, **kwargs

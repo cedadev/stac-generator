@@ -72,6 +72,10 @@ class ItemGenerator(BaseGenerator):
             "status": "new",
         }
 
+        # Get the description path, used for collection generation
+        if "description_path" in kwargs:
+            body["description_path"] = kwargs.get("description_path")
+
         # Get dataset description file
 
         description = self.collection_descriptions.get_description(uri)
