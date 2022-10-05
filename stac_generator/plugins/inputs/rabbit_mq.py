@@ -197,7 +197,7 @@ class RabbitMQInput(BaseInput):
                     "message": ":".join(split_line[6:]),
                 }
 
-        if not hasattr(msg, "uri"):
+        if "uri" in msg:
             msg["uri"] = msg["filepath"]
 
         return msg
