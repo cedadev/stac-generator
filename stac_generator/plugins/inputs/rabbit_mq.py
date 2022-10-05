@@ -197,7 +197,7 @@ class RabbitMQInput(BaseInput):
                     "message": ":".join(split_line[6:]),
                 }
 
-        if "uri" in msg:
+        if "uri" not in msg:
             msg["uri"] = msg["filepath"]
 
         return msg
