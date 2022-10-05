@@ -51,6 +51,10 @@ class AssetGenerator(BaseGenerator):
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)
 
+        LOGGER.info(
+            f"Processing uri: {uri} with description paths: {description.paths}"
+        )
+
         # Get the description path, used for item generation
         relevant_paths = [path for path in description.paths if uri.startswith(path)]
 
