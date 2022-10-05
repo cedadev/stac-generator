@@ -48,11 +48,16 @@ class CollectionGenerator(BaseGenerator):
         }
 
         # Get the description path, used for collection generation
-        if "description_path" in kwargs:
-            body["description_path"] = kwargs.get("description_path")
+        description_path = kwargs.get("description_path")
+
+        if description_path:
+            body["description_path"] = description_path
+
+        else:
+            description_path = uri
 
         # Get dataset description file
-        description = self.collection_descriptions.get_description(uri)
+        description = self.collection_descriptions.get_description(description_path)
 
         # extract data
         extraction_methods_output = self.run_extraction_methods(
