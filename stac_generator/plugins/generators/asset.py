@@ -52,7 +52,7 @@ class AssetGenerator(BaseGenerator):
         description = self.collection_descriptions.get_description(uri)
 
         LOGGER.info(
-            f"Processing uri: {uri} with description paths: {description.paths}"
+            "Processing uri: %s with description paths: %s", uri, description.paths
         )
 
         # Get the description path, used for item generation
