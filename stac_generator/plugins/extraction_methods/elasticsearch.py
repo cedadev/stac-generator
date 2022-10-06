@@ -72,7 +72,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if hasattr(self, "connection_kwargs"):
-            self.es = Elasticsearch(**self.session_kwargs)
+            self.es = Elasticsearch(**self.connection_kwargs)
 
     @staticmethod
     def bbox_query(facet: str) -> dict:
