@@ -54,7 +54,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
                 name: elasticsearch
                 inputs:
                     index: ceda-index
-                    session_kwargs:
+                    connection_kwargs:
                       hosts: ['host1:9200','host2:9200']
                     bbox:
                       - bbox
@@ -71,7 +71,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if hasattr(self, "session_kwargs"):
+        if hasattr(self, "connection_kwargs"):
             self.es = Elasticsearch(**self.session_kwargs)
 
     @staticmethod
