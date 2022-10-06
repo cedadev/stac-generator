@@ -105,6 +105,9 @@ class CollectionDescriptions:
                     # Strip trailing slash. Needed to make sure tree search works
                     dataset = dataset.rstrip("/")
 
+                    LOGGER.info(
+                        "Adding file %s to path %s in description tree", file, dataset
+                    )
                     self.tree.add_child(dataset, description_file=file.as_posix())
 
     def get_description(self, filepath: str) -> CollectionDescription:
