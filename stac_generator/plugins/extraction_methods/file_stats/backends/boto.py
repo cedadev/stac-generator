@@ -120,6 +120,9 @@ class BotoStats:
         url_path = Path(uri_parse.path)
         bucket = url_path.parts[1]
 
+        if endpoint_url == "://":
+            return False
+
         self.object_path = "/".join(url_path.parts[2:])
 
         session_kwargs = getattr(kwargs, "session_kwargs", {})
