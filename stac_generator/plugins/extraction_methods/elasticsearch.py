@@ -202,23 +202,23 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
         if hasattr(self, "bbox"):
             for bbox in self.bbox:
-                self.query["aggs"] |= self.bbox_query(bbox)
+                self.query["aggs"].update(self.bbox_query(bbox))
 
         if hasattr(self, "min"):
             for min in self.min:
-                self.query["aggs"] |= self.min_query(min)
+                self.query["aggs"].update(self.min_query(min))
 
         if hasattr(self, "max"):
             for max in self.max:
-                self.query["aggs"] |= self.max_query(max)
+                self.query["aggs"].update(self.max_query(max))
 
         if hasattr(self, "sum"):
             for sum_term in self.sum:
-                self.query["aggs"] |= self.sum_query(sum_term)
+                self.query["aggs"].update(self.sum_query(sum_term))
 
         if hasattr(self, "list"):
             for list_term in self.list:
-                self.query["aggs"] |= self.facet_composite_query(list_term)
+                self.query["aggs"].update(self.facet_composite_query(list_term))
 
     def extract_metadata(self):
         """
