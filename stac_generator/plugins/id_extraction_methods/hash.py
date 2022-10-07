@@ -71,10 +71,6 @@ class HashIdExtract(BaseIdExtractionMethod):
 
         properties = body["properties"]
 
-        LOGGER.info("properties: %s", properties)
-
-        LOGGER.info("terms: %s", self.terms)
-
         if hasattr(self, "terms") and all(
             [facet in properties for facet in self.terms]
         ):
@@ -89,7 +85,7 @@ class HashIdExtract(BaseIdExtractionMethod):
 
                 if isinstance(vals, (list)):
                     if len(vals) == 1:
-                        id_string = ".".join((id_string, vals))
+                        id_string = ".".join((id_string, vals[0]))
                     else:
                         id_string = ".".join((id_string, f"multi_{facet}"))
 
@@ -102,4 +98,4 @@ class HashIdExtract(BaseIdExtractionMethod):
             id_string = properties.get("uri")
 
         LOGGER.info("id_string: %s", id_string)
-        return id_string
+        return self.hash(id_string)
