@@ -348,7 +348,8 @@ class BaseGenerator(ABC):
                 "method" in item_id_description
                 and item_id_description["method"] == "hash"
             ):
-                item_id_description["inputs"]["terms"].append("collection_id")
+                if "collection_id" not in item_id_description["inputs"]["terms"]:
+                    item_id_description["inputs"]["terms"].append("collection_id")
                 body["properties"]["collection_id"] = ids["collection_id"]
 
             ids["item_id"] = self._run_id_extraction_method(
