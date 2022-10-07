@@ -253,6 +253,8 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
         self.construct_query()
 
+        LOGGER.info("Elasticsearch query: %s", self.query)
+
         # Run query
         result = self.es.search(index=self.index, body=self.query)
 
