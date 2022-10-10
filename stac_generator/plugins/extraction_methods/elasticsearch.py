@@ -39,6 +39,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
     Configuration Options:
         - ``index``: Name of the index holding the STAC entities
+        - ``id_term``: Term used for agregating the STAC entities
         - ``session_kwargs``: Session parameters passed to
         `elasticsearch.Elasticsearch<https://elasticsearch-py.readthedocs.io/en/7.10.0/api.html>`_
         - ``bbox``: list of terms for which their aggregate bbox should be returned.
@@ -54,6 +55,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
                 name: elasticsearch
                 inputs:
                     index: ceda-index
+                    id_term: item_id
                     connection_kwargs:
                       hosts: ['host1:9200','host2:9200']
                     bbox:
@@ -249,7 +251,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
         self.metadata = defaultdict(list)
 
-        self.construct_base_query("item_id", uri)
+        self.construct_base_query(self.id_term, uri)
 
         self.construct_query()
 
