@@ -98,7 +98,7 @@ class CollectionDescriptions:
             exit()
 
         for file in files:
-            with open(file) as reader:
+            with open(file, encoding="utf-8") as reader:
                 data = yaml.safe_load(reader)
 
                 for dataset in data.get("paths", []):
@@ -151,7 +151,7 @@ class CollectionDescriptions:
         """
         base_dict = {}
         for file in args:
-            with open(file) as reader:
+            with open(file, encoding="utf-8") as reader:
                 base_dict = self.description_merge(base_dict, yaml.safe_load(reader))
 
         return base_dict
