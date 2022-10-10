@@ -1,7 +1,7 @@
 # encoding: utf-8
 """
-Item Description
-================
+Collection Description
+======================
 """
 __author__ = "Richard Smith"
 __date__ = "27 May 2021"
