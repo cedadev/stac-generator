@@ -98,7 +98,7 @@ class CollectionDescriptions:
             exit()
 
         for file in files:
-            with open(file) as reader:
+            with open(file, encoding="uft-8") as reader:
                 data = yaml.safe_load(reader)
 
                 for dataset in data.get("paths", []):
@@ -151,10 +151,77 @@ class CollectionDescriptions:
         """
         base_dict = {}
         for file in args:
-            with open(file) as reader:
-                base_dict = dict_merge(base_dict, yaml.safe_load(reader))
+            with open(file, encoding="uft-8") as reader:
+                base_dict = self.description_merge(base_dict, yaml.safe_load(reader))
 
         return base_dict
+
+    def methods_merge(self, base_methods, override_methods) -> dict:
+        """
+        merge sections from two description
+
+        :param base_section: methods of the base description
+        :param override_section: methods of the more specific description
+        """
+        base_method_dict = {
+            base_method["method"]: base_method for base_method in base_methods
+        }
+
+        for method in override_methods:
+            method_name = method["method"]
+
+            if method_name in base_method_dict:
+                base_method_dict[method_name] = {
+                    "method": method_name,
+                    "inputs": {dict_merge(base_method_dict[method_name], method)},
+                }
+
+            else:
+                base_method_dict[method_name] = method
+
+        return base_method_dict.values()
+
+    def section_merge(self, base_section, override_section) -> dict:
+        """
+        merge sections from two description
+
+        :param base_section: methods of the base description
+        :param override_section: methods of the more specific description
+        """
+        if "id" in override_section:
+            base_section["id"] = override_section.pop("id")
+
+        for methods_name, methods in override_section:
+            base_section[methods_name] = self.methods_merge(
+                base_section[methods_name], methods
+            )
+
+        return base_section
+
+    def description_merge(self, *args) -> dict:
+        """
+        merge multiple descriptions into one
+
+        :params: List of descriptions
+        """
+        descriptions = list(args)
+
+        if len(descriptions) == 1:
+            return descriptions[0]
+
+        # Make a copy of the root description
+        description = descriptions.pop(0)
+
+        for next_description in descriptions:
+            if "paths" in next_description:
+                description["paths"] = next_description.pop("paths")
+
+            for section_name, section in next_description.items():
+                description[section_name] = self.section_merge(
+                    description[section_name], section
+                )
+
+        return description
 
 
 if __name__ == "__main__":
@@ -166,10 +233,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("path", help="path to retrieve description for")
 
-    args = parser.parse_args()
+    arguments = parser.parse_args()
 
-    descriptions = CollectionDescriptions(args.root)
+    collection_descriptions = CollectionDescriptions(arguments.root)
 
-    description = descriptions.get_description(args.path)
+    collection_description = collection_descriptions.get_description(arguments.path)
 
-    print(description)
+    print(collection_description)
