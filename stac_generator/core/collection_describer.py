@@ -24,7 +24,7 @@ from directory_tree import DatasetNode
 from pydantic import BaseModel
 
 # Package imports
-from stac_generator.core.utils import dict_merge, load_description_files
+from stac_generator.core.utils import load_description_files
 
 LOGGER = logging.getLogger(__name__)
 
