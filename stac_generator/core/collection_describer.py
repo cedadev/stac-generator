@@ -156,7 +156,7 @@ class CollectionDescriptions:
 
         return base_dict
 
-    def methods_merge(self, base_methods, override_methods) -> dict:
+    def methods_merge(self, base_methods: list, override_methods: list) -> list:
         """
         merge sections from two description
 
@@ -186,7 +186,7 @@ class CollectionDescriptions:
 
         return base_methods
 
-    def section_merge(self, base_section, override_section) -> dict:
+    def section_merge(self, base_section: dict, override_section: dict) -> dict:
         """
         merge sections from two description
 
