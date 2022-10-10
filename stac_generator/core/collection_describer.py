@@ -168,18 +168,23 @@ class CollectionDescriptions:
         }
 
         for method in override_methods:
+
             method_name = method["method"]
 
-            if method_name in base_method_dict:
-                base_method_dict[method_name] = {
-                    "method": method_name,
-                    "inputs": {dict_merge(base_method_dict[method_name], method)},
+            if method_name == "default" and "default" in base_method_dict:
+
+                base_method_dict["default"]["inputs"]["defaults"] = {
+                    **base_method_dict["default"]["inputs"]["defaults"],
+                    **method["inputs"]["defaults"],
                 }
 
-            else:
-                base_method_dict[method_name] = method
+                base_methods.append(base_method_dict["default"])
 
-        return base_method_dict.values()
+            else:
+
+                base_methods.append(method)
+
+        return base_methods
 
     def section_merge(self, base_section, override_section) -> dict:
         """
@@ -191,7 +196,7 @@ class CollectionDescriptions:
         if "id" in override_section:
             base_section["id"] = override_section.pop("id")
 
-        for methods_name, methods in override_section:
+        for methods_name, methods in override_section.items():
             base_section[methods_name] = self.methods_merge(
                 base_section[methods_name], methods
             )
@@ -217,9 +222,12 @@ class CollectionDescriptions:
                 description["paths"] = next_description.pop("paths")
 
             for section_name, section in next_description.items():
-                description[section_name] = self.section_merge(
-                    description[section_name], section
-                )
+                if section_name in description:
+                    description[section_name] = self.section_merge(
+                        description[section_name], section
+                    )
+                else:
+                    description[section_name] = section
 
         return description
 

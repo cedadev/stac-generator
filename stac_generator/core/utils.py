@@ -170,11 +170,20 @@ def dict_merge(*args, add_keys=True) -> dict:
 
             # This is an existing key with mismatched types
             elif k in rtn_dct and not isinstance(v, type(rtn_dct[k])):
-                if isinstance(v, list) and rtn_dct[k] in v:
-                    rtn_dct[k] = v
-                elif isinstance(rtn_dct[k], list) and v in rtn_dct[k]:
-                    rtn_dct[k] = rtn_dct[k]
+                if isinstance(v, list) and isinstance(v[0], type(rtn_dct[k])):
+
+                    if rtn_dct[k] not in v:
+                        v.append(rtn_dct[k])
+
+                elif isinstance(rtn_dct[k], list) and isinstance(
+                    rtn_dct[k][0], type(v)
+                ):
+
+                    if v not in rtn_dct[k]:
+                        rtn_dct[k].append(v)
+
                 else:
+
                     raise TypeError(
                         f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}"
                     )
