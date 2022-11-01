@@ -146,7 +146,7 @@ class FsSpecStatsExtract:
             self.extract_stat("modified_time", stats, "last_modified")
             self.extract_stat("magic_number", stats, "content_type")
             # self.extract_checksum(stats, self.checksum)
-        except:
+        except Exception:
             pass
 
         return self.info

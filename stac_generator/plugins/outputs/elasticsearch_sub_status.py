@@ -40,12 +40,9 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from typing import Dict
-
 from elasticsearch import Elasticsearch
 
 from stac_generator.core.output import BaseOutput
-from stac_generator.core.utils import Coordinates, load_yaml
 
 
 class ElasticsearchOutput(BaseOutput):
@@ -55,7 +52,7 @@ class ElasticsearchOutput(BaseOutput):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
         index_conf = kwargs["index"]
@@ -64,7 +61,7 @@ class ElasticsearchOutput(BaseOutput):
         self.index_name = index_conf["name"]
         self.id_key = index_conf["id_key"]
 
-    def export(self, data, **kwargs):
+    def export(self, data, **kwargs) -> None:
 
         body = {
             "script": {

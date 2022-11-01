@@ -24,7 +24,6 @@ from urllib.parse import urlparse
 from boto3.session import Session as BotoSession
 from botocore import UNSIGNED
 from botocore.config import Config
-from botocore.exceptions import ClientError
 
 from stac_generator.core.decorators import (
     accepts_output_key,
