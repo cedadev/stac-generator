@@ -12,6 +12,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 import logging
 from datetime import datetime
+from time import perf_counter
 
 # Framework imports
 from stac_generator.core.generator import BaseGenerator
@@ -48,8 +49,12 @@ class AssetGenerator(BaseGenerator):
             "properties": {"uri": uri},
         }
 
+        tic = perf_counter()
+
         # Get dataset description file
         description = self.collection_descriptions.get_description(uri)
+
+        print(f"Descriptions got at {perf_counter() - tic:0.4f} seconds")
 
         LOGGER.info(
             "Processing uri: %s with description paths: %s", uri, description.paths
@@ -62,16 +67,26 @@ class AssetGenerator(BaseGenerator):
 
         body["description_path"] = description_path
 
+        print(f"Description path selected at {perf_counter() - tic:0.4f} seconds")
+
         # extract facets, run post extractions and extract ids
         extraction_methods_output = self.run_extraction_methods(
             uri, description, **kwargs
         )
 
+        print(f"Extraction methods finished at {perf_counter() - tic:0.4f} seconds")
+
         body = dict_merge(body, extraction_methods_output)
+
+        print(f"Body merged at {perf_counter() - tic:0.4f} seconds")
 
         body = self.run_post_extraction_methods(body, description, **kwargs)
 
+        print(f"Post extraction finished at {perf_counter() - tic:0.4f} seconds")
+
         ids = self.run_id_extraction_methods(body, description, **kwargs)
+
+        print(f"ID extraction finished at {perf_counter() - tic:0.4f} seconds")
 
         body["item_id"] = ids["item_id"]
 
@@ -83,3 +98,5 @@ class AssetGenerator(BaseGenerator):
         }
 
         self.output(data, message=message)
+
+        print(f"Output finished at {perf_counter() - tic:0.4f} seconds")

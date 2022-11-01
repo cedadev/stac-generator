@@ -21,10 +21,18 @@ from datetime import datetime
 
 import magic
 
+from stac_generator.core.decorators import (
+    accepts_output_key,
+    accepts_postprocessors,
+    accepts_preprocessors,
+    expected_terms_postprocessors,
+)
+from stac_generator.core.processor import BaseExtractionMethod
+
 LOGGER = logging.getLogger(__name__)
 
 
-class OsStats:
+class OsStatsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -117,14 +125,9 @@ class OsStats:
         # Assuming no errors we can now store the checksum
         self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
-    def guess_can_open(self, uri: str, **kwargs) -> bool:
-        """Return a boolean on whether this backend can open that file."""
-
-        result = os.path.exists(uri)
-        LOGGER.info("OS stats backend check: %s", result)
-
-        return result
-
+    @accepts_output_key
+    @accepts_preprocessors
+    @accepts_postprocessors
     def run(self, uri: str, **kwargs) -> dict:
         """
 
@@ -140,14 +143,28 @@ class OsStats:
             getattr(self, "checksum", None),
         )
 
-        stats = os.stat(uri)
-
         self.info = {"uri": getattr(self, "prefix", "") + uri}
-        self.extract_filename(uri)
-        self.extract_extension(uri)
-        self.extract_stat("size", stats, "st_size")
-        self.extract_modified_time(stats)
-        self.extract_magic_number(uri)
-        # self.extract_checksum(uri, self.checksum)
+
+        if os.path.exists(uri):
+
+            stats = os.stat(uri)
+
+            self.extract_filename(uri)
+            self.extract_extension(uri)
+            self.extract_stat("size", stats, "st_size")
+            self.extract_modified_time(stats)
+            self.extract_magic_number(uri)
+            # self.extract_checksum(uri, self.checksum)
 
         return self.info
+
+    @expected_terms_postprocessors
+    def expected_terms(self, **kwargs) -> list:
+        """
+        The expected terms to be returned from running the extraction method with the given Collection Description
+        :param collection_descrition: CollectionDescription for extraction method
+        :param kwargs: free kwargs passed to the processor.
+        :return: list
+        """
+
+        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]
