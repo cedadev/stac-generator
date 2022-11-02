@@ -137,7 +137,7 @@ class OsStatsExtract(BaseExtractionMethod):
 
         """
 
-        LOGGER.info(
+        LOGGER.debug(
             "OS stats: Extracting metadata for: %s with checksum: %s",
             uri,
             getattr(self, "checksum", None),

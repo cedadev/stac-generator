@@ -124,8 +124,10 @@ class FsSpecStatsExtract:
 
         """
 
-        LOGGER.info(
-            f"Extracting metadata for: {uri} with checksum: {getattr(self, 'checksum', None)}"
+        LOGGER.debug(
+            "OS stats: Extracting metadata for: %s with checksum: %s",
+            uri,
+            getattr(self, "checksum", None),
         )
 
         if not hasattr(self, "uri_parse"):
