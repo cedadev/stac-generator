@@ -89,7 +89,7 @@ def main():
     input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
 
     for input_plugin in input_plugins:
-        input_plugin.run(generator)
+        input_plugin.start(generator)
 
 
 if __name__ == "__main__":

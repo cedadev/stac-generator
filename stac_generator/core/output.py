@@ -12,9 +12,14 @@ from abc import ABC, abstractmethod
 
 
 class BaseOutput(ABC):
+    """
+    Base class to define an output
+    """
+
     def __init__(self, **kwargs):
         """
         Set the kwargs to generate instance attributes of the same name
+
         :param kwargs:
         """
 
@@ -22,5 +27,20 @@ class BaseOutput(ABC):
             setattr(self, k, v)
 
     @abstractmethod
-    def export(self, data, **kwargs):
-        pass
+    def export(self, data: dict) -> None:
+        """
+        Output the data.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+
+    # This allows for bulk outputs
+    def run(self, data: dict) -> None:
+        """
+        Run the output.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+        self.export(data)

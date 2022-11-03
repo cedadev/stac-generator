@@ -38,7 +38,7 @@ class StandardOutOutput(BaseOutput):
     for testing and debugging.
     """
 
-    def export(self, data: dict, **kwargs) -> None:
+    def export(self, data: dict) -> None:
         """
         Print the received data.
 

@@ -97,11 +97,13 @@ class ItemGenerator(BaseGenerator):
         body["collection_id"] = ids["collection_id"]
         body["item_id"] = ids["item_id"]
 
-        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
-
-        message = {
-            f"{self.SURTYPE.value}_id": ids[f"{self.SURTYPE.value}_id"],
+        data = {
+            "id": ids[f"{self.TYPE.value}_id"],
+            "surtype": self.SURTYPE.value,
+            "type": self.TYPE.value,
+            "subtype": self.SUBTYPE.value,
             "uri": uri,
+            "body": body,
         }
 
-        self.output(data, message=message)
+        self.output(data)

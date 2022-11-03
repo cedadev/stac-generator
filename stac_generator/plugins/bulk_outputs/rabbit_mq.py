@@ -2,9 +2,10 @@
 RabbitMQ Output
 -----------------
 
-Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file objects.
+Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for parent
+generation messages.
 
-**Plugin name:** ``rabbitmq_out``
+**Plugin name:** ``rabbitmq_out_bulk``
 
 .. list-table::
     :header-rows: 1
@@ -37,6 +38,9 @@ Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a destination for file o
     * - ``queues``
       - ``list``
       - ``REQUIRED`` Queue parameters. `queues`_
+    * - ``max_cache_size``
+      - ``int``
+      - Maximum number of messages before cache is emptied.
 
 
 exchange
@@ -86,7 +90,7 @@ Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - method: rabbitmq
+            - method: rabbitmq_bulk
               connection:
                 host: my-rabbit-server.co.uk
                 user: user
@@ -98,24 +102,23 @@ Example Configuration:
                 name: mydest-exchange
                 type: fanout
                 routing_key: asset
+              cache_max_size: 10
 """
-
 
 import json
 
 import pika
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.bulk_output import BaseBulkOutput
 
 
-class RabbitMQOutput(BaseOutput):
+class RabbitMQBulkOutput(BaseBulkOutput):
     """
-    RabbitMQ output for sending grouped messages.
+    RabbitMQ Bulk output for sending grouped messages.
     """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
         # Create the credentials object
         credentials = pika.PlainCredentials(
             self.connection["user"], self.connection["password"]
@@ -138,20 +141,29 @@ class RabbitMQOutput(BaseOutput):
             exchange_type=self.exchange["type"],
         )
 
-    def export(self, data: dict) -> None:
+    def data_to_cache(self, data: dict) -> None:
+        """
+        Convert the data into a data to  be stored in cache.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+        return {
+            data["body"][f"{data['surtype']}_id"]: {
+                f"{data['surtype']}_id": data["body"][f"{data['surtype']}_id"],
+                "uri": data["uri"],
+            }
+        }
+
+    def export(self, data_list: list):
         """
         Export the data to rabbit.
 
         :param data: expected data as header dict
         """
 
-        message = {
-            f"{data['surtype'].value}_id": data[f"{data['surtype'].value}_id"],
-            "uri": data["uri"],
-        }
-
         self.channel.basic_publish(
             exchange=self.exchange["name"],
-            body=json.dumps(message),
+            body=json.dumps(data_list),
             routing_key=self.exchange.get("routing_key", ""),
         )

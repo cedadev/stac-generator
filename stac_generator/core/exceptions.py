@@ -17,5 +17,3 @@ class NoPluginsError(Exception):
     i.e. if no input plugins were successfully loaded, then this exception
     would be raised.
     """
-
-    pass

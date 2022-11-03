@@ -75,7 +75,7 @@ class IntakeESMOutput(BaseOutput):
         self.json_path = self.filepath + ".json"
         self.csv_path = self.filepath + ".csv.gz"
 
-    def export(self, data, **kwargs):
+    def export(self, data: dict) -> None:
         """Write data to disk."""
         import csv
         import gzip

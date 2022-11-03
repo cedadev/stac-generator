@@ -62,7 +62,7 @@ class HashIdExtract(BaseIdExtractionMethod):
                 final_dict = final_dict | self.flatten_dict(v)
             final_dict[k] = v
 
-    def hash(self, id_string: str):
+    def hash_id(self, id_string: str):
         return hashlib.md5(id_string.encode("utf-8")).hexdigest()
 
     @accepts_preprocessors
