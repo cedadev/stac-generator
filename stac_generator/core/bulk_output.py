@@ -27,14 +27,17 @@ class BaseBulkOutput(ABC):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        self.data_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
+        if not hasattr(self, "cache_max_size"):
+            self.cache_max_size = 100
+
+        self.data_cache = Cache(maxsize=self.cache_max_size + 1)
 
     @property
     def data_list(self):
         """
         Extract the data from the cache into a list.
         """
-        return [data for _, data in dict(self.data_cache.items()).items()]
+        return dict(self.data_cache.items()).values()
 
     @abstractmethod
     def export(self, data_list: list) -> None:
@@ -56,14 +59,14 @@ class BaseBulkOutput(ABC):
 
     def run(self, data: dict) -> None:
         """
-        Export the data to rabbit.
+        Add data to cache and if cache is full export data.
 
-        :param data: expected data as header dict
+        :param data: data to be exported
         """
         # add to cache
         self.data_cache.update(self.data_to_cache(data))
 
-        if self.data_cache.currsize >= getattr(self, "cache_max_size", 100):
+        if self.data_cache.currsize >= self.cache_max_size:
             self.clear_cache()
 
     def clear_cache(self) -> None:
