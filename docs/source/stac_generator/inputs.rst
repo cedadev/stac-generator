@@ -15,16 +15,16 @@ Inputs
      - ``None``
    * - :ref:`object_store <stac_generator/inputs:object store>`
      - Works with S3 endpoints.
-     - ``pip install asset-scanner[boto3]``
+     - ``pip install stac-generator[boto3]``
    * - :ref:`intake_esm <stac_generator/inputs:intake esm>`
      - Use/search and intake ESM catalog to provide a source of paths.
-     - ``pip install asset-scanner[intake-esm]``
+     - ``pip install stac-generator[intake-esm]``
    * - :ref:`rabbit_mq <stac_generator/inputs:rabbitmq>`
      - Connect to a RabbitMQ message queue.
-     - ``pip install asset-scanner[rabbitmq]``
+     - ``pip install stac-generator[rabbitmq]``
    * - :ref:`thredds <stac_generator/inputs:thredds>`
      - Use a THREDDS catalog as a source
-     - ``pip install asset-scanner[thredds]``
+     - ``pip install stac-generator[thredds]``
 
 .. automodule:: stac_generator.plugins.inputs.file_system
 
