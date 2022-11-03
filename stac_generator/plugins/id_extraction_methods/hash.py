@@ -98,4 +98,4 @@ class HashIdExtract(BaseIdExtractionMethod):
             id_string = properties.get("uri")
 
         LOGGER.debug("id_string: %s", id_string)
-        return self.hash(id_string)
+        return self.hash_id(id_string)
