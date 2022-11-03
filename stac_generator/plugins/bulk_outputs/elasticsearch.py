@@ -143,7 +143,6 @@ class ElasticsearchBulkOutput(BaseBulkOutput):
             yield {
                 "_op_type": "update",
                 "_index": self.index_name,
-                "_type": "document",
                 "_id": data["id"],
                 "doc": data["body"],
                 "doc_as_upsert": True,
