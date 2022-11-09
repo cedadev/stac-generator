@@ -17,7 +17,6 @@ idna==2.10
 imagesize==1.2.0
 Jinja2==3.0.1
 jmespath==0.10.0
-MarkupSafe==2.0.1
 multidict==5.1.0
 packaging==20.9
 pika==1.2.0
