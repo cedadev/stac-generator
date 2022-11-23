@@ -40,13 +40,16 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
+import logging
 from typing import Dict
 
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import streaming_bulk
 
 from stac_generator.core.bulk_output import BaseBulkOutput
 from stac_generator.core.utils import Coordinates, load_yaml
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ElasticsearchBulkOutput(BaseBulkOutput):
@@ -65,7 +68,6 @@ class ElasticsearchBulkOutput(BaseBulkOutput):
 
         self.es = Elasticsearch(**kwargs["connection_kwargs"])
         self.index_name = index_conf["name"]
-        self.pipeline_conf = kwargs.get("pipeline", None)
 
         # Create the index, if it doesn't already exist
         if index_conf.get("mapping"):
@@ -152,4 +154,12 @@ class ElasticsearchBulkOutput(BaseBulkOutput):
         """
         Export using elasticsearch bulk helper.
         """
-        bulk(self.es, self.action_iterator(data_list))
+        for okay, info in streaming_bulk(
+            self.es, self.action_iterator(data_list), yield_ok=False
+        ):
+            if not okay:
+                LOGGER.error(
+                    "Unable to index %s: %s",
+                    info["update"]["_id"],
+                    info["update"]["error"],
+                )

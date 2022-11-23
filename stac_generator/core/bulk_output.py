@@ -32,6 +32,9 @@ class BaseBulkOutput(ABC):
 
         self.data_cache = Cache(maxsize=self.cache_max_size + 1)
 
+    def __del__(self):
+        self.clear_cache()
+
     @property
     def data_list(self):
         """
