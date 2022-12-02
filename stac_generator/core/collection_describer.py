@@ -103,7 +103,8 @@ class CollectionDescriptions:
 
                 for dataset in data.get("paths", []):
                     # Strip trailing slash. Needed to make sure tree search works
-                    dataset = dataset.rstrip("/")
+                    if dataset != "/":
+                        dataset = dataset.rstrip("/")
 
                     LOGGER.info(
                         "Adding file %s to path %s in description tree", file, dataset
