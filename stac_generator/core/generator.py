@@ -344,7 +344,7 @@ class BaseGenerator(ABC):
         ids = {}
         collection_description = description.collection
 
-        if collection_description.id:
+        if collection_description and collection_description:
             collection_id_description = collection_description.id
 
         else:
