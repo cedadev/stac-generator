@@ -107,12 +107,14 @@ class HeaderExtract(BaseExtractionMethod):
                 self.backend,
             )
 
+            entry_points = list(entry_points)
+
             backend = None
             if len(entry_points) > 0:
                 backend = entry_points[0].load()
 
             if backend and backend().guess_can_open(uri):
-                return backend
+                return backend()
 
         backends = self.list_backend()
         for _, backend in backends.items():

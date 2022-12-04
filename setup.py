@@ -46,6 +46,7 @@ setup(
         "stac_generator.outputs": [
             "standard_out = stac_generator.plugins.outputs.standard_out:StandardOutOutput",
             "elasticsearch = stac_generator.plugins.outputs.elasticsearch:ElasticsearchOutput",
+            "stacapi = stac_generator.plugins.outputs.stacapi_backend:StacApiOutputBackend",
             "text_file = stac_generator.plugins.outputs.text_file:TextFileOutput",
             "json_file = stac_generator.plugins.outputs.json_file:JsonFileOutput",
             "rabbitmq = stac_generator.plugins.outputs.rabbit_mq:RabbitMQOutput",
@@ -73,7 +74,7 @@ setup(
             "default = stac_generator.plugins.id_extraction_methods.default:DefaultIdExtract",
             "hash = stac_generator.plugins.id_extraction_methods.hash:HashIdExtract",
         ],
-        "stac_generator.extraction_methods.header.backends": [
+        "stac_generator.extraction_methods.header_extract.backends": [
             "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
             "xarray = stac_generator.plugins.extraction_methods.header.backends.xarray:XarrayBackend",
             "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",

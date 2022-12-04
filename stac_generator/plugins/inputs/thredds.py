@@ -143,7 +143,7 @@ class ThreddsInput(BaseInput):
         else:
             logger.debug(f"Input skipping: {filepath}")
 
-    def run(self, generator: BaseGenerator, kwargs):
+    def run(self, generator: BaseGenerator):
         """
         Plugin's entrypoint.
 

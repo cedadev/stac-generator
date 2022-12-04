@@ -289,6 +289,9 @@ class BaseGenerator(ABC):
 
                 # Merge the extracted metadata with the metadata already retrieved
                 if metadata:
+                    if "properties" not in metadata:
+                        metadata = {"properties": metadata}
+
                     body = dict_merge(body, metadata)
 
         # Process multi-values
