@@ -18,6 +18,8 @@ An output backend which outputs the content generated to STAC API.
     * - ``collection.name``
       - ``str``
       - ``REQUIRED`` The collection name to output the content to.
+    * - ``drop_properties``
+      - List of properties to drop from item indexing
 
 Example Configuration:
     .. code-block:: yaml
@@ -28,6 +30,9 @@ Example Configuration:
                 host: 'hosturl'
               collection:
                 name: 'CMIP6'
+              drop_properties:
+                - uri
+                - extension
 """
 __author__ = "Mathieu Provencher"
 __date__ = "20 Apr 2022"
@@ -67,6 +72,7 @@ class StacApiOutputBackend(BaseOutput):
 
         self.stac_host = kwargs["connection"]["host"]
         self.collection_name = kwargs["collection"]["name"]
+        self.drop_properties = kwargs["drop_properties"] or []
         self.collection_id = generate_id(self.collection_name)
 
         # TODO if collection not exist, raise
@@ -102,7 +108,13 @@ class StacApiOutputBackend(BaseOutput):
                                 properties={},
                                 collection=self.collection_id)
 
-        stac_item.properties = data["body"]["properties"]
+        properties_list = dict()
+
+        for k, v in data["body"]["properties"].items():
+            if k not in self.drop_properties:
+                properties_list[k] = v
+
+        stac_item.properties = properties_list
 
         link = pystac.Link("self", "{}/collections/{}/items/{}".format(self.stac_host, self.collection_id, stac_item.id))
         stac_item.add_link(link)
