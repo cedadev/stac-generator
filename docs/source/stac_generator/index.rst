@@ -47,7 +47,7 @@ extractors ``stac_generator``.
 Configuration
 ==============
 
-The configuration file feeds this top level script and configures the inputs/outputs 
+The configuration file feeds this top level script and configures the inputs/outputs
 as well as the generator.
 
 Base configuration options:
