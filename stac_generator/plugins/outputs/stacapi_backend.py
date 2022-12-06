@@ -33,6 +33,7 @@ Example Configuration:
               drop_properties:
                 - uri
                 - extension
+                - filename
 """
 __author__ = "Mathieu Provencher"
 __date__ = "20 Apr 2022"
@@ -75,7 +76,9 @@ class StacApiOutputBackend(BaseOutput):
         self.drop_properties = kwargs["drop_properties"] or []
         self.collection_id = generate_id(self.collection_name)
 
-        # TODO if collection not exist, raise
+        r = requests.get(os.path.join(self.stac_host, f"collections/{self.collection_id}"))
+        if r.status_code == 404:
+            r.raise_for_status()
 
     def export(self, data, **kwargs):
         # todo avoid processing second json object
