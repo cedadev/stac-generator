@@ -47,7 +47,7 @@ class XarrayBackend:
         """
 
         ds = xr.open_dataset(
-            file, **backend_kwargs
+            file, engine=self.engine, **backend_kwargs
         )
 
         extracted_metadata = {}
