@@ -42,12 +42,12 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
 import datetime
+import hashlib
 import os
 
 import pystac
 import pystac.extensions.eo
 import requests
-from asset_scanner.core.utils import generate_id
 from shapely.geometry import Polygon, mapping
 
 from stac_generator.core.output import BaseOutput
@@ -75,8 +75,15 @@ class StacApiOutputBackend(BaseOutput):
 
         self.stac_host = kwargs["connection"]["host"]
         self.collection_name = kwargs["collection"]["name"]
-        self.drop_properties = kwargs["drop_properties"] or []
-        self.collection_id = generate_id(self.collection_name)
+        self.drop_properties = []
+
+        if "drop_properties" in kwargs:
+            self.drop_properties = kwargs["drop_properties"]
+
+        # TODO : use same collection ID hasing than `stac-generator`
+        self.collection_id = hashlib.md5(
+            self.collection_name.encode("utf-8")
+        ).hexdigest()
 
         r = requests.get(
             os.path.join(self.stac_host, f"collections/{self.collection_id}")
