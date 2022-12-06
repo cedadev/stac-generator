@@ -62,7 +62,7 @@ be used as an example. An example which includes extracting metadata from the Ne
                   - start_datetime
                   - end_datetime
                   - datetime
-        - method: header_extract
+        - method: header
           description: Extract header metadata
           inputs:
             attributes:

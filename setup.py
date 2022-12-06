@@ -74,7 +74,7 @@ setup(
             "default = stac_generator.plugins.id_extraction_methods.default:DefaultIdExtract",
             "hash = stac_generator.plugins.id_extraction_methods.hash:HashIdExtract",
         ],
-        "stac_generator.extraction_methods.header_extract.backends": [
+        "stac_generator.extraction_methods.header.backends": [
             "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
             "xarray = stac_generator.plugins.extraction_methods.header.backends.xarray:XarrayBackend",
             "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",
