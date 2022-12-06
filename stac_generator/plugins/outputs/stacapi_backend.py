@@ -36,7 +36,7 @@ Example Configuration:
 """
 __author__ = "Mathieu Provencher"
 __date__ = "20 Apr 2022"
-__copyright__ = "Copyright 2022 Computer Research Institute of Montréal"
+__copyright__ = "Copyright 2022 Computer Research Institute of Montreal"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
@@ -86,7 +86,7 @@ class StacApiOutputBackend(BaseOutput):
         self.post_collection_item(self.stac_host, self.collection_id, json_data)
 
     def create_stac_item(self, data):
-        # get bbox and footprint
+        # TODO : not hardcoded bbox and footprint
         bounds = {
             "left": -140.99778,
             "bottom": 41.6751050889,

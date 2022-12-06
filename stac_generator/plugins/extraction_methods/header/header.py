@@ -108,7 +108,6 @@ class HeaderExtract(BaseExtractionMethod):
             )
 
             entry_points = list(entry_points)
-
             backend = None
             if len(entry_points) > 0:
                 backend = entry_points[0].load()

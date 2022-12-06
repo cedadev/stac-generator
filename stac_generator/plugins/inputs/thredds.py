@@ -47,7 +47,7 @@ Example Configuration with NCML:
 """
 __author__ = "Mathieu Provencher"
 __date__ = "3 Dec 2021"
-__copyright__ = "Copyright 2021 Computer Research Institute of Montréal"
+__copyright__ = "Copyright 2021 Computer Research Institute of Montreal"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
