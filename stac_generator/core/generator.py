@@ -344,7 +344,7 @@ class BaseGenerator(ABC):
         ids = {}
         collection_description = description.collection
 
-        if collection_description and collection_description:
+        if collection_description and collection_description.id:
             collection_id_description = collection_description.id
 
         else:
@@ -359,7 +359,7 @@ class BaseGenerator(ABC):
         if self.TYPE in [GeneratorType.ASSET, GeneratorType.ITEM]:
             item_description = description.item
 
-            if item_description.id:
+            if item_description and item_description.id:
                 item_id_description = item_description.id
 
             else:
