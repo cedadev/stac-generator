@@ -86,7 +86,7 @@ setup(
         "stac_generator.post_processors": [
             "isodate = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
             "facet_map = stac_generator.plugins.postprocessors.facet_map:FacetMapPostProcessor",
-            "stac_bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
+            "bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
             "geometry_line = stac_generator.plugins.postprocessors.geometry_line:GeometryLinePostProcessor",
             "geometry_point = stac_generator.plugins.postprocessors.geometry_point:GeometryPointPostProcessor",
             "geometry_polygon = stac_generator.plugins.postprocessors.geometry_polygon:GeometryPolygonPostProcessor",
