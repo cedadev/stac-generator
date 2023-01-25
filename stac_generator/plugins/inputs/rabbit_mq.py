@@ -238,7 +238,7 @@ class RabbitMQInput(BaseInput):
             exchange_type=self.exchange_conf.get("type", "topic"),
             **self.exchange_conf.get("kwargs", {}),
         )
-        channel.basic_qos(1)
+        channel.basic_qos(prefetch_count=1)
 
         # Declare queue and bind queue to the dest exchange
         for queue in self.queues_conf:
