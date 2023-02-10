@@ -344,7 +344,7 @@ class BaseGenerator(ABC):
             collection_id_description, body, **kwargs
         )
 
-        if self.TYPE in [GeneratorType.ASSET, GeneratorType.ITEM]:
+        if self.TYPE in [GeneratorType.ASSET]:
             item_description = description.item
 
             if item_description.id:

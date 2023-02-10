@@ -71,23 +71,22 @@ class HashIdExtract(BaseIdExtractionMethod):
 
         properties = body["properties"]
 
-        if hasattr(self, "terms") and all(
-            [facet in properties for facet in self.terms]
-        ):
+        if hasattr(self, "terms"):
             id_string = ""
 
             for facet in self.terms:
 
-                vals = properties.get(facet)
+                if facet in properties:
+                    vals = properties.get(facet)
 
-                if isinstance(vals, (str, int)):
-                    id_string = ".".join((id_string, vals))
+                    if isinstance(vals, (str, int)):
+                        id_string = ".".join((id_string, vals))
 
-                if isinstance(vals, (list)):
-                    if len(vals) == 1:
-                        id_string = ".".join((id_string, vals[0]))
-                    else:
-                        id_string = ".".join((id_string, f"multi_{facet}"))
+                    if isinstance(vals, (list)):
+                        if len(vals) == 1:
+                            id_string = ".".join((id_string, vals[0]))
+                        elif len(vals) != 0:
+                            id_string = ".".join((id_string, f"multi_{facet}"))
 
             id_string = id_string[1:]
 

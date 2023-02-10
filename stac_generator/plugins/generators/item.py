@@ -95,7 +95,7 @@ class ItemGenerator(BaseGenerator):
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
         body["collection_id"] = ids["collection_id"]
-        body["item_id"] = ids["item_id"]
+        body["item_id"] = ids["item_id"] = uri
 
         data = {
             "id": ids[f"{self.TYPE.value}_id"],
