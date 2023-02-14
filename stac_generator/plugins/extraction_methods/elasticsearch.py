@@ -76,6 +76,9 @@ class ElasticsearchExtract(BaseExtractionMethod):
         if hasattr(self, "connection_kwargs"):
             self.es = Elasticsearch(**self.connection_kwargs)
 
+        if not hasattr(self, "request_tiemout"):
+            self.request_tiemout = 15
+
     @staticmethod
     def bbox_query(facet: str) -> dict:
         """
@@ -203,16 +206,16 @@ class ElasticsearchExtract(BaseExtractionMethod):
         self.query = self.base_query
 
         if hasattr(self, "bbox"):
-            for bbox in self.bbox:
-                self.query["aggs"].update(self.bbox_query(bbox))
+            for bbox_term in self.bbox:
+                self.query["aggs"].update(self.bbox_query(bbox_term))
 
         if hasattr(self, "min"):
-            for min in self.min:
-                self.query["aggs"].update(self.min_query(min))
+            for min_term in self.min:
+                self.query["aggs"].update(self.min_query(min_term))
 
         if hasattr(self, "max"):
-            for max in self.max:
-                self.query["aggs"].update(self.max_query(max))
+            for max_term in self.max:
+                self.query["aggs"].update(self.max_query(max_term))
 
         if hasattr(self, "sum"):
             for sum_term in self.sum:
@@ -258,7 +261,9 @@ class ElasticsearchExtract(BaseExtractionMethod):
         LOGGER.info("Elasticsearch query: %s", self.query)
 
         # Run query
-        result = self.es.search(index=self.index, body=self.query)
+        result = self.es.search(
+            index=self.index, body=self.query, request_timeout=self.request_tiemout
+        )
 
         self.hits = result["hits"]["hits"]
 
