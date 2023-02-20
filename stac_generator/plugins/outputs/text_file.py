@@ -58,7 +58,7 @@ class TextFileOutput(BaseOutput):
 
         with open(f"{filepath}", "a") as file:
             message = {
-                f"{data['surtype']}_id": data["body"][f"{data['surtype']}_id"],
-                "uri": data["uri"],
+                "uri": data["body"][f"{data['surtype']}_id"],
+                "description_path": data["body"]["description_path"],
             }
             file.write(f"{json.dumps(message)}\n")
