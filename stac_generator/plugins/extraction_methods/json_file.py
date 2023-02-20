@@ -66,7 +66,7 @@ class JsonFileExtract(BaseExtractionMethod):
 
     """
 
-    def get_facet_values(self, facet: str, id: str) -> list:
+    def get_facet_values(self, facet: str, uri: str) -> list:
 
         facet_values = []
 
@@ -74,7 +74,7 @@ class JsonFileExtract(BaseExtractionMethod):
             file_data = json.load(file)
 
             for item in file_data:
-                if item["body"]["uri"] == id:
+                if item["body"]["uri"] == uri:
                     values = item["body"]["properties"][facet]
 
                     if isinstance(values, list):
@@ -124,7 +124,7 @@ class JsonFileExtract(BaseExtractionMethod):
         metadata = {}
 
         for facet in self.terms:
-            values = self.get_facet_values(facet, getattr(self, "uri"))
+            values = self.get_facet_values(facet, uri)
             if values:
                 metadata[facet] = values
 
