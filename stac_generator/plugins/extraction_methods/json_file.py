@@ -74,7 +74,7 @@ class JsonFileExtract(BaseExtractionMethod):
             file_data = json.load(file)
 
             for item in file_data:
-                if item["body"]["uri"] == uri:
+                if item["body"][f"{self.TYPE.value}_id"] == uri:
                     values = item["body"]["properties"][facet]
 
                     if isinstance(values, list):
