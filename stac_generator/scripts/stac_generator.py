@@ -9,7 +9,10 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import argparse
+import cProfile
+import io
 import logging
+import pstats
 
 import pkg_resources
 import yaml
@@ -78,9 +81,14 @@ def load_generator(conf: dict) -> BaseGenerator:
 
 
 def main():
-    args = command_args()
+    # args = command_args()
 
-    conf = load_config(args.conf)
+    profiler = cProfile.Profile()
+    profiler.enable()
+
+    conf = load_config(
+        "/Users/rhys.r.evans/Documents/CEDA/search-futures/stac-generator-example/conf/asset-generator.yaml"
+    )
 
     setup_logging(conf)
 
@@ -90,6 +98,14 @@ def main():
 
     for input_plugin in input_plugins:
         input_plugin.start(generator)
+
+    profiler.disable()
+    s = io.StringIO()
+    stats = pstats.Stats(profiler, stream=s).sort_stats("tottime")
+    stats.print_stats()  # .dump_stats("profile_results")
+
+    with open("test.txt", "w+") as f:
+        f.write(s.getvalue())
 
 
 if __name__ == "__main__":

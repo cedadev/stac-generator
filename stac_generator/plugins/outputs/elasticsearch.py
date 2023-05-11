@@ -128,9 +128,24 @@ class ElasticsearchOutput(BaseOutput):
 
         return data
 
+    def remove_old(self, data: str, previous_ids: dict) -> Dict:
+        """
+        Condition the input dictionary for elasticsearch
+        :param data: Input dictionary
+        :returns: Dictionary produced as a result of the clean methods
+        """
+
+        previous_id = previous_ids[data["type"]]
+
+        if previous_id != data["id"]:
+            self.es.delete(index=self.index_name, id=previous_id)
+
     def export(self, data: dict) -> None:
 
         data = self.clean(data)
+
+        if self.remove_old:
+            self.remove_old(data, data["previous_ids"])
 
         index_kwargs = {
             "index": self.index_name,

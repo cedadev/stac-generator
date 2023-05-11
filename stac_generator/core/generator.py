@@ -442,14 +442,14 @@ class BaseGenerator(ABC):
         :param uri: uri for object
         """
 
-    def output(self, data: dict) -> None:
+    def output(self, data: dict, **kwargs) -> None:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         """
         for output in self.outputs:
-            output.run(data)
+            output.run(data, **kwargs)
 
     def finished(self) -> None:
         """

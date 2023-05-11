@@ -83,4 +83,4 @@ class AssetGenerator(BaseGenerator):
             "body": body,
         }
 
-        self.output(data)
+        self.output(data, **kwargs)

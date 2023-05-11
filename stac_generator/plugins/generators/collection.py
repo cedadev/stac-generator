@@ -77,4 +77,4 @@ class CollectionGenerator(BaseGenerator):
             "body": body,
         }
 
-        self.output(data)
+        self.output(data, **kwargs)
