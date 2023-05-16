@@ -44,9 +44,9 @@ Extraction Methods
 Header
 ------
 
-.. automodule:: stac_generator.plugins.extraction_methods.header_extract
+.. automodule:: stac_generator.plugins.extraction_methods.header
 
-.. autoclass:: stac_generator.plugins.extraction_methods.header_extract.HeaderExtract
+.. autoclass:: stac_generator.plugins.extraction_methods.header.HeaderExtract
 
 .. _regex-extract:
 
