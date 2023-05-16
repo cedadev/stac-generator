@@ -19,7 +19,7 @@ python entry points to allow you to write your own plugins.
 The STAC Generator package stores some :ref:`inputs <stac_generator/inputs:inputs>` which can be used to read from a range of different
 sources messages of STAC objects to genertate.
 The :ref:`asset <stac_generator/generators:asset>`, :ref:`item <stac_generator/generators:item>`, and :ref:`collection <stac_generator/generators:collection>`
-generators take these messages and extract the required facets to buil the relevant STAC object using a variety of :ref:`processors <stac_generator/processors:processors>`. 
+generators take these messages and extract the required facets to buil the relevant STAC object using a variety of :ref:`processors <stac_generator/processors:processors>`.
 These generated objects can then be passed to a range of :ref:`outputs <stac_generator/outputs:outputs>`.
 
 The generators have two levels of configuration. Global configuration, passed at the command line on
@@ -62,7 +62,7 @@ be used as an example. An example which includes extracting metadata from the Ne
                   - start_datetime
                   - end_datetime
                   - datetime
-        - method: header_extract
+        - method: header
           description: Extract header metadata
           inputs:
             attributes:
@@ -97,7 +97,7 @@ be used as an example. An example which includes extracting metadata from the Ne
             - sensor
 
     collection:
-        id: 
+        id:
           method: default
           inputs:
             value: Ic93XnsBhuk7QqVbSFwS

@@ -89,7 +89,7 @@ class HeaderExtract(BaseExtractionMethod):
     def list_backend() -> dict:
         backend_entrypoints = {}
         for pkg_ep in pkg.iter_entry_points(
-            "stac_generator.extraction_methods.header_extract.backends"
+            "stac_generator.extraction_methods.header.backends"
         ):
             name = pkg_ep.name
             try:
@@ -103,15 +103,18 @@ class HeaderExtract(BaseExtractionMethod):
 
         if hasattr(self, "backend"):
             entry_points = pkg.iter_entry_points(
-                "stac_generator.extraction_methods.header_extract.backends",
+                "stac_generator.extraction_methods.header.backends",
                 self.backend,
             )
 
+            entry_points = list(entry_points)
             backend = None
             if len(entry_points) > 0:
                 backend = entry_points[0].load()
 
             if backend and backend().guess_can_open(uri):
+                backend = backend()
+                backend.guess_can_open(uri)
                 return backend
 
         backends = self.list_backend()
