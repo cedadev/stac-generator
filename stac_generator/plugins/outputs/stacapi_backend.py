@@ -86,7 +86,8 @@ class StacApiOutputBackend(BaseOutput):
         ).hexdigest()
 
         r = requests.get(
-            os.path.join(self.stac_host, f"collections/{self.collection_id}")
+            os.path.join(self.stac_host, f"collections/{self.collection_id}"),
+            verify=False,
         )
         if r.status_code == 404:
             r.raise_for_status()
@@ -185,6 +186,7 @@ class StacApiOutputBackend(BaseOutput):
         r = requests.post(
             os.path.join(stac_host, f"collections/{collection_id}/items"),
             json=json_data,
+            verify=False,
         )
 
         if r.status_code == 200:
@@ -196,7 +198,7 @@ class StacApiOutputBackend(BaseOutput):
                 f"{bcolors.WARNING}[INFO] STAC item [{item_id}] already exists on [{stac_host}/collections/{collection_id}] ({r.status_code}), updating..{bcolors.ENDC}"
             )
             # todo fix "asyncpg.exceptions.FeatureNotSupportedError: DELETE is not allowed in a non-volatile function"
-            # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data)
+            # r = requests.put(os.path.join(stac_host, f"collections/{collection_id}/items"), json=json_data, verify=False)
             # r.raise_for_status()
         else:
             r.raise_for_status()
