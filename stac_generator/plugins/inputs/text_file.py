@@ -28,6 +28,7 @@ Example Configuration:
 
 
 import json
+from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
 
@@ -55,8 +56,19 @@ class TextFileInput(BaseInput):
 
     def run(self, generator: BaseGenerator):
 
+        start = datetime.now()
+        total_generated = 0
+        unique_lines = set()
+
         for file in self.file_list:
-            with open(file) as f:
+            with open(file, "r", encoding="utf-8") as f:
                 for line in f:
-                    data = json.loads(line)
-                    generator.process(**data)
+                    if line not in unique_lines:
+                        total_generated += 1
+                        unique_lines.add(line)
+                        data = json.loads(line)
+                        generator.process(**data)
+
+        end = datetime.now()
+        print(f"Processed {total_generated} elasticsearch records in {end-start}")
+
