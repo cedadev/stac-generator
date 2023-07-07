@@ -49,6 +49,7 @@ setup(
             "standard_out_bulk = stac_generator.plugins.bulk_outputs.standard_out:StandardOutBulkOutput",
             "elasticsearch = stac_generator.plugins.outputs.elasticsearch:ElasticsearchOutput",
             "elasticsearch_bulk = stac_generator.plugins.bulk_outputs.elasticsearch:ElasticsearchBulkOutput",
+            "stacapi = stac_generator.plugins.outputs.stacapi_backend:StacApiOutputBackend",
             "text_file = stac_generator.plugins.outputs.text_file:TextFileOutput",
             "json_file = stac_generator.plugins.outputs.json_file:JsonFileOutput",
             "rabbitmq = stac_generator.plugins.outputs.rabbit_mq:RabbitMQOutput",
@@ -97,7 +98,7 @@ setup(
         "stac_generator.post_processors": [
             "iso_date = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
             "facet_map = stac_generator.plugins.postprocessors.facet_map:FacetMapPostProcessor",
-            "stac_bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
+            "bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
             "geometry_line = stac_generator.plugins.postprocessors.geometry_line:GeometryLinePostProcessor",
             "geometry_point = stac_generator.plugins.postprocessors.geometry_point:GeometryPointPostProcessor",
             "geometry_polygon = stac_generator.plugins.postprocessors.geometry_polygon:GeometryPolygonPostProcessor",

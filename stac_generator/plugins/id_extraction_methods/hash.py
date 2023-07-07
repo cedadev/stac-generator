@@ -90,11 +90,12 @@ class HashIdExtract(BaseIdExtractionMethod):
 
             id_string = id_string[1:]
 
+            return self.hash(id_string)
+
         elif "collection_id" in self.terms:
-            id_string = f"{properties.get('collection_id')}.{properties.get('uri')}"
+            return self.hash(
+                f"{properties.get('collection_id')}.{properties.get('uri')}"
+            )
 
         else:
-            id_string = properties.get("uri")
-
-        LOGGER.debug("id_string: %s", id_string)
-        return self.hash_id(id_string)
+            return self.hash(properties.get("uri"))
