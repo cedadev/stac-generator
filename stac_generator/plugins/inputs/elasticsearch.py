@@ -123,7 +123,7 @@ class ElasticsearchInput(BaseInput):
                     generator.process(**bucket["key"])
                     total_generated += 1
 
-            if not "after_key" in aggregation.keys():
+            if "after_key" not in aggregation.keys():
                 break
 
             query["aggs"]["bucket"]["composite"]["after"] = aggregation["after_key"]

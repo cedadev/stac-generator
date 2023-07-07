@@ -50,7 +50,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
-import os
 from datetime import datetime
 
 # Thirdparty imports
