@@ -42,6 +42,7 @@ setup(
             "thredds = stac_generator.plugins.inputs.thredds:ThreddsInput",
             "text_file = stac_generator.plugins.inputs.text_file:TextFileInput",
             "solr = stac_generator.plugins.inputs.solr:SolrInput",
+            "elasticsearch = stac_generator.plugins.inputs.elasticsearch:ElasticsearchInput",
         ],
         "stac_generator.outputs": [
             "standard_out = stac_generator.plugins.outputs.standard_out:StandardOutOutput",
