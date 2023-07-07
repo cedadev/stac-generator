@@ -10,10 +10,9 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import argparse
 import cProfile
-import io
 import logging
-import pstats
 
+import click
 import pkg_resources
 import yaml
 
@@ -80,17 +79,29 @@ def load_generator(conf: dict) -> BaseGenerator:
     return generator(conf)
 
 
-def main():
-    # args = command_args()
+@click.command()
+@click.option(
+    "--conf",
+    "-c",
+    "conf",
+    required=True,
+    help="Path for generator configuration.",
+)
+@click.option(
+    "--prof",
+    "-p",
+    "prof",
+    help="Path for profile output file.",
+)
+def main(conf, prof):
 
-    profiler = cProfile.Profile()
-    profiler.enable()
+    if prof:
+        if not prof.lower().endswith((".pstats")):
+            prof += ".pstats"
+        profiler = cProfile.Profile()
+        profiler.enable()
 
-    conf = load_config(
-        "/Users/rhys.r.evans/Documents/CEDA/search-futures/stac-generator-example/conf/asset-generator.yaml"
-    )
-
-    setup_logging(conf)
+    conf = load_config(conf)
 
     generator = load_generator(conf)
 
@@ -99,13 +110,39 @@ def main():
     for input_plugin in input_plugins:
         input_plugin.start(generator)
 
-    profiler.disable()
-    s = io.StringIO()
-    stats = pstats.Stats(profiler, stream=s).sort_stats("tottime")
-    stats.print_stats()  # .dump_stats("profile_results")
+    if prof:
+        profiler.disable()
+        profiler.dump_stats(prof)
 
-    with open("test.txt", "w+") as f:
-        f.write(s.getvalue())
+
+# def main():
+#     args = command_args()
+
+#     profiler = cProfile.Profile()
+#     profiler.enable()
+
+#     conf = load_config(
+#         args.conf
+#         # "/Users/rhys.r.evans/Documents/CEDA/search-futures/stac-generator-example/conf/asset-generator.yaml"
+#     )
+
+#     setup_logging(conf)
+
+#     generator = load_generator(conf)
+
+#     input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
+
+#     for input_plugin in input_plugins:
+#         input_plugin.start(generator)
+
+#     profiler.disable()
+#     # s = io.StringIO()
+#     profiler.dump_stats("test2.pstats")
+#     # stats = pstats.Stats(profiler, stream=s).sort_stats("cumulative")
+#     # stats.print_stats()  # .dump_stats("profile_results")
+
+#     # with open("test.profile", "w+") as f:
+#     #     f.write(s.getvalue())
 
 
 if __name__ == "__main__":
