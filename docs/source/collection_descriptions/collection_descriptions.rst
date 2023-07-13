@@ -37,15 +37,6 @@ No pre or post processing is done in this case.
         - method: regex
           inputs:
             regex: '^(?:[^_]*_){2}(?P<datetime>\d*)'
-          pre_processors:
-            - method: filename_reducer
-          post_processors:
-            - method: isodate_processor
-              inputs:
-                date_key: datetime
-        - method: regex
-          inputs:
-            regex: '^\/(?:[^/]*/)(?P<platform>\w*)\/(?:[^/]*/){2}(?P<flight_number>\w\d{3})'
 
 Description file sections
 =========================

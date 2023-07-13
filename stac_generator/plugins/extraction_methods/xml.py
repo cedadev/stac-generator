@@ -16,14 +16,10 @@ import logging
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ParseError
 
-# Package imports
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
 from stac_generator.core.processor import BaseExtractionMethod
+
+# Package imports
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,10 +30,6 @@ class XMLExtract(BaseExtractionMethod):
 
         * - Processor Name
           - ``xml``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Processes XML documents to extract metadata
@@ -46,12 +38,6 @@ class XMLExtract(BaseExtractionMethod):
         - ``extraction_keys``: List of keys to retrieve from the document.
         - ``filter_expr``: Regex to match against files to limit the attempts to known files
         - ``namespaces``: Map of namespaces
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes.
-          ``default: 'properties'``
 
     Extraction Keys:
         Extraction keys should be a map.
@@ -89,14 +75,9 @@ class XMLExtract(BaseExtractionMethod):
     # noqa: W605
     """
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         # Extract the keys
-        metadata = {}
-
         try:
             xml_file = ET.parse(uri)
         except ParseError:
@@ -113,20 +94,9 @@ class XMLExtract(BaseExtractionMethod):
                     v = value.get(attribute, "")
                 else:
                     v = value.text
-                metadata[name] = v
+                body[name] = v
 
-        return metadata
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return [extraction_key.name for extraction_key in self.extraction_keys]
+        return body
 
 
 if __name__ == "__main__":

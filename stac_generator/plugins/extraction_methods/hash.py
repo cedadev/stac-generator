@@ -16,32 +16,26 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import hashlib
 import logging
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BaseIdExtractionMethod
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class HashIdExtract(BaseIdExtractionMethod):
+class HashExtract(BaseExtractionMethod):
     """
 
     .. list-table::
 
         * - Processor Name
           - ``hash``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes list of terms and creates dot seperated string of
         values which is then hashed.
 
     Configuration Options:
+        - ``key``: Key for result to be saved as
         - ``terms``: Terms to be hashed
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
 
     Example configuration:
         .. code-block:: yaml
@@ -49,6 +43,7 @@ class HashIdExtract(BaseIdExtractionMethod):
           id:
             method: hash
             inputs:
+              key: hashed_terms
               terms:
                   - start_time
                   - model
@@ -62,40 +57,30 @@ class HashIdExtract(BaseIdExtractionMethod):
                 final_dict = final_dict | self.flatten_dict(v)
             final_dict[k] = v
 
-    def hash_id(self, id_string: str):
-        return hashlib.md5(id_string.encode("utf-8")).hexdigest()
+    def hash(self, output: str):
+        return hashlib.md5(output.encode("utf-8")).hexdigest()
 
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, body: dict, **kwargs) -> dict:
-
-        properties = body["properties"]
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         if hasattr(self, "terms"):
-            id_string = ""
+            output = ""
 
             for facet in self.terms:
 
-                if facet in properties:
-                    vals = properties.get(facet)
+                if facet in body:
+                    vals = body.get(facet)
 
                     if isinstance(vals, (str, int)):
-                        id_string = ".".join((id_string, vals))
+                        output = ".".join((output, vals))
 
                     if isinstance(vals, (list)):
                         if len(vals) == 1:
-                            id_string = ".".join((id_string, vals[0]))
+                            output = ".".join((output, vals[0]))
                         elif len(vals) != 0:
-                            id_string = ".".join((id_string, f"multi_{facet}"))
+                            output = ".".join((output, f"multi_{facet}"))
 
-            id_string = id_string[1:]
+            output = output[1:]
 
-            return self.hash(id_string)
+            body[self.key] = self.hash(output)
 
-        elif "collection_id" in self.terms:
-            return self.hash(
-                f"{properties.get('collection_id')}.{properties.get('uri')}"
-            )
-
-        else:
-            return self.hash(properties.get("uri"))
+            return body

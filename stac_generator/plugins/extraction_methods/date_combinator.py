@@ -7,17 +7,14 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 
-# Python imports
-from typing import Optional
-
 # Package imports
-from stac_generator.core.processor import BasePostProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 from stac_generator.core.utils import DATE_TEMPLATE, isoformat_date
 
 LOGGER = logging.getLogger(__name__)
 
 
-class DateCombinatorPostProcessor(BasePostProcessor):
+class DateCombinatorExtract(BaseExtractionMethod):
     """
 
     Processor Name: ``date_combinator``
@@ -49,41 +46,35 @@ class DateCombinatorPostProcessor(BasePostProcessor):
 
     .. code-block:: yaml
 
-        post_processors:
-            - method: date_combinator
-              inputs:
-                destructive: true
-                format: '%Y-%m'
-                key: datetime
+        - method: date_combinator
+          inputs:
+          destructive: true
+          format: '%Y-%m'
+          key: datetime
 
     """
 
-    def run(
-        self,
-        uri: str,
-        source_dict: Optional[dict] = {},
-        **kwargs,
-    ):
-        if source_dict:
+    def run(self, uri: str, body: dict, **kwargs):
+        if body:
 
-            if not source_dict.get("year"):
+            if not body.get("year"):
                 LOGGER.error(
                     f'Unable to use date combinator for file: {uri}. Requires at least "year"'
                 )
-                return source_dict
+                return body
 
             date_format = getattr(self, "format", None)
 
-            if not all(k in source_dict for k in ["year", "month", "day"]):
+            if not all(k in body for k in ["year", "month", "day"]):
                 if not date_format:
                     LOGGER.error(
                         "Dateutil does not perform as expected without a day. It will use the current day instead of 01."
                         "Make sure to use a format string if only providing %Y-%m"
                     )
-                    return source_dict
+                    return body
 
             # Template the date. safe_substitute allows missing and extra keys.
-            date = DATE_TEMPLATE.safe_substitute(**source_dict)
+            date = DATE_TEMPLATE.safe_substitute(**body)
 
             # Trim the resulting string to remove un-filled template parameters
             try:
@@ -105,30 +96,11 @@ class DateCombinatorPostProcessor(BasePostProcessor):
                 LOGGER.error(f"Error parsing date from file: {uri}")
 
             key = getattr(self, "key", "datetime")
-            source_dict[key] = isodate or date
+            body[key] = isodate or date
 
             # Clear out keys if destructive
             if getattr(self, "destructive", True):
                 for key in ["year", "month", "day", "hour", "minute", "second"]:
-                    source_dict.pop(key, None)
+                    body.pop(key, None)
 
-        return source_dict
-
-    def expected_terms(
-        self,
-        term_list: Optional[list] = [],
-    ) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        term_list.append(getattr(self, "key", "datetime"))
-
-        if getattr(self, "destructive", True):
-            for key in ["year", "month", "day", "hour", "minute", "second"]:
-                term_list.remove(key)
-
-        return term_list
+        return body

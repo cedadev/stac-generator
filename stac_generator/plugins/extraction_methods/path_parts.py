@@ -16,12 +16,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 from pathlib import Path
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
 from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
@@ -34,10 +28,6 @@ class PathPartsExtract(BaseExtractionMethod):
 
         * - Processor Name
           - ``path_parts``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Extracts the parts of a given path skipping ``skip`` number
@@ -45,13 +35,6 @@ class PathPartsExtract(BaseExtractionMethod):
 
     Configuration Options:
         - ``skip``: The number of path parts to skip. ``default: 1``
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
 
 
     Example configuration:
@@ -68,30 +51,16 @@ class PathPartsExtract(BaseExtractionMethod):
         if not hasattr(self, "skip"):
             self.skip = 1
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> list:
+    def run(self, uri: str, body: dict, **kwargs) -> list:
         path = Path(uri)
 
         parts = list(path.parts)[self.skip :]
 
-        output = {"filename": parts.pop()}
+        body["filename"] = parts.pop()
 
         dir_level = 1
         for part in parts:
-            output[f"_dir{dir_level}"] = part
+            body[f"_dir{dir_level}"] = part
             dir_level += 1
 
-        return output
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return "list of path parts"
+        return body

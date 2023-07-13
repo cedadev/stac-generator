@@ -18,23 +18,18 @@ import logging
 
 import requests
 
-from stac_generator.core.decorators import accepts_postprocessors, accepts_preprocessors
-from stac_generator.core.processor import BasePostExtractionMethod
+from stac_generator.core.processor import BasExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class CEDAVocabularyPostExtract(BasePostExtractionMethod):
+class CEDAVocabularyExtract(BasExtractionMethod):
     """
 
     .. list-table::
 
         * - Processor Name
           - ``vocab``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Validates and sorts properties into vocabs and generates
@@ -44,8 +39,6 @@ class CEDAVocabularyPostExtract(BasePostExtractionMethod):
         - ``namespace``: namespace of vocab for terms
         - ``terms``: Terms to be sorted
         - ``strict``: Boolean on whether values should be validated
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
 
     Example configuration:
         .. code-block:: yaml
@@ -61,20 +54,14 @@ class CEDAVocabularyPostExtract(BasePostExtractionMethod):
 
     """
 
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(
-        self,
-        body: dict,
-        **kwargs,
-    ) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
-        properties = body["properties"]
+        properties = body
 
         # if there is already an unspecified_vocab it is not the first vocab
         first = True
-        if "unspecified_vocab" in properties:
-            properties = properties["unspecified_vocab"]
+        if "unspecified_vocab" in body:
+            properties = body["unspecified_vocab"]
             first = False
 
         req_data = {
@@ -96,24 +83,12 @@ class CEDAVocabularyPostExtract(BasePostExtractionMethod):
         if json_response["error"]:
             raise Exception(f"Vocab request failed, reason: {json_response['reason']}")
 
-        if not first:
-            new_properties = properties | json_response["result"]
-            vocabs = body["vocabs"] + [self.namespace]
+        body = body | json_response["result"]
+
+        if "vocabs" in body:
+            body["vocabs"].append(self.namespace)
 
         else:
-            new_properties = json_response["result"]
-            vocabs = [self.namespace]
-
-        body = body | {"vocabs": vocabs, "properties": new_properties}
+            body["vocabs"] = self.namespace
 
         return body
-
-    def expected_terms(self, term_list) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return term_list

@@ -21,12 +21,6 @@ from datetime import datetime
 
 import magic
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
 from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
@@ -39,22 +33,11 @@ class OsStatsExtract(BaseExtractionMethod):
 
         * - Processor Name
           - ``posix_stats``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes an input filepath and returns a dictionary of file level stats.
 
     Configuration Options:
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
 
 
     Example configuration:
@@ -125,10 +108,7 @@ class OsStatsExtract(BaseExtractionMethod):
         # Assuming no errors we can now store the checksum
         self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
         """
 
         :param uri:
@@ -143,7 +123,9 @@ class OsStatsExtract(BaseExtractionMethod):
             getattr(self, "checksum", None),
         )
 
-        self.info = {"uri": getattr(self, "prefix", "") + uri}
+        self.info = body
+
+        self.info["uri"] = getattr(self, "prefix", "") + uri
 
         if os.path.exists(uri):
 
@@ -157,14 +139,3 @@ class OsStatsExtract(BaseExtractionMethod):
             # self.extract_checksum(uri, self.checksum)
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]

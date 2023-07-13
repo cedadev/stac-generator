@@ -14,8 +14,8 @@ from functools import lru_cache
 import pkg_resources as pkg
 
 from stac_generator.core.decorators import (
+    BaseExtractionMethod_postprocessors,
     accepts_postprocessors,
-    expected_terms_postprocessors,
 )
 from stac_generator.core.processor import BaseExtractionMethod
 
@@ -35,10 +35,6 @@ class HeaderExtract(BaseExtractionMethod):
 
         * - Processor Name
           - ``header``
-        * - Accepts Pre-processors
-          - .. fa:: times
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes a uri string and a list of attributes
@@ -49,11 +45,6 @@ class HeaderExtract(BaseExtractionMethod):
         - ``attributes``: A list of attributes to match for from the file header
         - ``backend``: Specify which backend
         - ``backend_kwargs``: A dictionary of kwargs for the extractor
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes.
-          ``default: 'properties'``
 
     Example configuration:
         .. code-block:: yaml
@@ -70,8 +61,7 @@ class HeaderExtract(BaseExtractionMethod):
 
     """
 
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         try:
             backend = self.guess_backend(uri)
@@ -141,14 +131,3 @@ class HeaderExtract(BaseExtractionMethod):
         """
 
         return backend.attr_extraction(uri, attributes, backend_kwargs)
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return self.attributes

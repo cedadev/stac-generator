@@ -131,7 +131,7 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
 
     for plugin_conf in conf[conf_section]:
         try:
-            loaded_plugin = plugins.get_processor(**plugin_conf)
+            loaded_plugin = plugins.get(**plugin_conf)
             loaded_plugins.append(loaded_plugin)
         except Exception:
             LOGGER.error(f'Failed to load plugin: {plugin_conf["name"]}', exc_info=True)

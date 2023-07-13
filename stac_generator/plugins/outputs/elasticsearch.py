@@ -40,6 +40,7 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
+from datetime import datetime
 from typing import Dict
 
 from elasticsearch import Elasticsearch
@@ -128,7 +129,7 @@ class ElasticsearchOutput(BaseOutput):
 
         return data
 
-    def remove_old(self, data: str, previous_ids: dict) -> Dict:
+    def _remove_old(self, data: str, previous_ids: dict) -> Dict:
         """
         Condition the input dictionary for elasticsearch
         :param data: Input dictionary
@@ -145,12 +146,12 @@ class ElasticsearchOutput(BaseOutput):
         data = self.clean(data)
 
         if self.remove_old:
-            self.remove_old(data, data["previous_ids"])
+            self._remove_old(data, data["previous_ids"])
 
         index_kwargs = {
             "index": self.index_name,
             "id": data["id"],
-            "body": {"doc": data["body"], "doc_as_upsert": True},
+            "body": {"doc": data, "doc_as_upsert": True},
         }
 
         self.es.update(**index_kwargs)

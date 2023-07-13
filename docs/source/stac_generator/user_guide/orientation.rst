@@ -53,15 +53,6 @@ be used as an example. An example which includes extracting metadata from the Ne
           description: Extract facets from the filename
           inputs:
             regex: '^(?:[^_]*_){2}(?P<processing_level>[^_]+)__(?P<variable>[^_]+)_{4}(?P<start_datetime>[0-9T]+)_(?P<end_datetime>[0-9T]+)_(?P<orbit>\d+)(?:[^_]*_){3}(?P<datetime>[0-9T]+)'
-          pre_processors:
-            - method: filename_reducer
-          post_processors:
-            - method: isodate_processor
-              inputs:
-                date_keys:
-                  - start_datetime
-                  - end_datetime
-                  - datetime
         - method: header
           description: Extract header metadata
           inputs:

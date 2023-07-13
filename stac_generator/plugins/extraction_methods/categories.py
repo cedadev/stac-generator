@@ -16,12 +16,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 import re
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
 from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
@@ -34,24 +28,12 @@ class CategoriesExtract(BaseExtractionMethod):
 
         * - Processor Name
           - ``catagories``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes a list of catagory label and associated regex.
 
     Configuration Options:
         - ``catagories``: list of dictionaries containing label and regex
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
-
 
     Example configuration:
         .. code-block:: yaml
@@ -84,10 +66,7 @@ class CategoriesExtract(BaseExtractionMethod):
 
         return label
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         result = set()
 
@@ -96,15 +75,6 @@ class CategoriesExtract(BaseExtractionMethod):
             if label:
                 result.add(label)
 
-        return {"catagories": list(result) or ["data"]}
+        body["catagories"] = list(result) or ["data"]
 
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return list(self.defaults.keys())
+        return body

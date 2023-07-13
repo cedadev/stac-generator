@@ -25,7 +25,7 @@ def fpath():
 
 
 @pytest.fixture
-def source_dict():
+def body():
     return {"date": "2021-05-02"}
 
 
@@ -54,12 +54,12 @@ def facet_prefix_processor():
     return FacetPrefixPostProcessor(prefix="CMIP6", terms=["date"])
 
 
-def test_isodate_processor(isodate_processor, fpath, source_dict):
+def test_isodate_processor(isodate_processor, fpath, body):
     """Check isodate processor does what's expected"""
-    expected = source_dict.copy()
+    expected = body.copy()
     expected["date"] = "2021-05-02T00:00:00"
 
-    output = isodate_processor.run(fpath, source_dict=source_dict)
+    output = isodate_processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -74,10 +74,10 @@ def test_isodate_processor_bad_date(isodate_processor, fpath, caplog):
         - Produce an error
         - Delete the date key
     """
-    source_dict = {"date": "202105"}
+    body = {"date": "202105"}
     expected = {}
 
-    output = isodate_processor.run(fpath, source_dict=source_dict)
+    output = isodate_processor.run(fpath, body=body)
     assert output == expected
     assert len(caplog.records) == 2
     assert caplog.records[0].levelname == "ERROR"
@@ -93,11 +93,11 @@ def test_isodate_processor_with_good_format(isodate_processor_with_format, fpath
         - Successfully use strptime to parse the date
     """
 
-    source_dict = {"date": "202105"}
-    expected = source_dict.copy()
+    body = {"date": "202105"}
+    expected = body.copy()
     expected["date"] = "2021-05-01T00:00:00"
 
-    output = isodate_processor_with_format.run(fpath, source_dict=source_dict)
+    output = isodate_processor_with_format.run(fpath, body=body)
     assert output == expected
 
 
@@ -113,11 +113,11 @@ def test_isodate_processor_with_bad_format(
         - Produce warning
         - Successfully Use dateutil to parse the date
     """
-    source_dict = {"date": "20210501"}
-    expected = source_dict.copy()
+    body = {"date": "20210501"}
+    expected = body.copy()
     expected["date"] = "2021-05-01T00:00:00"
 
-    output = isodate_processor_with_format.run(fpath, source_dict=source_dict)
+    output = isodate_processor_with_format.run(fpath, body=body)
     assert output == expected
     assert len(caplog.records) == 2
     assert caplog.records[0].levelname == "WARNING"
@@ -134,38 +134,38 @@ def test_isodate_processor_with_bad_format_bad_dateutil(
     Expected:
         Should delete the date
     """
-    source_dict = {"date": "2021010101"}
+    body = {"date": "2021010101"}
     expected = {}
 
-    output = isodate_processor_with_format.run(fpath, source_dict=source_dict)
+    output = isodate_processor_with_format.run(fpath, body=body)
     assert output == expected
     assert len(caplog.records) == 4
 
 
-def test_facet_map_processor(facet_map_processor, fpath, source_dict):
+def test_facet_map_processor(facet_map_processor, fpath, body):
     """
     Check processor changes name of named facets
     """
-    expected = {"start_date": source_dict["date"]}
+    expected = {"start_date": body["date"]}
 
-    output = facet_map_processor.run(fpath, source_dict=source_dict)
+    output = facet_map_processor.run(fpath, body=body)
     assert output == expected
 
 
 def test_bbox_processor(bbox_processor, fpath):
-    source_dict = {"north": "42.0", "south": "38.0", "east": "-28.0", "west": "-37.0"}
+    body = {"north": "42.0", "south": "38.0", "east": "-28.0", "west": "-37.0"}
 
     expected = {
         "bbox": {
             "type": "envelope",
             "coordinates": [
                 [
-                    float(source_dict["west"]),
-                    float(source_dict["south"]),
+                    float(body["west"]),
+                    float(body["south"]),
                 ],
                 [
-                    float(source_dict["east"]),
-                    float(source_dict["north"]),
+                    float(body["east"]),
+                    float(body["north"]),
                 ],
             ],
         },
@@ -175,7 +175,7 @@ def test_bbox_processor(bbox_processor, fpath):
         "west": "-37.0",
     }
 
-    output = bbox_processor.run(fpath, source_dict=source_dict)
+    output = bbox_processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -185,9 +185,9 @@ def test_date_combinator_no_year(fpath, caplog):
     """
     processor = DateCombinatorPostProcessor()
 
-    source_dict = {"month": "02", "day": "01"}
+    body = {"month": "02", "day": "01"}
 
-    processor.run(fpath, source_dict=source_dict)
+    processor.run(fpath, body=body)
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == "ERROR"
 
@@ -198,12 +198,12 @@ def test_date_combinator(fpath):
     """
     processor = DateCombinatorPostProcessor()
 
-    source_dict = {"year": "1850", "month": "02", "day": "01"}
+    body = {"year": "1850", "month": "02", "day": "01"}
 
     expected = {}
     expected["datetime"] = "1850-02-01T00:00:00"
 
-    output = processor.run(fpath, source_dict=source_dict)
+    output = processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -213,27 +213,12 @@ def test_date_combinator_non_destructive(fpath):
     """
     processor = DateCombinatorPostProcessor(destructive=False)
 
-    source_dict = {"year": "1850", "month": "02", "day": "01"}
+    body = {"year": "1850", "month": "02", "day": "01"}
 
-    expected = source_dict.copy()
+    expected = body.copy()
     expected["datetime"] = "1850-02-01T00:00:00"
 
-    output = processor.run(fpath, source_dict=source_dict)
-    assert output == expected
-
-
-def test_date_combinator_different_output_key(fpath):
-    """
-    Test can set different key
-    """
-    processor = DateCombinatorPostProcessor(key="test")
-
-    source_dict = {"year": "1850", "month": "02", "day": "01"}
-
-    expected = {}
-    expected["test"] = "1850-02-01T00:00:00"
-
-    output = processor.run(fpath, source_dict=source_dict)
+    output = processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -243,7 +228,7 @@ def test_date_combinator_format_string(fpath):
     """
     processor = DateCombinatorPostProcessor(format="%Y-%m")
 
-    source_dict = {
+    body = {
         "year": "1850",
         "month": "02",
     }
@@ -251,7 +236,7 @@ def test_date_combinator_format_string(fpath):
     expected = {}
     expected["datetime"] = "1850-02-01T00:00:00"
 
-    output = processor.run(fpath, source_dict=source_dict)
+    output = processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -259,12 +244,12 @@ def test_date_combinator_no_kwargs(fpath):
     """Check that the processor can run with no kwargs."""
     processor = DateCombinatorPostProcessor()
 
-    source_dict = {"year": "1850", "month": "02", "day": "01"}
+    body = {"year": "1850", "month": "02", "day": "01"}
 
     expected = {}
     expected["datetime"] = "1850-02-01T00:00:00"
 
-    output = processor.run(fpath, source_dict=source_dict)
+    output = processor.run(fpath, body=body)
     assert output == expected
 
 
@@ -281,23 +266,23 @@ def test_date_combinator_ym_no_format(fpath, caplog):
 
     processor = DateCombinatorPostProcessor()
 
-    source_dict = {
+    body = {
         "year": "1850",
         "month": "02",
     }
 
-    expected = source_dict.copy()
+    expected = body.copy()
 
-    output = processor.run(fpath, source_dict=source_dict)
+    output = processor.run(fpath, body=body)
     assert output == expected
     assert len(caplog.records) == 1
 
 
-def test_facet_prefix_processor(facet_prefix_processor, fpath, source_dict):
+def test_facet_prefix_processor(facet_prefix_processor, fpath, body):
     """
     Check processor adds prefix to named facets
     """
-    expected = {"CMIP6:date": source_dict["date"]}
+    expected = {"CMIP6:date": body["date"]}
 
-    output = facet_prefix_processor.run(fpath, source_dict=source_dict)
+    output = facet_prefix_processor.run(fpath, body=body)
     assert output == expected

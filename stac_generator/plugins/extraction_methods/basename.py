@@ -9,12 +9,12 @@ import logging
 import os
 
 # Package imports
-from stac_generator.core.processor import BasePreProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class BasenamePreProcessor(BasePreProcessor):
+class BasenameExtract(BaseExtractionMethod):
     """
 
     Processor Name: ``basename``
@@ -26,15 +26,12 @@ class BasenamePreProcessor(BasePreProcessor):
 
     .. code-block:: yaml
 
-          pre_processors:
-            - method: basename
+        - method: basename
 
     """
 
-    def run(self, uri: str, **kwargs):
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
-        uri = os.path.basename(uri)
+        body["basename"] = os.path.basename(uri)
 
-        LOGGER.info(f"Identified file name: {uri}")
-
-        return uri, kwargs
+        return body

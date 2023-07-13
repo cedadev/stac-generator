@@ -25,42 +25,25 @@ from boto3.session import Session as BotoSession
 from botocore import UNSIGNED
 from botocore.config import Config
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
+from stac_generator.core.processor import BaseExtractionMethod
 from stac_generator.core.utils import Stats
 
 LOGGER = logging.getLogger(__name__)
 
 
-class BotoStatsExtract:
+class BotoStatsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
 
         * - Processor Name
           - ``object_store_stats``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes an input uri and returns a dictionary of file level stats.
 
     Configuration Options:
         - ``uri_parse``: The uri parser
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
-
 
     Example configuration:
         .. code-block:: yaml
@@ -115,13 +98,11 @@ class BotoStatsExtract:
         if checksum:
             self.info["checksum"] = checksum
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
         """
 
         :param uri:
+        :param body:
         :param kwargs:
         :return:
 
@@ -156,7 +137,8 @@ class BotoStatsExtract:
         stats = s3.head_object(Bucket=bucket, Key=uri)
         self.stats = Stats.from_boto(stats)
 
-        self.info = {"uri": uri}
+        self.info = body
+        self.info["uri"] = uri
         self.extract_filename(self.object_path)
         self.extract_extension(self.object_path)
         self.extract_stat("size", self.stats, "size")
@@ -165,14 +147,3 @@ class BotoStatsExtract:
         # self.extract_checksum(stats, self.checksum)
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]

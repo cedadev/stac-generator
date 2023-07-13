@@ -56,9 +56,6 @@ setup(
             "rabbitmq_bulk = stac_generator.plugins.bulk_outputs.rabbit_mq:RabbitMQBulkOutput",
             "intake_esm = stac_generator.plugins.outputs.intake_esm:IntakeESMOutput",
         ],
-        "stac_generator.filters": [
-            "path_regex = stac_generator.plugins.filters.path_regex:PathRegexFilter",
-        ],
         "stac_generator.extraction_methods": [
             "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
             "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
@@ -72,39 +69,29 @@ setup(
             "os_stats = stac_generator.plugins.extraction_methods.os_stats:OsStatsExtract",
             "boto_stats = stac_generator.plugins.extraction_methods.boto_stats:BotoStatsExtract",
             "fsspec_stats = stac_generator.plugins.extraction_methods.fsspec_stats:FsSpecStatsExtract",
-        ],
-        "stac_generator.post_extraction_methods": [
-            "ceda_vocabulary = stac_generator.plugins.post_extraction_methods.ceda_vocabulary:CEDAVocabularyPostExtract",
-            "controlled_vocabulary = stac_generator.plugins.post_extraction_methods.controlled_vocabulary:ControlledVocabularyPostExtract",
-        ],
-        "stac_generator.id_extraction_methods": [
-            "default = stac_generator.plugins.id_extraction_methods.default:DefaultIdExtract",
-            "hash = stac_generator.plugins.id_extraction_methods.hash:HashIdExtract",
+            "ceda_vocabulary = stac_generator.plugins.extraction_methods.ceda_vocabulary:CEDAVocabularyExtract",
+            "controlled_vocabulary = stac_generator.plugins.extraction_methods.controlled_vocabulary:ControlledVocabularyExtract",
+            "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
+            "hash = stac_generator.plugins.extraction_methods.hash:HashExtract",
+            "basename = stac_generator.plugins.extraction_methods.basename:BasenameExtract",
+            "ceda_observation = stac_generator.plugins.extraction_methods.ceda_observation:CEDAObservationExtract",
+            "iso_date = stac_generator.plugins.extraction_methods.iso_date:ISODateExtract",
+            "facet_map = stac_generator.plugins.extraction_methods.facet_map:FacetMapExtract",
+            "bbox = stac_generator.plugins.extraction_methods.bbox:BboxExtract",
+            "geometry_line = stac_generator.plugins.extraction_methods.geometry_line:GeometryLineExtract",
+            "geometry_point = stac_generator.plugins.extraction_methods.geometry_point:GeometryPointExtract",
+            "geometry_polygon = stac_generator.plugins.extraction_methods.geometry_polygon:GeometryPolygonExtract",
+            "string_join = stac_generator.plugins.extraction_methods.string_join:StringJoinExtract",
+            "date_combinator = stac_generator.plugins.extraction_methods.date_combinator:DateCombinatorExtract",
+            "facet_prefix = stac_generator.plugins.extraction_methods.facet_prefix:FacetPrefixExtract",
         ],
         "stac_generator.extraction_methods.header.backends": [
             "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
             "xarray = stac_generator.plugins.extraction_methods.header.backends.xarray:XarrayBackend",
             "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",
         ],
-        "stac_generator.extraction_methods.file_stats.backends": [
-            "boto = stac_generator.plugins.extraction_methods.file_stats.backends.boto:BotoStats",
-            "fsspec = stac_generator.plugins.extraction_methods.file_stats.backends.fsspec:FsSpecStats",
-            "os = stac_generator.plugins.extraction_methods.file_stats.backends.os:OsStats",
-        ],
-        "stac_generator.pre_processors": [
-            "basename = stac_generator.plugins.preprocessors.basename:BasenamePreProcessor",
-            "ceda_observation = stac_generator.plugins.preprocessors.ceda_observation:CEDAObservationPreProcessor",
-        ],
-        "stac_generator.post_processors": [
-            "iso_date = stac_generator.plugins.postprocessors.iso_date:ISODatePostProcessor",
-            "facet_map = stac_generator.plugins.postprocessors.facet_map:FacetMapPostProcessor",
-            "bbox = stac_generator.plugins.postprocessors.bbox:BboxPostProcessor",
-            "geometry_line = stac_generator.plugins.postprocessors.geometry_line:GeometryLinePostProcessor",
-            "geometry_point = stac_generator.plugins.postprocessors.geometry_point:GeometryPointPostProcessor",
-            "geometry_polygon = stac_generator.plugins.postprocessors.geometry_polygon:GeometryPolygonPostProcessor",
-            "string_join = stac_generator.plugins.postprocessors.string_join:StringJoinPostProcessor",
-            "date_combinator = stac_generator.plugins.postprocessors.date_combinator:DateCombinatorPostProcessor",
-            "facet_prefix = stac_generator.plugins.postprocessors.facet_prefix:FacetPrefixPostProcessor",
+        "stac_generator.mappings": [
+            "ceda = stac_generator.plugins.mappings.ceda:CEDAMapping"
         ],
         "stac_generator.generators": [
             "asset = stac_generator.plugins.generators.asset:AssetGenerator",

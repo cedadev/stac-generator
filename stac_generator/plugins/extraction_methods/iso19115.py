@@ -19,12 +19,6 @@ from xml.etree import ElementTree as ET
 # Third party imports
 import requests
 
-from stac_generator.core.decorators import (
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
-
 # Package imports
 from stac_generator.core.processor import BaseExtractionMethod
 
@@ -46,10 +40,6 @@ class ISO19115Extract(BaseExtractionMethod):
 
         * - Processor Name
           - ``iso19115``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes a URL template and calls out to URL to retrieve the
@@ -60,12 +50,6 @@ class ISO19115Extract(BaseExtractionMethod):
         - ``url_template``: ``REQUIRED`` String template to build the URL.
           Template uses the `python string template <https://docs.python.org/3/library/string.html#template-strings>`_ format.
         - ``extraction_keys``: List of keys to retrieve from the response.
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes.
-          ``default: 'properties'``
 
     Extraction Keys:
         Extraction keys should be a map.
@@ -96,17 +80,9 @@ class ISO19115Extract(BaseExtractionMethod):
                 extraction_keys:
                   - name: start_datetime
                     key: './/gml:beginPosition'
-              pre_processors:
-                - method: ceda_observation
-              post_processors:
-                - method: isodate_processor
-                  inputs:
-                    date_key: datetime
     """
 
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         # Build the template
         url = Template(self.url_template)
@@ -129,8 +105,6 @@ class ISO19115Extract(BaseExtractionMethod):
         iso_record = ET.fromstring(response.text)
 
         # Extract the keys
-        metadata = {}
-
         for key in self.extraction_keys:
             name = key["name"]
             location = key["key"]
@@ -138,17 +112,6 @@ class ISO19115Extract(BaseExtractionMethod):
             value = iso_record.find(location, iso19115_ns)
 
             if value is not None:
-                metadata[name] = value.text
+                body[name] = value.text
 
-        return metadata
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return [extraction_key.name for extraction_key in self.extraction_keys]
+        return body

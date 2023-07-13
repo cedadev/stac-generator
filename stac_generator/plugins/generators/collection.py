@@ -20,6 +20,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 from datetime import datetime
 
+from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
@@ -29,52 +30,52 @@ LOGGER = logging.getLogger(__name__)
 
 class CollectionGenerator(BaseGenerator):
 
-    TYPE = GeneratorType.COLLECTION
-    SUBTYPE = GeneratorType.ITEM
+    TYPES = GeneratorType.COLLECTION
 
-    def process(self, uri: str, **kwargs) -> None:
+    def run_id_extraction_methods(
+        self, body: dict, description: CollectionDescription, **kwargs: dict
+    ) -> dict:
+        """
+        Extract the raw facets from the listed extraction methods
+
+        :param body: Dict of current extracted data
+        :param description: CollectionDescription
+        :return: dictionary containing ids
+        """
+
+        ids = {}
+        collection_description = description.collection
+
+        if collection_description and collection_description.id:
+            collection_id_description = collection_description.id
+
+        else:
+            collection_id_description = self.DEFAULT_ID_EXTRACTION_METHODS[
+                "collection_id"
+            ]
+
+        ids["collection_id"] = self._run_extraction_method(
+            collection_id_description, body, **kwargs
+        )
+
+    def _process(self, uri: str, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
 
         :param uri:
-        :param checksum:
+
         :return:
         """
 
-        body = {
-            "type": self.TYPE.value,
-            "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-            "status": "new",
-        }
-
-        # Get the description path, used for collection generation
-        description_path = kwargs.get("description_path")
-
-        if description_path:
-            body["description_path"] = description_path
-
-        else:
-            description_path = uri
-
         # Get dataset description file
-        description = self.collection_descriptions.get_description(description_path)
+        description = self.collection_descriptions.get_description(uri, **kwargs)
 
-        # extract data
-        extraction_methods_output = self.run_extraction_methods(
-            uri, description, **kwargs
-        )
-        body = dict_merge(body, extraction_methods_output)
+        body = {}
 
-        body = self.run_post_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(uri, body, description, **kwargs)
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        data = {
-            "id": ids[f"{self.TYPE.value}_id"],
-            "type": self.TYPE.value,
-            "subtype": self.SUBTYPE.value,
-            "uri": uri,
-            "body": body,
-        }
+        data = self.map(uri, ids, body, description, **kwargs)
 
-        self.output(data, **kwargs)
+        self.output(data, description=description, **kwargs)

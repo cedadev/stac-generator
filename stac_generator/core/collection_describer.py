@@ -111,7 +111,7 @@ class CollectionDescriptions:
                     )
                     self.tree.add_child(dataset, description_file=file.as_posix())
 
-    def get_description(self, filepath: str) -> CollectionDescription:
+    def get_description(self, filepath: str, **kwargs) -> CollectionDescription:
         """
         Get the merged description for the given file path.
         This gets all the description files along the path
@@ -133,7 +133,10 @@ class CollectionDescriptions:
         :param filepath: Path for which to retrieve the description
         """
 
-        if not filepath[0] == "/":
+        if "description_path" in kwargs:
+            filepath = kwargs.get("description_path")
+
+        elif not filepath[0] == "/":
             filepath = f"/{filepath}"
 
         nodes = self.tree.search_all(filepath)

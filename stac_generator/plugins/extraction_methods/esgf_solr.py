@@ -20,12 +20,6 @@ from functools import lru_cache
 
 import requests
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
 from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
@@ -172,10 +166,7 @@ class ESGFSolrExtract(BaseExtractionMethod):
         except KeyError:
             pass
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         # Transform the path back to ID form
         uri = uri.replace("/", ".")
@@ -196,14 +187,3 @@ class ESGFSolrExtract(BaseExtractionMethod):
         self.get_item_info()
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["esgf solar terms"]

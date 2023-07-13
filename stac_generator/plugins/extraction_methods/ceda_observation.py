@@ -12,12 +12,12 @@ from string import Template
 import requests
 
 # Package imports
-from stac_generator.core.processor import BasePreProcessor
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class CEDAObservationPreProcessor(BasePreProcessor):
+class CEDAObservationExtract(BaseExtractionMethod):
     """
 
     Processor Name: ``ceda_observation``
@@ -33,14 +33,13 @@ class CEDAObservationPreProcessor(BasePreProcessor):
 
         .. code-block:: yaml
 
-              pre_processors:
-                - method: ceda_observation
-                  inputs:
-                    url_template: http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri
+            - method: ceda_observation
+              inputs:
+                url_template: http://api.catalogue.ceda.ac.uk/api/v0/obs/get_info$uri
 
     """
 
-    def run(self, uri: str, **kwargs):
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         url = Template(self.url_template).substitute(uri=uri)
 
@@ -52,7 +51,7 @@ class CEDAObservationPreProcessor(BasePreProcessor):
             url = response.get("url")
 
             if record_type == "Dataset" and url:
-                uuid = url.split("/")[-1]
-                kwargs["uuid"] = uuid
 
-        return uri, kwargs
+                body["uuid"] = url.split("/")[-1]
+
+        return body

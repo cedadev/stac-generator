@@ -7,28 +7,25 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "huard.david@ouranos.ca"
 
 
+import importlib
+
 # Python imports
 import logging
 
 import pydantic
 
-from stac_generator.core.decorators import accepts_postprocessors
-from stac_generator.core.processor import BasePostExtractionMethod
+from stac_generator.core.processor import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ControlledVocabularyPostExtract(BasePostExtractionMethod):
+class ControlledVocabularyExtract(BaseExtractionMethod):
     """
 
     .. list-table::
 
         * - Processor Name
           - ``controlled_vocabulary``
-        * - Accepts Pre-processors
-          -
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Compare properties to a controlled vocabulary defined by a pydantic.BaseModel.
@@ -41,21 +38,13 @@ class ControlledVocabularyPostExtract(BasePostExtractionMethod):
 
     .. code-block:: yaml
 
-        post_processors:
             - name: controlled_vocabulary
               inputs:
                 model: my_cv.collections.CMIP5
                 strict: False
     """
 
-    @accepts_postprocessors
-    def run(
-        self,
-        data: dict,
-        source_media: str = "POSIX",
-        **kwargs,
-    ) -> dict:
-        import importlib
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
 
         # Import data model
         scopes = self.model.split(".")
@@ -65,12 +54,12 @@ class ControlledVocabularyPostExtract(BasePostExtractionMethod):
         klass = getattr(module, scopes[-1])
 
         # Get metadata attributes
-        properties = data["body"]["properties"]
+        properties = body
 
         # Instantiate data model
         try:
             cv = klass(**properties)
-            data["body"]["properties"] = cv.dict()
+            body = cv.dict()
 
         except pydantic.ValidationError as exc:
             LOGGER.warning(exc)
@@ -78,4 +67,4 @@ class ControlledVocabularyPostExtract(BasePostExtractionMethod):
             if self.strict:
                 raise exc
 
-        return data
+        return body

@@ -23,13 +23,6 @@ from urllib.parse import urlparse
 # Third-party imports
 import fsspec as fs
 
-from stac_generator.core.decorators import (
-    accepts_output_key,
-    accepts_postprocessors,
-    accepts_preprocessors,
-    expected_terms_postprocessors,
-)
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -40,23 +33,12 @@ class FsSpecStatsExtract:
 
         * - Processor Name
           - ``object_store_stats``
-        * - Accepts Pre-processors
-          - .. fa:: check
-        * - Accepts Post-processors
-          - .. fa:: check
 
     Description:
         Takes an input uri and returns a dictionary of file level stats.
 
     Configuration Options:
         - ``uri_parse``: The uri parser
-        - ``pre_processors``: List of pre-processors to apply
-        - ``post_processors``: List of post_processors to apply
-        - ``output_key``: When the metadata is returned, this key determines
-          where the metadata is fit in the response. Dot separated
-          strings can be used to created nested attributes. An empty string can
-          be used to return the output with no prefix.
-          ``default: 'properties'``
 
 
     Example configuration:
@@ -112,10 +94,7 @@ class FsSpecStatsExtract:
         if checksum:
             self.info["checksum"] = checksum
 
-    @accepts_output_key
-    @accepts_preprocessors
-    @accepts_postprocessors
-    def run(self, uri: str, **kwargs) -> dict:
+    def run(self, uri: str, body: dict, **kwargs) -> dict:
         """
 
         :param uri:
@@ -136,7 +115,9 @@ class FsSpecStatsExtract:
         url_path = Path(uri_parse.path)
         self.object_path = "/".join(url_path.parts[2:])
 
-        self.info = {"uri": uri}
+        self.info = body
+
+        self.info["uri"] = uri
 
         try:
             with fs.open(uri, anon=True) as f:
@@ -152,14 +133,3 @@ class FsSpecStatsExtract:
             pass
 
         return self.info
-
-    @expected_terms_postprocessors
-    def expected_terms(self, **kwargs) -> list:
-        """
-        The expected terms to be returned from running the extraction method with the given Collection Description
-        :param collection_descrition: CollectionDescription for extraction method
-        :param kwargs: free kwargs passed to the processor.
-        :return: list
-        """
-
-        return ["uri", "filename", "extension", "size", "modified_time", "magic_number"]

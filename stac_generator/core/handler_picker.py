@@ -57,7 +57,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
+    def get(self, name: str, **kwargs) -> Optional[BaseProcessor]:
         """
         Get the processor by name
 
