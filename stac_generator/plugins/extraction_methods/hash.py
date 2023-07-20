@@ -30,12 +30,11 @@ class HashExtract(BaseExtractionMethod):
           - ``hash``
 
     Description:
-        Takes list of terms and creates dot seperated string of
-        values which is then hashed.
+        Hashes input string.
 
     Configuration Options:
-        - ``key``: Key for result to be saved as
-        - ``terms``: Terms to be hashed
+        - ``input_key``: Key for term to be hashed
+        - ``output_key``: Key for result to be saved as
 
     Example configuration:
         .. code-block:: yaml
@@ -43,44 +42,16 @@ class HashExtract(BaseExtractionMethod):
           id:
             method: hash
             inputs:
-              key: hashed_terms
-              terms:
-                  - start_time
-                  - model
+              input_key: model
+              output_key: hashed_terms
 
     """
 
-    def flatten_dict(self, start_dict: dict):
-        final_dict = {}
-        for k, v in start_dict:
-            if isinstance(v, dict):
-                final_dict = final_dict | self.flatten_dict(v)
-            final_dict[k] = v
-
-    def hash(self, output: str):
-        return hashlib.md5(output.encode("utf-8")).hexdigest()
+    def hash(self, input_str: str):
+        return hashlib.md5(input_str.encode("utf-8")).hexdigest()
 
     def run(self, uri: str, body: dict, **kwargs) -> dict:
 
-        if hasattr(self, "terms"):
-            output = ""
+        body[self.output_key] = self.hash(body[self.input_key])
 
-            for facet in self.terms:
-
-                if facet in body:
-                    vals = body.get(facet)
-
-                    if isinstance(vals, (str, int)):
-                        output = ".".join((output, vals))
-
-                    if isinstance(vals, (list)):
-                        if len(vals) == 1:
-                            output = ".".join((output, vals[0]))
-                        elif len(vals) != 0:
-                            output = ".".join((output, f"multi_{facet}"))
-
-            output = output[1:]
-
-            body[self.key] = self.hash(output)
-
-            return body
+        return body
