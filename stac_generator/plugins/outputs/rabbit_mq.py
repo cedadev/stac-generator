@@ -138,7 +138,7 @@ class RabbitMQOutput(BaseOutput):
             exchange_type=self.exchange["type"],
         )
 
-    def export(self, data: dict) -> None:
+    def export(self, data: dict, **kwargs) -> None:
         """
         Export the data to rabbit.
 

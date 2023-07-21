@@ -41,7 +41,10 @@ class BaseGenerator(ABC):
     TYPE = GeneratorType.NONE
 
     DEFAULT_ID_EXTRACTION_METHODS = {
-        "asset_id": {"method": "hash", "inputs": {"terms": ["uri"]}},
+        "asset_id": {
+            "method": "hash",
+            "inputs": {"input_key": "uri", "output_key": "asset_id"},
+        },
         "item_id": {"method": "hash", "inputs": {"terms": []}},
         "collection_id": {"method": "default", "inputs": {"name": "undefined"}},
     }
@@ -109,7 +112,7 @@ class BaseGenerator(ABC):
         return self.extraction_methods.get(extraction_method_name, **inputs)
 
     def _run_extraction_method(
-        self, extraction_method_conf: dict, uri: str, body: dict, **kwargs
+        self, uri: str, body: dict, extraction_method_conf: dict, **kwargs
     ) -> dict:
         """Run the specified extraction method."""
 
@@ -139,7 +142,7 @@ class BaseGenerator(ABC):
             for extraction_method in generator_description.extraction_methods:
 
                 body = self._run_extraction_method(
-                    extraction_method, uri, body, **kwargs
+                    uri, body, extraction_method, **kwargs
                 )
 
         return body

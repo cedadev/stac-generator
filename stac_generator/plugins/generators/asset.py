@@ -11,7 +11,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
-from datetime import datetime
 
 from stac_generator.core.collection_describer import CollectionDescription
 
@@ -33,7 +32,7 @@ class AssetGenerator(BaseGenerator):
     TYPE = GeneratorType.ASSET
 
     def run_id_extraction_methods(
-        self, body: dict, description: CollectionDescription, **kwargs: dict
+        self, uri: str, body: dict, description: CollectionDescription, **kwargs: dict
     ) -> dict:
         """
         Extract the raw facets from the listed extraction methods
@@ -44,49 +43,30 @@ class AssetGenerator(BaseGenerator):
         """
 
         ids = {}
-        collection_description = description.collection
 
-        if collection_description and collection_description.id:
-            collection_id_description = collection_description.id
+        # item_description = description.item
 
-        else:
-            collection_id_description = self.DEFAULT_ID_EXTRACTION_METHODS[
-                "collection_id"
-            ]
+        # if item_description and item_description.id:
+        #     item_id_description = item_description.id
 
-        ids["collection_id"] = self._run_extraction_method(
-            collection_id_description, body, **kwargs
-        )
+        # else:
+        #     item_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["item_id"]
 
-        item_description = description.item
-
-        if item_description and item_description.id:
-            item_id_description = item_description.id
-
-        else:
-            item_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["item_id"]
-
-        # Add collection_id to item_id terms
-        if "method" in item_id_description and item_id_description["method"] == "hash":
-            if "collection_id" not in item_id_description["inputs"]["terms"]:
-                item_id_description["inputs"]["terms"].append("collection_id")
-            body["properties"]["collection_id"] = ids["collection_id"]
-
-        ids["item_id"] = self._run_extraction_method(
-            item_id_description, body, **kwargs
-        )
+        # ids["item_id"] = self._run_extraction_method(
+        #     item_id_description, body, **kwargs
+        # )
 
         asset_description = description.asset
 
         if asset_description.id:
-            asset_id_description = asset_description.id
+            asset_id_method = asset_description.id
 
         else:
-            asset_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["asset_id"]
+            asset_id_method = self.DEFAULT_ID_EXTRACTION_METHODS["asset_id"]
 
-        ids["asset_id"] = self._run_extraction_method(
-            asset_id_description, body, **kwargs
-        )
+        output = self._run_extraction_method(uri, body, asset_id_method, **kwargs)
+
+        ids["asset_id"] = output.pop("asset_id")
 
         return ids
 
@@ -110,7 +90,11 @@ class AssetGenerator(BaseGenerator):
 
         body = self.run_extraction_methods(uri, body, description, **kwargs)
 
-        ids = self.run_id_extraction_methods(body, description, **kwargs)
+        print("before_id: ", body)
+
+        ids = self.run_id_extraction_methods(uri, body, description, **kwargs)
+
+        print("after_id: ", body)
 
         data = self.map(uri, ids, body, description, **kwargs)
 

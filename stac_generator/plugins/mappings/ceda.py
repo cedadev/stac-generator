@@ -7,15 +7,11 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from datetime import datetime
-from string import Template
-
-# Third party imports
-import requests
 
 from stac_generator.core.collection_describer import CollectionDescription
 
 # Package imports
-from stac_generator.core.processor import BaseMapping
+from stac_generator.core.mapping import BaseMapping
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,8 +52,10 @@ class CEDAMapping(BaseMapping):
 
         description_path = max(relevant_paths, key=lambda x: x.count("/"))
 
+        id_key = f"{kwargs['TYPE'].value}_id"
+
         output = {
-            f"{self.TYPE.value}_id": ids[self.TYPE.value],
+            id_key: ids[id_key],
             "description_path": description_path,
             "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             "status": "new",

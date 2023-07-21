@@ -52,6 +52,8 @@ class HashExtract(BaseExtractionMethod):
 
     def run(self, uri: str, body: dict, **kwargs) -> dict:
 
-        body[self.output_key] = self.hash(body[self.input_key])
+        str_to_hash = uri if self.input_key == "uri" else body[self.input_key]
+
+        body[self.output_key] = self.hash(str_to_hash)
 
         return body

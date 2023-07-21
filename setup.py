@@ -71,7 +71,7 @@ setup(
             "fsspec_stats = stac_generator.plugins.extraction_methods.fsspec_stats:FsSpecStatsExtract",
             "ceda_vocabulary = stac_generator.plugins.extraction_methods.ceda_vocabulary:CEDAVocabularyExtract",
             "controlled_vocabulary = stac_generator.plugins.extraction_methods.controlled_vocabulary:ControlledVocabularyExtract",
-            "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
+            "dot_seperated_str = stac_generator.plugins.extraction_methods.dot_seperated_str:DotSeperatedStrExtract",
             "hash = stac_generator.plugins.extraction_methods.hash:HashExtract",
             "basename = stac_generator.plugins.extraction_methods.basename:BasenameExtract",
             "ceda_observation = stac_generator.plugins.extraction_methods.ceda_observation:CEDAObservationExtract",

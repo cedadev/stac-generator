@@ -141,7 +141,7 @@ class ElasticsearchOutput(BaseOutput):
         if previous_id != data["id"]:
             self.es.delete(index=self.index_name, id=previous_id)
 
-    def export(self, data: dict) -> None:
+    def export(self, data: dict, **kwargs) -> None:
 
         data = self.clean(data)
 

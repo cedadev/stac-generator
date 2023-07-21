@@ -27,7 +27,7 @@ class BaseOutput(ABC):
             setattr(self, k, v)
 
     @abstractmethod
-    def export(self, data: dict) -> None:
+    def export(self, data: dict, **kwargs) -> None:
         """
         Output the data.
 
@@ -36,11 +36,11 @@ class BaseOutput(ABC):
         """
 
     # This allows for bulk outputs
-    def run(self, data: dict) -> None:
+    def run(self, data: dict, **kwargs) -> None:
         """
         Run the output.
 
         :param data: data from processor to be output.
         :param kwargs:
         """
-        self.export(data)
+        self.export(data, **kwargs)

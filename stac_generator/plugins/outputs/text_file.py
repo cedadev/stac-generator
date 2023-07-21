@@ -47,7 +47,7 @@ class TextFileOutput(BaseOutput):
         super().__init__(**kwargs)
         self.filepath = self.filepath.rstrip("/")
 
-    def export(self, data: dict) -> None:
+    def export(self, data: dict, **kwargs) -> None:
         if hasattr(self, "deduplicate"):
             return
 
@@ -56,9 +56,9 @@ class TextFileOutput(BaseOutput):
         else:
             filepath = self.filepath
 
-        with open(f"{filepath}", "a") as file:
+        with open(filepath, "a", encoding="utf-8") as file:
             message = {
-                "uri": data["body"][f"{data['surtype']}_id"],
-                "description_path": data["body"]["description_path"],
+                "uri": "ITEM_ID_GOES_HERE",
+                "description_path": "DESCRIPTION_PATH_FOR_ITEM_GOES_HERE",
             }
             file.write(f"{json.dumps(message)}\n")

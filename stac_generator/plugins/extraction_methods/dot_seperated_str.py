@@ -21,7 +21,7 @@ from stac_generator.core.processor import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class HashExtract(BaseExtractionMethod):
+class DotSeperatedStrExtract(BaseExtractionMethod):
     """
 
     .. list-table::
