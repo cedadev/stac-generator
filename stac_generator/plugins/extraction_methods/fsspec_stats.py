@@ -94,33 +94,25 @@ class FsSpecStatsExtract:
         if checksum:
             self.info["checksum"] = checksum
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         """
 
-        :param uri:
+        :param body:
         :param kwargs:
         :return:
 
         """
 
-        LOGGER.debug(
-            "OS stats: Extracting metadata for: %s with checksum: %s",
-            uri,
-            getattr(self, "checksum", None),
-        )
-
         if not hasattr(self, "uri_parse"):
-            uri_parse = urlparse(uri)
+            uri_parse = urlparse(body["uri"])
 
         url_path = Path(uri_parse.path)
         self.object_path = "/".join(url_path.parts[2:])
 
         self.info = body
 
-        self.info["uri"] = uri
-
         try:
-            with fs.open(uri, anon=True) as f:
+            with fs.open(body["uri"], anon=True) as f:
                 stats = vars(f)
 
             self.extract_filename(self.object_path)

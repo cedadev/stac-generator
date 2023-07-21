@@ -22,7 +22,7 @@ class CEDAMapping(BaseMapping):
     Mapping Name: ``ceda_mapping``
 
     Description:
-        Takes a uri, ids, and body and returns object in CEDA mapping.
+        Takes ids, body, and description and returns object in CEDA mapping.
 
     Configuration Options:
         - ``url_template``: ``REQUIRED`` URL string template to build url.
@@ -40,7 +40,6 @@ class CEDAMapping(BaseMapping):
 
     def run(
         self,
-        uri: str,
         ids: dict,
         body: dict,
         description: CollectionDescription,
@@ -48,7 +47,9 @@ class CEDAMapping(BaseMapping):
     ) -> dict:
 
         # Get the description path, used for item generation
-        relevant_paths = [path for path in description.paths if uri.startswith(path)]
+        relevant_paths = [
+            path for path in description.paths if body["uri"].startswith(path)
+        ]
 
         description_path = max(relevant_paths, key=lambda x: x.count("/"))
 

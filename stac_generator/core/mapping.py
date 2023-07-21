@@ -36,11 +36,6 @@ class BaseMapping(ABC):
 
     @abstractmethod
     def run(
-        self,
-        uri: str,
-        ids: dict,
-        body: dict,
-        description: CollectionDescription,
-        **kwargs
+        self, ids: dict, body: dict, description: CollectionDescription, **kwargs
     ) -> dict:
         pass

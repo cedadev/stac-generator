@@ -50,10 +50,8 @@ class HashExtract(BaseExtractionMethod):
     def hash(self, input_str: str):
         return hashlib.md5(input_str.encode("utf-8")).hexdigest()
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
-        str_to_hash = uri if self.input_key == "uri" else body[self.input_key]
-
-        body[self.output_key] = self.hash(str_to_hash)
+        body[self.output_key] = self.hash(body[self.input_key])
 
         return body

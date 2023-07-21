@@ -52,9 +52,9 @@ class RegexExtract(BaseExtractionMethod):
         super().__init__(**kwargs)
         self.regex = rf"{self.regex}"
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
-        m = re.match(self.regex, uri)
+        m = re.match(self.regex, body["uri"])
 
         if m:
             LOGGER.info("Found matches for regex extract")

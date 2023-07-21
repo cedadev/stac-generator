@@ -166,10 +166,10 @@ class ESGFSolrExtract(BaseExtractionMethod):
         except KeyError:
             pass
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         # Transform the path back to ID form
-        uri = uri.replace("/", ".")
+        uri = body["uri"].replace("/", ".")
 
         LOGGER.info("Extracting metadata for: %s", uri)
 

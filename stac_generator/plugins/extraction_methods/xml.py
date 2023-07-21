@@ -75,11 +75,11 @@ class XMLExtract(BaseExtractionMethod):
     # noqa: W605
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         # Extract the keys
         try:
-            xml_file = ET.parse(uri)
+            xml_file = ET.parse(body["uri"])
         except ParseError:
             return {}
 

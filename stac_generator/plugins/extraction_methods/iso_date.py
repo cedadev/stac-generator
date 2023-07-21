@@ -48,9 +48,8 @@ class ISODateExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         """
-        :param uri: file currently being processed
         :param body: dict containing the date value
 
         :return: the source dict with the date converted to ISO8601 format.
@@ -68,11 +67,11 @@ class ISODateExtract(BaseExtractionMethod):
 
                 if format_errors:
                     LOGGER.warning(
-                        f"Could not use format string {date_format} with date from: {uri}"
+                        f"Could not use format string {date_format} with date from: {body['uri']}"
                     )
 
                 if not date:
-                    LOGGER.error(f"Could not extract date from {uri}")
+                    LOGGER.error(f"Could not extract date from {body['uri']}")
                     body.pop(key)
                 else:
                     body[key] = date

@@ -43,7 +43,7 @@ class GeometryPolygonExtract(BaseExtractionMethod):
               - lat_3
     """
 
-    def run(self, uri: str, body: dict, **kwargs):
+    def run(self, body: dict, **kwargs):
 
         try:
 

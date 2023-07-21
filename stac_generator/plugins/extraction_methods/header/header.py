@@ -61,18 +61,18 @@ class HeaderExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         try:
-            backend = self.guess_backend(uri)
+            backend = self.guess_backend(body["uri"])
         except NoSuitableBackendException:
-            LOGGER.warning(f"Header extract backend not found for {uri}")
+            LOGGER.warning(f"Header extract backend not found for {body['uri']}")
             return {}
 
         # Use the handler to extract the desired attributes from the header
-        data = self.attr_extraction(backend, uri, self.attributes, self.backend_kwargs)
+        body = self.attr_extraction(backend, body, self.attributes, self.backend_kwargs)
 
-        return data
+        return body
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -117,7 +117,7 @@ class HeaderExtract(BaseExtractionMethod):
 
     @staticmethod
     def attr_extraction(
-        backend, uri: str, attributes: list, backend_kwargs: dict
+        backend, body: dict, attributes: list, backend_kwargs: dict
     ) -> dict:
         """
         Takes a uri and list of attributes and extracts the metadata from the header.
@@ -130,4 +130,4 @@ class HeaderExtract(BaseExtractionMethod):
         :return: dictionary of extracted attributes
         """
 
-        return backend.attr_extraction(uri, attributes, backend_kwargs)
+        return backend.attr_extraction(body, attributes, backend_kwargs)

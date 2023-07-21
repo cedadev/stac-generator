@@ -66,12 +66,12 @@ class CategoriesExtract(BaseExtractionMethod):
 
         return label
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         result = set()
 
         for category in self.categories:
-            label = self.get_category(uri, **category)
+            label = self.get_category(body["uri"], **category)
             if label:
                 result.add(label)
 

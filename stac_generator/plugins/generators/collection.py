@@ -58,24 +58,24 @@ class CollectionGenerator(BaseGenerator):
             collection_id_description, body, **kwargs
         )
 
-    def _process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
 
-        :param uri:
+        :param body:
 
         :return:
         """
 
         # Get dataset description file
-        description = self.collection_descriptions.get_description(uri, **kwargs)
+        description = self.collection_descriptions.get_description(
+            body["uri"], **kwargs
+        )
 
-        body = {}
-
-        body = self.run_extraction_methods(uri, body, description, **kwargs)
+        body = self.run_extraction_methods(body, description, **kwargs)
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        data = self.map(uri, ids, body, description, **kwargs)
+        data = self.map(ids, body, description, **kwargs)
 
         self.output(data, description=description, **kwargs)

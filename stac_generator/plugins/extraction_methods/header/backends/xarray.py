@@ -33,12 +33,12 @@ class XarrayBackend:
             return False
 
     def attr_extraction(
-        self, file: str, attributes: list, backend_kwargs: dict
+        self, body: dict, attributes: list, backend_kwargs: dict
     ) -> dict:
         """
-        Takes a filepath and list of attributes and extracts the metadata.
+        Takes a dictionary and list of attributes and extracts the metadata.
 
-        :param file: file-like object
+        :param body: current extracted properties
         :param attributes: attributes to extract
         :param kwargs: kwargs to send to xarray.open_dataset(). e.g. engine to
         specify different engines to use with grib data.
@@ -46,7 +46,7 @@ class XarrayBackend:
         :return: Dictionary of extracted attributes
         """
 
-        ds = xr.open_dataset(file, engine=self.engine, **backend_kwargs)
+        ds = xr.open_dataset(body["uri"], engine=self.engine, **backend_kwargs)
 
         extracted_metadata = {}
         for attr in attributes:
@@ -55,4 +55,4 @@ class XarrayBackend:
             if value:
                 extracted_metadata[attr] = value
 
-        return extracted_metadata
+        return body | extracted_metadata

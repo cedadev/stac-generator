@@ -108,24 +108,18 @@ class OsStatsExtract(BaseExtractionMethod):
         # Assuming no errors we can now store the checksum
         self.info["checksum"] = [{"time": datetime.now(), "checksum": checksum}]
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         """
 
-        :param uri:
+        :param body:
         :param kwargs:
         :return:
 
         """
 
-        LOGGER.debug(
-            "OS stats: Extracting metadata for: %s with checksum: %s",
-            uri,
-            getattr(self, "checksum", None),
-        )
+        uri = body["uri"]
 
         self.info = body
-
-        self.info["uri"] = getattr(self, "prefix", "") + uri
 
         if os.path.exists(uri):
 

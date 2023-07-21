@@ -39,7 +39,7 @@ class BboxExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs):
+    def run(self, body: dict, **kwargs):
 
         try:
             coordinates = [

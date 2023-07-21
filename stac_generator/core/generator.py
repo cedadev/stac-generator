@@ -112,7 +112,7 @@ class BaseGenerator(ABC):
         return self.extraction_methods.get(extraction_method_name, **inputs)
 
     def _run_extraction_method(
-        self, uri: str, body: dict, extraction_method_conf: dict, **kwargs
+        self, body: dict, extraction_method_conf: dict, **kwargs
     ) -> dict:
         """Run the specified extraction method."""
 
@@ -120,15 +120,14 @@ class BaseGenerator(ABC):
             extraction_method_conf, **kwargs
         )
 
-        return extraction_method.run(uri, body)
+        return extraction_method.run(body)
 
     def run_extraction_methods(
-        self, uri: str, body: dict, description: CollectionDescription, **kwargs: dict
+        self, body: dict, description: CollectionDescription, **kwargs: dict
     ) -> dict:
         """
         Extract facets from the listed extraction methods
 
-        :param uri: uri for object
         :param body: current extracted meta data
         :param description: CollectionDescription
 
@@ -141,19 +140,12 @@ class BaseGenerator(ABC):
 
             for extraction_method in generator_description.extraction_methods:
 
-                body = self._run_extraction_method(
-                    uri, body, extraction_method, **kwargs
-                )
+                body = self._run_extraction_method(body, extraction_method, **kwargs)
 
         return body
 
     def map(
-        self,
-        uri: str,
-        ids: dict,
-        body: dict,
-        description: CollectionDescription,
-        **kwargs
+        self, ids: dict, body: dict, description: CollectionDescription, **kwargs
     ) -> dict:
         """
         Run all configured outputs export methods.
@@ -161,7 +153,7 @@ class BaseGenerator(ABC):
         :param data: data to be output
         """
         for mapping in self.mappings:
-            body = mapping.run(uri, ids, body, description, **kwargs)
+            body = mapping.run(ids, body, description, **kwargs)
 
         return body
 
@@ -183,11 +175,11 @@ class BaseGenerator(ABC):
                 output.clear_cache()
 
     @abstractmethod
-    def _process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Run generator.
 
-        :param uri: uri for object
+        :param body: body for object
         """
 
     def process(self, uri: str, **kwargs) -> None:
@@ -198,4 +190,6 @@ class BaseGenerator(ABC):
         """
         kwargs["TYPE"] = self.TYPE
 
-        self._process(uri, **kwargs)
+        body = {"uri": uri}
+
+        self._process(body, **kwargs)

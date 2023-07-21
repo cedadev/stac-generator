@@ -54,7 +54,7 @@ class CEDAVocabularyExtract(BasExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         properties = body
 

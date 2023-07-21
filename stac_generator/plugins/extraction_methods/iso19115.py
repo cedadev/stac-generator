@@ -82,7 +82,7 @@ class ISO19115Extract(BaseExtractionMethod):
                     key: './/gml:beginPosition'
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         # Build the template
         url = Template(self.url_template)
@@ -91,7 +91,7 @@ class ISO19115Extract(BaseExtractionMethod):
             url = url.substitute(kwargs)
         except KeyError:
             LOGGER.warning(
-                f"URL templating failed. Template: {self.url_template} key not found in kwargs: {uri}"
+                f"URL templating failed. Template: {self.url_template} key not found in kwargs: {body['uri']}"
             )
             return {}
 

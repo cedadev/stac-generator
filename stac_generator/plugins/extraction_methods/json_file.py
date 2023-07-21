@@ -49,7 +49,7 @@ class JsonFileExtract(BaseExtractionMethod):
 
     """
 
-    def get_facet_values(self, facet: str, uri: str) -> list:
+    def get_facet_values(self, facet: str) -> list:
 
         facet_values = []
 
@@ -102,10 +102,10 @@ class JsonFileExtract(BaseExtractionMethod):
         # spatial_extent = self.get_spatial_extent(item_list)
         # temporal_extent = self.get_temporal_extent(item_list)
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         for facet in self.terms:
-            values = self.get_facet_values(facet, uri)
+            values = self.get_facet_values(facet)
             if values:
                 body[facet] = values
 

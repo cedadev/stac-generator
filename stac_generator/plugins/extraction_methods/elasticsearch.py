@@ -242,11 +242,11 @@ class ElasticsearchExtract(BaseExtractionMethod):
         if hasattr(self, "list"):
             self.extract_facet_list(self.list)
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         self.metadata = body
 
-        self.construct_base_query(self.id_term, uri)
+        self.construct_base_query(self.id_term, body["uri"])
 
         self.construct_query()
 

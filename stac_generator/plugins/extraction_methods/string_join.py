@@ -49,7 +49,7 @@ class StringJoinExtract(BaseExtractionMethod):
         if not hasattr(self, "destructive"):
             self.destructive = True
 
-    def run(self, uri: str, body: dict, **kwargs):
+    def run(self, body: dict, **kwargs):
         try:
 
             if self.destructive:
@@ -60,6 +60,6 @@ class StringJoinExtract(BaseExtractionMethod):
             body[self.key] = self.delimiter.join(string_elements)
 
         except KeyError:
-            LOGGER.warning(f"Unable merge strings. file: {uri}", exc_info=True)
+            LOGGER.warning(f"Unable merge strings. file: {body['uri']}", exc_info=True)
 
         return body

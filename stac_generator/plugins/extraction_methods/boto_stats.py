@@ -98,10 +98,9 @@ class BotoStatsExtract(BaseExtractionMethod):
         if checksum:
             self.info["checksum"] = checksum
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         """
 
-        :param uri:
         :param body:
         :param kwargs:
         :return:
@@ -110,12 +109,12 @@ class BotoStatsExtract(BaseExtractionMethod):
 
         LOGGER.debug(
             "OS stats: Extracting metadata for: %s with checksum: %s",
-            uri,
+            body["uri"],
             getattr(self, "checksum", None),
         )
 
         if not hasattr(self, "uri_parse"):
-            self.uri_parse = urlparse(uri)
+            self.uri_parse = urlparse(body["uri"])
 
         endpoint_url = f"{self.uri_parse.scheme}://{self.uri_parse.netloc}"
         url_path = Path(self.uri_parse.path)
@@ -134,11 +133,10 @@ class BotoStatsExtract(BaseExtractionMethod):
             client_kwargs["config"] = Config(signature_version=UNSIGNED)
 
         s3 = self.session.client("s3", endpoint_url=endpoint_url, **client_kwargs)
-        stats = s3.head_object(Bucket=bucket, Key=uri)
+        stats = s3.head_object(Bucket=bucket, Key=body["uri"])
         self.stats = Stats.from_boto(stats)
 
         self.info = body
-        self.info["uri"] = uri
         self.extract_filename(self.object_path)
         self.extract_extension(self.object_path)
         self.extract_stat("size", self.stats, "size")

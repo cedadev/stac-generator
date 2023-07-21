@@ -74,38 +74,26 @@ class ItemGenerator(BaseGenerator):
             item_id_description, body, **kwargs
         )
 
-        asset_description = description.asset
-
-        if asset_description.id:
-            asset_id_description = asset_description.id
-
-        else:
-            asset_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["asset_id"]
-
-        ids["asset_id"] = self._run_extraction_method(
-            asset_id_description, body, **kwargs
-        )
-
         return ids
 
-    def _process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
 
-        :param uri:
+        :param body:
 
         :return:
         """
 
         # Get dataset description file
-        description = self.collection_descriptions.get_description(uri, **kwargs)
+        description = self.collection_descriptions.get_description(
+            body["uri"], **kwargs
+        )
 
-        body = {}
-
-        body = self.run_extraction_methods(uri, body, description, **kwargs)
+        body = self.run_extraction_methods(body, description, **kwargs)
 
         ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        data = self.map(uri, ids, body, description, **kwargs)
+        data = self.map(ids, body, description, **kwargs)
 
         self.output(data, description=description, **kwargs)

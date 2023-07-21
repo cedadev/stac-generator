@@ -51,8 +51,8 @@ class PathPartsExtract(BaseExtractionMethod):
         if not hasattr(self, "skip"):
             self.skip = 1
 
-    def run(self, uri: str, body: dict, **kwargs) -> list:
-        path = Path(uri)
+    def run(self, body: dict, **kwargs) -> list:
+        path = Path(body["uri"])
 
         parts = list(path.parts)[self.skip :]
 

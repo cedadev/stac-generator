@@ -39,9 +39,9 @@ class CEDAObservationExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
-        url = Template(self.url_template).substitute(uri=uri)
+        url = Template(self.url_template).substitute(uri=body["uri"])
 
         r = requests.get(url)
 

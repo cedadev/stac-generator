@@ -50,7 +50,7 @@ class DotSeperatedStrExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         if hasattr(self, "terms"):
             output = ""

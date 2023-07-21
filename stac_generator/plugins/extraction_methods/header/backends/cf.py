@@ -33,19 +33,19 @@ class CfBackend:
             return False
 
     def attr_extraction(
-        self, file: str, attributes: list, backend_kwargs: dict
+        self, body: dict, attributes: list, backend_kwargs: dict
     ) -> dict:
         """
-        Takes a filepath and list of attributes and extracts the metadata.
+        Takes a dictionary and list of attributes and extracts the metadata.
 
-        :param file: file-like object
+        :param body: current extracted properties
         :param attributes: attributes to extract
         :param kwargs: kwargs to send to cf.read().
 
         :return: Dictionary of extracted attributes
         """
 
-        field_list = cf.read(file, **backend_kwargs)
+        field_list = cf.read(body["uri"], **backend_kwargs)
 
         properties = {}
         for field in field_list:
@@ -63,4 +63,4 @@ class CfBackend:
             elif attr in properties:
                 extracted_metadata[attr] = properties[attr]
 
-        return extracted_metadata
+        return body | extracted_metadata

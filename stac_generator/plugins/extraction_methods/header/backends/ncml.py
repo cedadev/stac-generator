@@ -34,7 +34,7 @@ class NcMLBackend:
             return False
 
     def attr_extraction(
-        self, file: str, attributes: list, backend_kwargs: dict
+        self, body: dict, attributes: list, backend_kwargs: dict
     ) -> dict:
         """
         Takes a filepath and list of attributes and extracts the metadata.
@@ -60,7 +60,7 @@ class NcMLBackend:
             if value:
                 extracted_metadata[attr] = value[0]
 
-        return extracted_metadata
+        return body | extracted_metadata
 
 
 def get_ncml(filepath: str) -> bytes:

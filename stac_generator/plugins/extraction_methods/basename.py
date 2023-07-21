@@ -30,8 +30,8 @@ class BasenameExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
-        body["basename"] = os.path.basename(uri)
+        body["basename"] = os.path.basename(body["uri"])
 
         return body

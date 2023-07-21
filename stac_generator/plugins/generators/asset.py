@@ -32,7 +32,7 @@ class AssetGenerator(BaseGenerator):
     TYPE = GeneratorType.ASSET
 
     def run_id_extraction_methods(
-        self, uri: str, body: dict, description: CollectionDescription, **kwargs: dict
+        self, body: dict, description: CollectionDescription, **kwargs: dict
     ) -> dict:
         """
         Extract the raw facets from the listed extraction methods
@@ -64,38 +64,30 @@ class AssetGenerator(BaseGenerator):
         else:
             asset_id_method = self.DEFAULT_ID_EXTRACTION_METHODS["asset_id"]
 
-        output = self._run_extraction_method(uri, body, asset_id_method, **kwargs)
+        output = self._run_extraction_method(body, asset_id_method, **kwargs)
 
         ids["asset_id"] = output.pop("asset_id")
 
         return ids
 
-    def _process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
 
-        :param uri:
+        :param body:
 
         :return:
         """
 
         # Get dataset description file
-        description = self.collection_descriptions.get_description(uri, **kwargs)
-
-        LOGGER.info(
-            "Processing uri: %s with description paths: %s", uri, description.paths
+        description = self.collection_descriptions.get_description(
+            body["uri"], **kwargs
         )
 
-        body = {}
+        body = self.run_extraction_methods(body, description, **kwargs)
 
-        body = self.run_extraction_methods(uri, body, description, **kwargs)
+        ids = self.run_id_extraction_methods(body, description, **kwargs)
 
-        print("before_id: ", body)
-
-        ids = self.run_id_extraction_methods(uri, body, description, **kwargs)
-
-        print("after_id: ", body)
-
-        data = self.map(uri, ids, body, description, **kwargs)
+        data = self.map(ids, body, description, **kwargs)
 
         self.output(data, description=description, **kwargs)

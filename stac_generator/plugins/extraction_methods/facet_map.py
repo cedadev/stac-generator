@@ -37,7 +37,7 @@ class FacetMapExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         output = {}
         for k, v in body.items():
 

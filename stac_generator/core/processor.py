@@ -35,5 +35,5 @@ class BaseProcessor(ABC):
 
 class BaseExtractionMethod(BaseProcessor):
     @abstractmethod
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
         pass

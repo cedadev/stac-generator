@@ -45,7 +45,7 @@ class DefaultExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         body = body | self.defaults
 

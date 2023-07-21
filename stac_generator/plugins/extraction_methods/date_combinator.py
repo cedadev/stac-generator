@@ -54,12 +54,12 @@ class DateCombinatorExtract(BaseExtractionMethod):
 
     """
 
-    def run(self, uri: str, body: dict, **kwargs):
+    def run(self, body: dict, **kwargs):
         if body:
 
             if not body.get("year"):
                 LOGGER.error(
-                    f'Unable to use date combinator for file: {uri}. Requires at least "year"'
+                    f'Unable to use date combinator for file: {body["uri"]}. Requires at least "year"'
                 )
                 return body
 
@@ -89,11 +89,11 @@ class DateCombinatorExtract(BaseExtractionMethod):
 
             if format_errors:
                 LOGGER.warning(
-                    f"Error parsing date from file: {uri} with format: {self.format}."
+                    f"Error parsing date from file: {body["uri"]} with format: {self.format}."
                     "Trying dateutil..."
                 )
             if not isodate:
-                LOGGER.error(f"Error parsing date from file: {uri}")
+                LOGGER.error(f"Error parsing date from file: {body["uri"]}")
 
             key = getattr(self, "key", "datetime")
             body[key] = isodate or date

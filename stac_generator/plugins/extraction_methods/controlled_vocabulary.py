@@ -44,7 +44,7 @@ class ControlledVocabularyExtract(BaseExtractionMethod):
                 strict: False
     """
 
-    def run(self, uri: str, body: dict, **kwargs) -> dict:
+    def run(self, body: dict, **kwargs) -> dict:
 
         # Import data model
         scopes = self.model.split(".")
