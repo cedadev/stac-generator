@@ -5,6 +5,8 @@ STAC Baker
 """
 from __future__ import annotations
 
+from itertools import chain
+
 __author__ = "Rhys Evans"
 __date__ = "01 August 2023"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -157,11 +159,7 @@ class Recipes:
         if path in self.recipes:
             return self.load_recipe(self.recipes[path])
 
-        if path in self.paths_map:
-            key = self.paths_map[path]
-            return self.load_recipe(self.recipes[key])
-
-        for parent in Path(path).parents:
+        for parent in chain([path], Path(path).parents):
             if parent in self.paths_map:
                 key = self.paths_map[parent]
                 return self.load_recipe(self.recipes[key])

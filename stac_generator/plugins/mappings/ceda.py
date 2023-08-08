@@ -7,7 +7,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from datetime import datetime
-from pathlib import Path
 
 from stac_generator.core.baker import Recipe
 
