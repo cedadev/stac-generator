@@ -18,7 +18,7 @@ import logging
 
 import requests
 
-from stac_generator.core.processor import BasExtractionMethod
+from stac_generator.core.extraction_method import BasExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +55,6 @@ class CEDAVocabularyExtract(BasExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         properties = body
 
         # if there is already an unspecified_vocab it is not the first vocab

@@ -156,14 +156,12 @@ def dict_merge(*args, add_keys=True) -> dict:
     merge_dicts = args[1:]
 
     for merge_dct in merge_dicts:
-
         if add_keys is False:
             merge_dct = {
                 key: merge_dct[key] for key in set(rtn_dct).intersection(set(merge_dct))
             }
 
         for k, v in merge_dct.items():
-
             # This is a new key. Add as is.
             if not rtn_dct.get(k):
                 rtn_dct[k] = v
@@ -171,19 +169,16 @@ def dict_merge(*args, add_keys=True) -> dict:
             # This is an existing key with mismatched types
             elif k in rtn_dct and not isinstance(v, type(rtn_dct[k])):
                 if isinstance(v, list) and isinstance(v[0], type(rtn_dct[k])):
-
                     if rtn_dct[k] not in v:
                         v.append(rtn_dct[k])
 
                 elif isinstance(rtn_dct[k], list) and isinstance(
                     rtn_dct[k][0], type(v)
                 ):
-
                     if v not in rtn_dct[k]:
                         rtn_dct[k].append(v)
 
                 else:
-
                     raise TypeError(
                         f"Overlapping keys exist with different types: original: {type(rtn_dct[k])}, new value: {type(v)} for key: {k}"
                     )
@@ -203,34 +198,6 @@ def dict_merge(*args, add_keys=True) -> dict:
                 rtn_dct[k] = v
 
     return rtn_dct
-
-
-def dot2dict(key: str, val: Any) -> Dict[str, Any]:
-    """
-    Convert a dot separated string into
-    a dictionary construct. Can work with
-    single layer or multi-layer strings.
-
-    Recursively creates from bottom up.
-
-    :param key: Key value. Can be single layer. e.g. ``properties`` or
-                multi-level e.g. ``properties.start_time``
-    :param val: The value associated with the key
-
-    :return: dict
-    """
-    if not key:
-        return val
-
-    # Split on .
-    parts = key.split(".")
-    tail = parts.pop()
-
-    # Create the new key
-    key = ".".join(parts)
-
-    val = {tail: val}
-    return dot2dict(key, val)
 
 
 def nested_get(key_list: List, input_dict: Dict) -> Optional[Any]:

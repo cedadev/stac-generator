@@ -8,7 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +43,6 @@ class FacetPrefixExtract(BaseExtractionMethod):
     def run(self, body: dict, **kwargs) -> dict:
         output = {}
         if body:
-
             for k, v in body.items():
                 if k in self.terms:
                     output[f"{self.prefix}:{k}"] = v

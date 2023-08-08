@@ -16,7 +16,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 import re
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -67,7 +67,6 @@ class CategoriesExtract(BaseExtractionMethod):
         return label
 
     def run(self, body: dict, **kwargs) -> dict:
-
         result = set()
 
         for category in self.categories:

@@ -16,7 +16,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import hashlib
 import logging
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +51,6 @@ class HashExtract(BaseExtractionMethod):
         return hashlib.md5(input_str.encode("utf-8")).hexdigest()
 
     def run(self, body: dict, **kwargs) -> dict:
-
         body[self.output_key] = self.hash(body[self.input_key])
 
         return body

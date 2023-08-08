@@ -59,6 +59,6 @@ class TextFileOutput(BaseOutput):
         with open(filepath, "a", encoding="utf-8") as file:
             message = {
                 "uri": "ITEM_ID_GOES_HERE",
-                "description_path": "DESCRIPTION_PATH_FOR_ITEM_GOES_HERE",
+                "recipe_path": "DESCRIPTION_PATH_FOR_ITEM_GOES_HERE",
             }
             file.write(f"{json.dumps(message)}\n")

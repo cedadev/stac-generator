@@ -1,6 +1,7 @@
 .idea
 *.egg-info
 *venv
+.vscode
 conf
 conf.yml
 __pycache__

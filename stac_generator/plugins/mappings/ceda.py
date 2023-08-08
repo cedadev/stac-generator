@@ -7,8 +7,9 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from datetime import datetime
+from pathlib import Path
 
-from stac_generator.core.collection_describer import CollectionDescription
+from stac_generator.core.baker import Recipe
 
 # Package imports
 from stac_generator.core.mapping import BaseMapping
@@ -22,7 +23,7 @@ class CEDAMapping(BaseMapping):
     Mapping Name: ``ceda_mapping``
 
     Description:
-        Takes ids, body, and description and returns object in CEDA mapping.
+        Takes ids, body, and recipe and returns object in CEDA mapping.
 
     Configuration Options:
         - ``url_template``: ``REQUIRED`` URL string template to build url.
@@ -40,26 +41,17 @@ class CEDAMapping(BaseMapping):
 
     def run(
         self,
-        ids: dict,
         body: dict,
-        description: CollectionDescription,
+        recipe: Recipe,
         **kwargs,
     ) -> dict:
-
-        # Get the description path, used for item generation
-        relevant_paths = [
-            path for path in description.paths if body["uri"].startswith(path)
-        ]
-
-        description_path = max(relevant_paths, key=lambda x: x.count("/"))
-
-        id_key = f"{kwargs['TYPE'].value}_id"
-
         output = {
-            id_key: ids[id_key],
-            "description_path": description_path,
-            "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-            "status": "new",
+            f"{kwargs['TYPE'].value}_id": body.pop(f"{kwargs['TYPE'].value}_id"),
+            "stac": {
+                "member_of_recipes": body.pop("member_of_recipes"),
+                "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                "status": "new",
+            },
         }
 
         extent = {}

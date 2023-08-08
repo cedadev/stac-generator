@@ -13,13 +13,14 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
+from collections import defaultdict
 
 from stac_generator.core.bulk_output import BaseBulkOutput
 from stac_generator.types.generators import GeneratorType
 
-from .collection_describer import CollectionDescription, CollectionDescriptions
+from .baker import Recipe, Recipes
+from .extraction_method import BaseExtractionMethod
 from .handler_picker import HandlerPicker
-from .processor import BaseProcessor
 from .utils import load_plugins
 
 
@@ -32,31 +33,18 @@ class BaseGenerator(ABC):
         TYPE:
             Defines the stac levels the extraction is occuring at.
 
-        DEFAULT_ID_EXTRACTION_METHODS:
-            Defines the default id extraction methods for each stac level
-            which is used if a method is not specified in the description.
-
     """
 
     TYPE = GeneratorType.NONE
 
-    DEFAULT_ID_EXTRACTION_METHODS = {
-        "asset_id": {
-            "method": "hash",
-            "inputs": {"input_key": "uri", "output_key": "asset_id"},
-        },
-        "item_id": {"method": "hash", "inputs": {"terms": []}},
-        "collection_id": {"method": "default", "inputs": {"name": "undefined"}},
-    }
-
     def __init__(self, conf: dict):
-        self.conf = conf
+        recipes_root = conf.get("recipes_root", "recipes")
 
-        self.collection_descriptions = (
-            CollectionDescriptions(conf["collection_descriptions"]["root_directory"])
-            if "collection_descriptions" in conf
-            else None
-        )
+        self.recipes = Recipes(recipes_root)
+
+        self.default_id_methods = conf.pop("default_id_methods", {})
+
+        self.conf = conf
 
         self.extraction_methods = self.load_extraction_methods()
 
@@ -90,7 +78,7 @@ class BaseGenerator(ABC):
 
     def _load_extraction_method(
         self, extraction_method_conf: dict, **kwargs
-    ) -> BaseProcessor:
+    ) -> BaseExtractionMethod:
         """
         Load the given extraction method
 
@@ -99,13 +87,15 @@ class BaseGenerator(ABC):
         :return: extraction method
         """
 
-        extraction_method_name = extraction_method_conf["method"]
+        extraction_method_name = extraction_method_conf.method
 
         generator_conf = self.conf.get("extraction_methods", {})
 
         default_conf = generator_conf.get(extraction_method_name, {})
 
-        inputs = extraction_method_conf.get("inputs", {})
+        inputs = extraction_method_conf.inputs
+
+        print(inputs)
 
         inputs["default_conf"] = kwargs | default_conf
 
@@ -123,37 +113,58 @@ class BaseGenerator(ABC):
         return extraction_method.run(body)
 
     def run_extraction_methods(
-        self, body: dict, description: CollectionDescription, **kwargs: dict
+        self, body: dict, extraction_methods: list, **kwargs: dict
     ) -> dict:
         """
         Extract facets from the listed extraction methods
 
         :param body: current extracted meta data
-        :param description: CollectionDescription
+        :param recipe: Recipe
 
         :return: result from the processing
         """
 
-        generator_description = getattr(description, self.TYPE.value)
-
-        if generator_description:
-
-            for extraction_method in generator_description.extraction_methods:
-
-                body = self._run_extraction_method(body, extraction_method, **kwargs)
+        for extraction_method in extraction_methods:
+            body = self._run_extraction_method(body, extraction_method, **kwargs)
 
         return body
 
-    def map(
-        self, ids: dict, body: dict, description: CollectionDescription, **kwargs
+    def run_member_of_methods(
+        self, body: dict, member_of: list, **kwargs: dict
     ) -> dict:
+        """
+        Extract the raw facets from the listed extraction methods
+
+        :param body: Dict of current extracted data
+        :param recipe: Recipe
+        :return: updated body
+        """
+
+        update = defaultdict(list)
+
+        update["member_of_recipes"] = {}
+
+        for link in member_of:
+            body = self.run_extraction_methods(body, link.id, **kwargs)
+
+            link_id = body.pop(f"{link.type}_id")
+
+            update[f"{link.type}_id"].append(link_id)
+
+            update["member_of_recipes"][link_id] = link.key
+
+        body.update(update)
+
+        return body
+
+    def map(self, body: dict, recipe: Recipe, **kwargs) -> dict:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         """
         for mapping in self.mappings:
-            body = mapping.run(ids, body, description, **kwargs)
+            body = mapping.run(body, recipe, **kwargs)
 
         return body
 

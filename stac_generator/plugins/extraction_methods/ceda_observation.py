@@ -12,7 +12,7 @@ from string import Template
 import requests
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +40,6 @@ class CEDAObservationExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         url = Template(self.url_template).substitute(uri=body["uri"])
 
         r = requests.get(url)
@@ -51,7 +50,6 @@ class CEDAObservationExtract(BaseExtractionMethod):
             url = response.get("url")
 
             if record_type == "Dataset" and url:
-
                 body["uuid"] = url.split("/")[-1]
 
         return body

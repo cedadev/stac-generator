@@ -10,7 +10,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
-from stac_generator.core.collection_describer import CollectionDescription
+from stac_generator.core.baker import Recipe
 
 
 class BaseMapping(ABC):
@@ -35,7 +35,5 @@ class BaseMapping(ABC):
             setattr(self, k, v)
 
     @abstractmethod
-    def run(
-        self, ids: dict, body: dict, description: CollectionDescription, **kwargs
-    ) -> dict:
+    def run(self, body: dict, recipe: Recipe, **kwargs) -> dict:
         pass

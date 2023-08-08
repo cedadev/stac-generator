@@ -9,7 +9,7 @@ import logging
 import os
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +31,6 @@ class BasenameExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         body["basename"] = os.path.basename(body["uri"])
 
         return body

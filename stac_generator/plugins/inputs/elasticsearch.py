@@ -93,8 +93,8 @@ class ElasticsearchInput(BaseInput):
                                 }
                             },
                             {
-                                "description_path": {
-                                    "terms": {"field": "description_path.keyword"},
+                                "recipe_path": {
+                                    "terms": {"field": "recipe_path.keyword"},
                                 }
                             },
                         ],

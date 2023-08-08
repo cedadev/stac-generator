@@ -20,7 +20,7 @@ from xml.etree import ElementTree as ET
 import requests
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,7 +83,6 @@ class ISO19115Extract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         # Build the template
         url = Template(self.url_template)
 

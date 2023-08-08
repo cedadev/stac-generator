@@ -25,7 +25,7 @@ from boto3.session import Session as BotoSession
 from botocore import UNSIGNED
 from botocore.config import Config
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 from stac_generator.core.utils import Stats
 
 LOGGER = logging.getLogger(__name__)

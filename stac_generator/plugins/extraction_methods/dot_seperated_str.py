@@ -16,7 +16,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import hashlib
 import logging
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,12 +51,10 @@ class DotSeperatedStrExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         if hasattr(self, "terms"):
             output = ""
 
             for facet in self.terms:
-
                 if facet in body:
                     vals = body.get(facet)
 

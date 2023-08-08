@@ -8,7 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,9 +42,7 @@ class GeometryLineExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs):
-
         try:
-
             coordinates = []
 
             for coordinate_key in self.coordinate_keys:

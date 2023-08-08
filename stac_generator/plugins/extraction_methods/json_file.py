@@ -17,7 +17,7 @@ import json
 import logging
 from typing import Optional
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 from stac_generator.core.types import SpatialExtent, TemporalExtent
 
 LOGGER = logging.getLogger(__name__)
@@ -50,7 +50,6 @@ class JsonFileExtract(BaseExtractionMethod):
     """
 
     def get_facet_values(self, facet: str) -> list:
-
         facet_values = []
 
         with open(self.filepath, "r") as file:
@@ -103,7 +102,6 @@ class JsonFileExtract(BaseExtractionMethod):
         # temporal_extent = self.get_temporal_extent(item_list)
 
     def run(self, body: dict, **kwargs) -> dict:
-
         for facet in self.terms:
             values = self.get_facet_values(facet)
             if values:

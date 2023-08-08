@@ -13,16 +13,10 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 
 import logging
 
-# Python imports
-from collections import defaultdict
-
 # Third party imports
 from elasticsearch import Elasticsearch
 
-from stac_generator.core.processor import BaseExtractionMethod
-
-# Package imports
-
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -124,9 +118,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
         Function to extract the given facets from the aggregation
         """
         for facet in facets:
-
             if facet in self.aggregations.keys():
-
                 if "value_as_string" in self.aggregations[facet].keys():
                     value = self.aggregations[facet]["value_as_string"]
 
@@ -135,14 +127,13 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
                 self.metadata[facet] = value
 
-    def extract_default_facet(self, facets: list):
+    def extract_first_facet(self, facets: list):
         """
         Function to extract the given default facets from the first hit
         """
         properties = self.hits[0]["_source"]["properties"]
 
         for facet in facets:
-
             if facet in properties.keys():
                 self.metadata[facet] = properties[facet]
 
@@ -154,11 +145,8 @@ class ElasticsearchExtract(BaseExtractionMethod):
         items = self.aggregations
 
         while True:
-
             for facet in facets:
-
                 if facet in items.keys():
-
                     aggregation = items[facet]
 
                     self.metadata[facet].extend(
@@ -224,8 +212,8 @@ class ElasticsearchExtract(BaseExtractionMethod):
         """
         Function to extract the required metadata from the returned query result
         """
-        if hasattr(self, "default"):
-            self.extract_default_facet(self.default)
+        if hasattr(self, "first"):
+            self.extract_first_facet(self.first)
 
         if hasattr(self, "bbox"):
             self.extract_facet(self.bbox)
@@ -243,7 +231,6 @@ class ElasticsearchExtract(BaseExtractionMethod):
             self.extract_facet_list(self.list)
 
     def run(self, body: dict, **kwargs) -> dict:
-
         self.metadata = body
 
         self.construct_base_query(self.id_term, body["uri"])
@@ -254,7 +241,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
         # Run query
         result = self.es.search(
-            index=self.index, body=self.query, request_timeout=self.request_tiemout
+            index=self.index, body=self.query, timeout=self.request_tiemout
         )
 
         self.hits = result["hits"]["hits"]

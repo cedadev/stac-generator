@@ -21,7 +21,7 @@ from datetime import datetime
 
 import magic
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -88,7 +88,6 @@ class OsStatsExtract(BaseExtractionMethod):
             LOGGER.debug(e)
 
     def extract_checksum(self, path: str, checksum: str) -> None:
-
         # Check if the checksum is the right length for md5 (32 chars)
         if checksum and len(checksum) != 32:
             checksum = None
@@ -122,7 +121,6 @@ class OsStatsExtract(BaseExtractionMethod):
         self.info = body
 
         if os.path.exists(uri):
-
             stats = os.stat(uri)
 
             self.extract_filename(uri)

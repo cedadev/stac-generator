@@ -16,7 +16,7 @@ import logging
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ParseError
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 # Package imports
 
@@ -76,7 +76,6 @@ class XMLExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         # Extract the keys
         try:
             xml_file = ET.parse(body["uri"])

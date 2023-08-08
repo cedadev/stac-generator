@@ -8,7 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +51,6 @@ class StringJoinExtract(BaseExtractionMethod):
 
     def run(self, body: dict, **kwargs):
         try:
-
             if self.destructive:
                 string_elements = [str(body.pop(key)) for key in self.key_list]
             else:

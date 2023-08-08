@@ -16,7 +16,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 import re
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +53,6 @@ class RegexExtract(BaseExtractionMethod):
         self.regex = rf"{self.regex}"
 
     def run(self, body: dict, **kwargs) -> dict:
-
         m = re.match(self.regex, body["uri"])
 
         if m:

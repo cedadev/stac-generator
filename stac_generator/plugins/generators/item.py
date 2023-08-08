@@ -19,7 +19,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 
-from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.types.generators import GeneratorType
 
@@ -27,73 +26,34 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ItemGenerator(BaseGenerator):
+    """
+    Class defining the metadata extraction process for an item.
 
-    TYPES = GeneratorType.ITEM
+    An instance of the class can be used to process files.
+    """
 
-    def run_id_extraction_methods(
-        self, body: dict, description: CollectionDescription, **kwargs: dict
-    ) -> dict:
-        """
-        Extract the raw facets from the listed extraction methods
-
-        :param body: Dict of current extracted data
-        :param description: CollectionDescription
-        :return: dictionary containing ids
-        """
-
-        ids = {}
-        collection_description = description.collection
-
-        if collection_description and collection_description.id:
-            collection_id_description = collection_description.id
-
-        else:
-            collection_id_description = self.DEFAULT_ID_EXTRACTION_METHODS[
-                "collection_id"
-            ]
-
-        ids["collection_id"] = self._run_extraction_method(
-            collection_id_description, body, **kwargs
-        )
-
-        item_description = description.item
-
-        if item_description and item_description.id:
-            item_id_description = item_description.id
-
-        else:
-            item_id_description = self.DEFAULT_ID_EXTRACTION_METHODS["item_id"]
-
-        # Add collection_id to item_id terms
-        if "method" in item_id_description and item_id_description["method"] == "hash":
-            if "collection_id" not in item_id_description["inputs"]["terms"]:
-                item_id_description["inputs"]["terms"].append("collection_id")
-            body["properties"]["collection_id"] = ids["collection_id"]
-
-        ids["item_id"] = self._run_extraction_method(
-            item_id_description, body, **kwargs
-        )
-
-        return ids
+    TYPE = GeneratorType.ITEM
 
     def _process(self, body: dict, **kwargs) -> None:
         """
-        Method to outline the processing pipeline for an asset
+        Method to outline the processing pipeline for an item
 
         :param body:
 
         :return:
         """
+        recipe = self.recipes.get(kwargs.get("recipe_path", body["uri"]))
 
-        # Get dataset description file
-        description = self.collection_descriptions.get_description(
-            body["uri"], **kwargs
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.TYPE.value, body["uri"], recipe
         )
 
-        body = self.run_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
-        ids = self.run_id_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(body, recipe.id, **kwargs)
 
-        data = self.map(ids, body, description, **kwargs)
+        body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
 
-        self.output(data, description=description, **kwargs)
+        data = self.map(body, recipe, **kwargs)
+
+        self.output(data, **kwargs)

@@ -67,7 +67,6 @@ def load_generator(conf: dict) -> BaseGenerator:
         )
 
         for entry_point in entry_points:
-
             generator = entry_point.load()
 
             # Only load the first one
@@ -94,7 +93,6 @@ def load_generator(conf: dict) -> BaseGenerator:
     help="Path for profile output file.",
 )
 def main(conf, prof):
-
     if prof:
         if not prof.lower().endswith((".pstats")):
             prof += ".pstats"
@@ -113,36 +111,6 @@ def main(conf, prof):
     if prof:
         profiler.disable()
         profiler.dump_stats(prof)
-
-
-# def main():
-#     args = command_args()
-
-#     profiler = cProfile.Profile()
-#     profiler.enable()
-
-#     conf = load_config(
-#         args.conf
-#         # "/Users/rhys.r.evans/Documents/CEDA/search-futures/stac-generator-example/conf/asset-generator.yaml"
-#     )
-
-#     setup_logging(conf)
-
-#     generator = load_generator(conf)
-
-#     input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
-
-#     for input_plugin in input_plugins:
-#         input_plugin.start(generator)
-
-#     profiler.disable()
-#     # s = io.StringIO()
-#     profiler.dump_stats("test2.pstats")
-#     # stats = pstats.Stats(profiler, stream=s).sort_stats("cumulative")
-#     # stats.print_stats()  # .dump_stats("profile_results")
-
-#     # with open("test.profile", "w+") as f:
-#     #     f.write(s.getvalue())
 
 
 if __name__ == "__main__":

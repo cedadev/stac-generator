@@ -8,7 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Package imports
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 from stac_generator.core.utils import DATE_TEMPLATE, isoformat_date
 
 LOGGER = logging.getLogger(__name__)

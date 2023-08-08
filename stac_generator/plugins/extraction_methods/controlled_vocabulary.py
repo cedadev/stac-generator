@@ -14,7 +14,7 @@ import logging
 
 import pydantic
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ class ControlledVocabularyExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         # Import data model
         scopes = self.model.split(".")
         module = ".".join(scopes[:-1])

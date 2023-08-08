@@ -17,7 +17,7 @@ from stac_generator.core.decorators import (
     BaseExtractionMethod_postprocessors,
     accepts_postprocessors,
 )
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,7 +62,6 @@ class HeaderExtract(BaseExtractionMethod):
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-
         try:
             backend = self.guess_backend(body["uri"])
         except NoSuitableBackendException:
@@ -90,7 +89,6 @@ class HeaderExtract(BaseExtractionMethod):
         return backend_entrypoints
 
     def guess_backend(self, uri: str) -> dict:
-
         if hasattr(self, "backend"):
             entry_points = pkg.iter_entry_points(
                 "stac_generator.extraction_methods.header.backends",
@@ -109,7 +107,6 @@ class HeaderExtract(BaseExtractionMethod):
 
         backends = self.list_backend()
         for _, backend in backends.items():
-
             if backend().guess_can_open(uri):
                 return backend
 

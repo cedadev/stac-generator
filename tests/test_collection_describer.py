@@ -12,7 +12,7 @@ import os
 
 import pytest
 
-from stac_generator.core.collection_describer import CollectionDescriptions
+from stac_generator.core.baker import Recipes
 
 ROOT_DESCRIPTIONS = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "test_descriptions"

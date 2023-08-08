@@ -20,7 +20,7 @@ from functools import lru_cache
 
 import requests
 
-from stac_generator.core.processor import BaseExtractionMethod
+from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -167,7 +167,6 @@ class ESGFSolrExtract(BaseExtractionMethod):
             pass
 
     def run(self, body: dict, **kwargs) -> dict:
-
         # Transform the path back to ID form
         uri = body["uri"].replace("/", ".")
 
