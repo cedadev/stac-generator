@@ -110,14 +110,12 @@ class Stats:
         )
 
 
-def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
+def load_plugins(plugin_confs: list, entry_point: str) -> List:
     """
     Load plugins from the entry points
 
-    :param conf: Configuration dict
+    :param plugin_confs: List of plugin configurations
     :param entry_point: The name of the collection of entry points
-    :param conf_section: The name for the section in the config file
-    which applies to these plugins.
 
     Exceptions:
         NoPluginsError: Triggered if no plugins are successfully loaded
@@ -125,25 +123,30 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
     :return: List of loaded plugins
     """
 
+    if not isinstance(plugin_confs, list):
+        plugin_confs = [plugin_confs]
+
     loaded_plugins = []
 
     plugins = HandlerPicker(entry_point)
 
-    for plugin_conf in conf[conf_section]:
+    for plugin_conf in plugin_confs:
         try:
             loaded_plugin = plugins.get(**plugin_conf)
             loaded_plugins.append(loaded_plugin)
         except Exception:
-            LOGGER.error(f'Failed to load plugin: {plugin_conf["name"]}', exc_info=True)
+            LOGGER.error(
+                "Failed to load plugin: %s", plugin_conf["name"], exc_info=True
+            )
 
     if not loaded_plugins:
-        raise NoPluginsError(f"No plugins were successfully loaded from {conf_section}")
+        raise NoPluginsError(f"No plugins were successfully loaded from {entry_point}")
 
     return loaded_plugins
 
 
 def load_yaml(path):
-    with open(path) as reader:
+    with open(path, "r", encoding="utf-8") as reader:
         return yaml.safe_load(reader)
 
 

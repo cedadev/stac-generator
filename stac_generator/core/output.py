@@ -10,6 +10,9 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
+from stac_generator.core.baker import Recipe
+from stac_generator.core.utils import load_plugins
+
 
 class BaseOutput(ABC):
     """
@@ -22,6 +25,12 @@ class BaseOutput(ABC):
 
         :param kwargs:
         """
+
+        kwargs["mappings"] = (
+            load_plugins(kwargs["mappings"], "stac_generator.mappings")
+            if "mappings" in kwargs
+            else []
+        )
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -36,11 +45,14 @@ class BaseOutput(ABC):
         """
 
     # This allows for bulk outputs
-    def run(self, data: dict, **kwargs) -> None:
+    def run(self, body: dict, recipe: Recipe, **kwargs) -> None:
         """
         Run the output.
 
         :param data: data from processor to be output.
         :param kwargs:
         """
-        self.export(data, **kwargs)
+        for mapping in self.mappings:
+            body = mapping(body, recipe)
+
+        self.export(body, **kwargs)

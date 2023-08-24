@@ -103,7 +103,7 @@ def main(conf, prof):
 
     generator = load_generator(conf)
 
-    input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
+    input_plugins = load_plugins(conf["inputs"], "stac_generator.inputs")
 
     for input_plugin in input_plugins:
         input_plugin.start(generator)

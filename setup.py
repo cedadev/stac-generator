@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-with open("README.md") as readme_file:
+with open("README.md", "r", encoding="utf-8") as readme_file:
     _long_description = readme_file.read()
 
 setup(

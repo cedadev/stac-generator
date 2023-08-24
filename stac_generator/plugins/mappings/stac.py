@@ -16,19 +16,19 @@ from stac_generator.core.mapping import BaseMapping
 LOGGER = logging.getLogger(__name__)
 
 
-class CEDAMapping(BaseMapping):
+class STACMapping(BaseMapping):
     """
 
-    Mapping Name: ``ceda_mapping``
+    Mapping Name: ``stac_mapping``
 
     Description:
-        Takes body, and recipe and returns object in CEDA mapping.
+        Takes body, and recipe and returns object in STAC mapping.
 
     Example Configuration:
 
         .. code-block:: yaml
 
-            - method: ceda_mapping
+            - method: stac_observation
 
     """
 
@@ -39,12 +39,7 @@ class CEDAMapping(BaseMapping):
         **kwargs,
     ) -> dict:
         output = {
-            f"{kwargs['TYPE'].value}_id": body.pop(f"{kwargs['TYPE'].value}_id"),
-            "stac": {
-                "member_of_recipes": body.pop("member_of_recipes"),
-                "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-                "status": "new",
-            },
+            "id": body.pop(f"{kwargs['TYPE'].value}_id"),
         }
 
         extent = {}

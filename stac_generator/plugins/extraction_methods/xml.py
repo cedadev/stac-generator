@@ -13,6 +13,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
+import os
+from pathlib import Path
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ParseError
 
@@ -79,6 +81,7 @@ class XMLExtract(BaseExtractionMethod):
         # Extract the keys
         try:
             xml_file = ET.parse(body["uri"])
+
         except ParseError:
             return {}
 

@@ -44,13 +44,11 @@ class BaseGenerator(ABC):
 
         self.default_id_methods = conf.pop("default_id_methods", {})
 
+        self.outputs = load_plugins(conf.pop("outputs", []), "stac_generator.outputs")
+
         self.conf = conf
 
         self.extraction_methods = self.load_extraction_methods()
-
-        self.mappings = self.load_mappings()
-
-        self.outputs = self.load_outputs()
 
     def load_extraction_methods(self) -> HandlerPicker:
         """
@@ -59,22 +57,6 @@ class BaseGenerator(ABC):
         :return: HandlerPicker for extraction methods
         """
         return HandlerPicker("stac_generator.extraction_methods")
-
-    def load_outputs(self) -> list:
-        """
-        Load output plugins.
-
-        :return: list of output plugins
-        """
-        return load_plugins(self.conf, "stac_generator.outputs", "outputs")
-
-    def load_mappings(self) -> list:
-        """
-        Load output plugins.
-
-        :return: list of output plugins
-        """
-        return load_plugins(self.conf, "stac_generator.mappings", "mappings")
 
     def _load_extraction_method(
         self, extraction_method_conf: dict, **kwargs
@@ -94,8 +76,6 @@ class BaseGenerator(ABC):
         default_conf = generator_conf.get(extraction_method_name, {})
 
         inputs = extraction_method_conf.inputs
-
-        print(inputs)
 
         inputs["default_conf"] = kwargs | default_conf
 
@@ -157,25 +137,14 @@ class BaseGenerator(ABC):
 
         return body
 
-    def map(self, body: dict, recipe: Recipe, **kwargs) -> dict:
-        """
-        Run all configured outputs export methods.
-
-        :param data: data to be output
-        """
-        for mapping in self.mappings:
-            body = mapping.run(body, recipe, **kwargs)
-
-        return body
-
-    def output(self, data: dict, **kwargs) -> None:
+    def output(self, body: dict, recipe: Recipe, **kwargs) -> None:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         """
         for output in self.outputs:
-            output.run(data, **kwargs)
+            output.run(body, recipe, **kwargs)
 
     def finished(self) -> None:
         """

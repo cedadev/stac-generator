@@ -22,7 +22,7 @@ class BaseInput(ABC):
     def __init__(self, **kwargs):
         self.filters = None
         if kwargs.get("filters"):
-            self.filters = load_plugins(kwargs, "stac_generator.filters", "filters")
+            self.filters = load_plugins(kwargs["filters"], "stac_generator.filters")
 
     def should_process(self, uri) -> bool:
         """

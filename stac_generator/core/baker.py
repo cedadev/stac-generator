@@ -117,7 +117,7 @@ class Recipes:
         if file in self.location_map:
             return self.recipes[self.location_map[file]]
 
-        with open(file, encoding="utf-8") as reader:
+        with open(file, "r", encoding="utf-8") as reader:
             data = yaml.safe_load(reader)
 
         links = []
@@ -138,12 +138,13 @@ class Recipes:
         return recipe
 
     @lru_cache(100)
-    def load_recipe(self, recipe: Recipe) -> Recipe:
+    def load_recipe(self, key: str) -> Recipe:
         """
         Load the links from recipes member for ID generation.
 
         :param recipe: Recipe for links to be loaded for
         """
+        recipe = self.recipes[key]
 
         recipe.member_of = [self.recipes[link] for link in recipe.links]
 
@@ -157,11 +158,11 @@ class Recipes:
         """
 
         if path in self.recipes:
-            return self.load_recipe(self.recipes[path])
+            return self.load_recipe(path)
 
         for parent in chain([path], Path(path).parents):
             if parent in self.paths_map:
                 key = self.paths_map[parent]
-                return self.load_recipe(self.recipes[key])
+                return self.load_recipe(key)
 
         raise ValueError(f"No Recipe found for path: {path}")

@@ -240,9 +240,12 @@ class ElasticsearchExtract(BaseExtractionMethod):
         LOGGER.info("Elasticsearch query: %s", self.query)
 
         # Run query
+        print(self.query)
         result = self.es.search(
-            index=self.index, body=self.query, timeout=self.request_tiemout
+            index=self.index, body=self.query, timeout=f"{self.request_tiemout}s"
         )
+
+        print(result)
 
         self.hits = result["hits"]["hits"]
 

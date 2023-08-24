@@ -48,6 +48,4 @@ class AssetGenerator(BaseGenerator):
 
         body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
 
-        data = self.map(body, recipe, **kwargs)
-
-        self.output(data, **kwargs)
+        self.output(body, recipe, **kwargs)
