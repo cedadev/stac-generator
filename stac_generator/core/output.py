@@ -52,7 +52,9 @@ class BaseOutput(ABC):
         :param data: data from processor to be output.
         :param kwargs:
         """
-        for mapping in self.mappings:
-            body = mapping(body, recipe)
+        output_body = body.copy()
 
-        self.export(body, **kwargs)
+        for mapping in self.mappings:
+            output_body = mapping.run(output_body, recipe, **kwargs)
+
+        self.export(output_body, **kwargs)

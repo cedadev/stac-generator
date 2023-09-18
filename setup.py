@@ -58,6 +58,7 @@ setup(
         ],
         "stac_generator.extraction_methods": [
             "regex = stac_generator.plugins.extraction_methods.regex:RegexExtract",
+            "regex_assets = stac_generator.plugins.extraction_methods.regex_assets:RegexAssetsExtract",
             "default = stac_generator.plugins.extraction_methods.default:DefaultExtract",
             "categories = stac_generator.plugins.extraction_methods.categories:CategoriesExtract",
             "header = stac_generator.plugins.extraction_methods.header.header:HeaderExtract",
@@ -82,8 +83,11 @@ setup(
             "geometry_point = stac_generator.plugins.extraction_methods.geometry_point:GeometryPointExtract",
             "geometry_polygon = stac_generator.plugins.extraction_methods.geometry_polygon:GeometryPolygonExtract",
             "string_join = stac_generator.plugins.extraction_methods.string_join:StringJoinExtract",
+            "string_template = stac_generator.plugins.extraction_methods.string_template:StringTemplateExtract",
             "date_combinator = stac_generator.plugins.extraction_methods.date_combinator:DateCombinatorExtract",
             "facet_prefix = stac_generator.plugins.extraction_methods.facet_prefix:FacetPrefixExtract",
+            "remove = stac_generator.plugins.extraction_methods.remove:RemoveExtract",
+            "general_function = stac_generator.plugins.extraction_methods.general_function:GeneralFunctionExtract",
         ],
         "stac_generator.extraction_methods.header.backends": [
             "ncml = stac_generator.plugins.extraction_methods.header.backends.ncml:NcMLBackend",
@@ -91,7 +95,9 @@ setup(
             "cf = stac_generator.plugins.extraction_methods.header.backends.cf:CfBackend",
         ],
         "stac_generator.mappings": [
-            "ceda = stac_generator.plugins.mappings.ceda:CEDAMapping"
+            "ceda = stac_generator.plugins.mappings.ceda:CEDAMapping",
+            "stac = stac_generator.plugins.mappings.stac:STACMapping",
+            "jinja = stac_generator.plugins.mappings.jinja2:Jinja2Mapping",
         ],
         "stac_generator.generators": [
             "asset = stac_generator.plugins.generators.asset:AssetGenerator",

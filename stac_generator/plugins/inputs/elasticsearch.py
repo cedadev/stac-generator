@@ -109,15 +109,11 @@ class ElasticsearchInput(BaseInput):
             query["query"] = self.search_kwargs
 
         while True:
-
             result = es_client.search(index=self.index, body=query)
 
             aggregation = result["aggregations"]["bucket"]
 
-            print(aggregation)
-
             for bucket in aggregation["buckets"]:
-                print(bucket)
                 uri = bucket["key"]["uri"]
                 if self.should_process(uri):
                     generator.process(**bucket["key"])

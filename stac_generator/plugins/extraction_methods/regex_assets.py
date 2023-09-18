@@ -12,16 +12,22 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
-# Python imports
+import glob
 import logging
-import re
+import os
+
+# Python imports
+from datetime import datetime
+from pathlib import Path
+
+import magic
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RegexExtract(BaseExtractionMethod):
+class RegexAssetsExtract(BaseExtractionMethod):
     """
 
     .. list-table::
@@ -48,21 +54,25 @@ class RegexExtract(BaseExtractionMethod):
     # noqa: W605
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.regex = rf"{self.regex}"
-
-        if not hasattr(self, "input_term"):
-            self.input_term = "uri"
-
     def run(self, body: dict, **kwargs) -> dict:
-        result = re.search(self.regex, body[self.input_term])
+        assets = body.get("assets", [])
 
-        if result:
-            LOGGER.info("Found matches for regex extract")
-            body = body | result.groupdict()
+        for path in glob.iglob(self.regex):
+            stats = os.stat(path)
+            assets.append(
+                {
+                    Path(path).stem: {
+                        "href": path,
+                        "role": self.role,
+                        "type": magic.from_file(path, mime=True),
+                        "last_modified": datetime.fromtimestamp(
+                            stats.st_mtime
+                        ).isoformat(),
+                        "size": getattr(stats, "st_size"),
+                    }
+                }
+            )
 
-        else:
-            LOGGER.debug("No matches found for regex extract")
+        body["assets"] = assets
 
         return body

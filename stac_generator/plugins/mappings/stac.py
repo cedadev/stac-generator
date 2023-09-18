@@ -39,7 +39,13 @@ class STACMapping(BaseMapping):
         **kwargs,
     ) -> dict:
         output = {
+            "type": "Feature",
+            "stac_version": self.stac_version,
+            "stac_extensions": self.stac_extensions,
             "id": body.pop(f"{kwargs['TYPE'].value}_id"),
+            "geometry": None,
+            "datetime": None,
+            "assets": {},
         }
 
         extent = {}
@@ -57,6 +63,9 @@ class STACMapping(BaseMapping):
 
         if "geometry" in body:
             extent["geometry"] = body.pop("geometry")
+
+        if "assets" in body:
+            extent["assets"] = body.pop("assets")
 
         if extent:
             output["extent"] = extent

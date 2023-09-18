@@ -57,8 +57,11 @@ class TextFileOutput(BaseOutput):
             filepath = self.filepath
 
         with open(filepath, "a", encoding="utf-8") as file:
-            message = {
-                "uri": "ITEM_ID_GOES_HERE",
-                "recipe_path": "DESCRIPTION_PATH_FOR_ITEM_GOES_HERE",
-            }
-            file.write(f"{json.dumps(message)}\n")
+            if "member_of_recipes" in data:
+                for uri, recipe_path in data["member_of_recipes"].items():
+                    message = {
+                        "uri": uri,
+                        "recipe_path": recipe_path,
+                    }
+
+                    file.write(f"{json.dumps(message)}\n")

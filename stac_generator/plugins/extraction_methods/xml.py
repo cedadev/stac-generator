@@ -15,7 +15,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 import os
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree
 from xml.etree.ElementTree import ParseError
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
@@ -73,14 +73,21 @@ class XMLExtract(BaseExtractionMethod):
                 extraction_keys:
                   - name: start_datetime
                     key: './/gml:beginPosition'
+                    attribute: start
 
     # noqa: W605
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        if not hasattr(self, "input_term"):
+            self.input_term = "uri"
+
     def run(self, body: dict, **kwargs) -> dict:
         # Extract the keys
         try:
-            xml_file = ET.parse(body["uri"])
+            xml_file = ElementTree.parse(body[self.input_term])
 
         except ParseError:
             return {}

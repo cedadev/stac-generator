@@ -31,7 +31,7 @@ class BboxExtract(BaseExtractionMethod):
 
         - method: bbox
             inputs:
-            coordinate_keys:
+              coordinate_keys:
                 - west
                 - south
                 - east
