@@ -15,16 +15,21 @@ scale application.
     * - Option
       - Value Type
       - Description
-    * - ``filepath``
+    * - ``dirpath``
       - ``str``
-      - ``REQUIRED`` Path to output file(s), either directory or specific file to write.
+      - ``REQUIRED`` Path to output directory.
+    * - ``filename_term``
+      - ``str``
+      - ``REQUIRED`` Term to be used for the file name (typically the id).
+      
 
 Example Configuration:
     .. code-block:: yaml
 
         outputs:
             - method: json_out
-              filepath: location_to_destination_file
+              dirpath: location_to_destination_file
+              filename_term: item_id
 
 """
 __author__ = "Mahir Rahman"
@@ -34,7 +39,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import json
-import os
 
 from stac_generator.core.output import BaseOutput
 
@@ -46,25 +50,10 @@ class JsonFileOutput(BaseOutput):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.filepath = self.filepath.rstrip("/")
+        self.dirpath = self.dirpath.rstrip("/")
 
     def export(self, data: dict, **kwargs) -> None:
+        filepath = f"{self.dirpath}/{data[self.filename_term]}.json"
 
-        if os.path.isdir(self.filepath):
-            filepath = f"{self.filepath}/json_out.json"
-        else:
-            filepath = self.filepath
-
-        mode = "r+" if os.path.exists(filepath) else "w+"
-
-        with open(filepath, mode) as file:
-            try:
-                file_data = json.load(file)
-                file_data.append(data)
-
-            except json.JSONDecodeError:
-                file_data = [data]
-
-            file.seek(0)
-
-            json.dump(file_data, file, indent=4)
+        with open(filepath, "w+", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
