@@ -7,8 +7,10 @@ boto3==1.18.44
 botocore==1.21.44
 cachetools==4.2.4
 certifi==2022.12.7
-chardet==4.0.0
 ceda-directory-tree==1.0.2
+cf_xarray==0.8.4
+chardet==4.0.0
+click==8.1.3
 docutils==0.16
 elasticsearch==7.13.1
 fsspec==2021.10.0
@@ -33,5 +35,6 @@ siphon==0.9
 six==1.16.0
 snowballstemmer==2.1.0
 tqdm==4.62.3
-typing-extensions==4.0.0
+typing-extensions==4.7.1
 urllib3==1.26.5
+xarray==2023.9.0
