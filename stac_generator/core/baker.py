@@ -27,7 +27,7 @@ from pydantic import BaseModel, field_serializer
 LOGGER = logging.getLogger(__name__)
 
 
-class ExtractionMethod(BaseModel):
+class ExtractionMethodConf(BaseModel):
     """STAC extraction method model."""
 
     method: str
@@ -43,8 +43,8 @@ class Recipe(BaseModel):
     _key: Optional[str] = None
     type: str
     paths: Optional[list[Path]] = []
-    id: Optional[list[ExtractionMethod]] = []
-    extraction_methods: Optional[list[ExtractionMethod]] = []
+    id: Optional[list[ExtractionMethodConf]] = []
+    extraction_methods: Optional[list[ExtractionMethodConf]] = []
     links: Optional[list[str]] = []
     _member_of: Optional[list[Recipe]] = []
 
@@ -150,19 +150,20 @@ class Recipes:
 
         return recipe
 
-    def get(self, path: str) -> Recipe:
+    def get(self, path: str, stac_type: str) -> Recipe:
         """
         Get the most relevant recipe for a given path.
 
         :param path: Path for which to retrieve the recipe
         """
-
-        if path in self.recipes:
+        if path in self.recipes and self.recipes[path].type == stac_type:
             return self.load_recipe(path)
 
         for parent in chain([path], Path(path).parents):
             if parent in self.paths_map:
                 key = self.paths_map[parent]
-                return self.load_recipe(key)
+
+                if self.recipes[key].type == stac_type:
+                    return self.load_recipe(key)
 
         raise ValueError(f"No Recipe found for path: {path}")
