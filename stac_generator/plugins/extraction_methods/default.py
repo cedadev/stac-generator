@@ -45,7 +45,20 @@ class DefaultExtract(BaseExtractionMethod):
 
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        if not hasattr(self, "exists_key"):
+            self.exists_key = "$"
+
     def run(self, body: dict, **kwargs) -> dict:
-        body = body | self.defaults
+        defaults = {}
+        for default_key, default_value in self.defaults.items():
+            if isinstance(default_value, str) and default_value[0] == self.exists_key:
+                default_value = body[default_value[1:]]
+
+            defaults[default_key] = default_value
+
+        body = body | defaults
 
         return body

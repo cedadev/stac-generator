@@ -16,20 +16,21 @@ LOGGER = logging.getLogger(__name__)
 class GeometryPolygonExtract(BaseExtractionMethod):
     """
 
-    Processor Name: ``polygon_geometry``
+    Processor Name: ``geometry_polygon``
 
     Description:
         Accepts a dictionary of coordinate values and converts to `RFC 7946, <https://tools.ietf.org/html/rfc7946>`_
         formatted geometry.
 
     Configuration Options:
-        - ``coordinate_keys``: ``REQUIRED`` list of keys to convert to polygon geometry. Ordering is respected.
+        - ``coordinates_term``: term for coordinates to convert to polygon geometry.
+        - ``coordinate_keys``: list of keys to convert to polygon geometry. Ordering is respected.
 
     Example Configuration:
 
     .. code-block:: yaml
 
-        - method: polygon_geometry
+        - method: geometry_polygon
           inputs:
           coordinate_keys:
             -
@@ -47,21 +48,21 @@ class GeometryPolygonExtract(BaseExtractionMethod):
         try:
             coordinates = []
 
-            for coordinate_key in self.coordinate_keys:
-                coordinates.append(
-                    [
-                        float(body[coordinate_key[0]]),
-                        float(body[coordinate_key[1]]),
-                    ]
-                )
+            if hasattr(self, "coordinates_term"):
+                coordinates = body[self.coordinates_term]
 
-            # Add the first point to the end to complete the shape
-            coordinates.append(
-                [
-                    float(body[self.coordinate_keys[0][0]]),
-                    float(body[self.coordinate_keys[0][1]]),
-                ]
-            )
+            elif hasattr(self, "coordinate_keys"):
+                for coordinate_key in self.coordinate_keys:
+                    coordinates.append(
+                        [
+                            float(body[coordinate_key[0]]),
+                            float(body[coordinate_key[1]]),
+                        ]
+                    )
+
+            if coordinates[0] != coordinates[-1]:
+                # Add the first point to the end to complete the shape
+                coordinates.append(coordinates[0])
 
             body["geometry"] = {
                 "type": "Polygon",

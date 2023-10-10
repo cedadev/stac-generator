@@ -13,6 +13,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 # Python imports
+from collections import defaultdict
 import json
 import logging
 from typing import Optional
@@ -43,32 +44,27 @@ class JsonFileExtract(BaseExtractionMethod):
 
             - method: json
               inputs:
-                filepath: /path/to/file.json
+                dirpath: /path/to/file.json
                 terms:
                   - mip_era
 
     """
 
-    def get_facet_values(self, facet: str) -> list:
-        facet_values = []
+    def get_facet_values(self) -> list:
+        output = defaultdict(list)
 
-        with open(self.filepath, "r") as file:
-            file_data = json.load(file)
+        for filepath in os.listdir(self.dirpath):
 
-            for item in file_data:
-                if item["body"][f"{self.TYPE.value}_id"] == id:
-                    values = []
+            with open(filepath, "r") as file:
+                item = json.load(file)
 
-                    if facet in item["body"]["properties"]:
-                        values = item["body"]["properties"][facet]
+                item_properties = item["body"]["properties"]
 
-                    if isinstance(values, list):
-                        facet_values.extend(values)
+                for facet in self.terms:
+                    if facet in item_properties:
+                        output[facet].extend(item_properties[facet])
 
-                    else:
-                        facet_values.append(values)
-
-        return list(set(facet_values))
+        return output
 
     @staticmethod
     def get_spatial_extent(item_list: list) -> Optional[SpatialExtent]:
@@ -102,10 +98,10 @@ class JsonFileExtract(BaseExtractionMethod):
         # temporal_extent = self.get_temporal_extent(item_list)
 
     def run(self, body: dict, **kwargs) -> dict:
-        for facet in self.terms:
-            values = self.get_facet_values(facet)
-            if values:
-                body[facet] = values
+        output = self.get_facet_values()
+
+        if values:
+            body |= output
 
         # No need to include extents since the example scanner has none.
 

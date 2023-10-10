@@ -39,6 +39,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import json
+import os
 
 from stac_generator.core.output import BaseOutput
 
@@ -48,12 +49,9 @@ class JsonFileOutput(BaseOutput):
     Export data to a json file
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.dirpath = self.dirpath.rstrip("/")
-
     def export(self, data: dict, **kwargs) -> None:
-        filepath = f"{self.dirpath}/{data[self.filename_term]}.json"
+        filename = f"{data[self.filename_term].strip('/').replace('/', '.')}.json"
+        filepath = os.path.join(self.dirpath, filename)
 
         with open(filepath, "w+", encoding="utf-8") as file:
             json.dump(data, file, indent=4)

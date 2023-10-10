@@ -9,7 +9,7 @@ import logging
 
 # Package imports
 from stac_generator.core.extraction_method import BaseExtractionMethod
-from stac_generator.core.utils import isoformat_date
+from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,8 +43,9 @@ class ISODateExtract(BaseExtractionMethod):
             - method: isodate_processor
               inputs:
               date_keys:
-                - key: date
-              format: '%Y%m'
+                - date
+              formats:
+                - '%Y%m'
 
     """
 
@@ -55,27 +56,26 @@ class ISODateExtract(BaseExtractionMethod):
         :return: the source dict with the date converted to ISO8601 format.
         """
 
-        for key in self.date_keys:
-            if body.get(key):
-                date = body[key]
+        for date_key in self.date_keys:
+            date_str = body.get(date_key)
+            date_iso = None
 
-                date_format = getattr(self, "format", None)
+            if not date_str:
+                LOGGER.error(f"{date_key} not present in body for {body['uri']}")
 
-                date, format_errors = isoformat_date(date, date_format)
+            if hasattr(self, "formats"):
+            
+                for date_format in self.formats:
+                    try:
+                        date_iso = datetime.strptime(date_str, date_format).isoformat()
 
-                if format_errors:
-                    LOGGER.warning(
-                        f"Could not use format string {date_format} with date from: {body['uri']}"
-                    )
-
-                if not date:
-                    LOGGER.error(f"Could not extract date from {body['uri']}")
-                    body.pop(key)
-                else:
-                    body[key] = date
+                    except ValueError:
+                        pass
 
             else:
-                # Clean up empty strings and non-matches
-                body.pop(key, None)
+                date_iso = datetime.strptime(date_str).isoformat()
+
+            if date_iso:
+                body[date_key] = date_iso
 
         return body

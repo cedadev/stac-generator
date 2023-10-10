@@ -41,37 +41,43 @@ class RegexAssetsExtract(BaseExtractionMethod):
         extracted using the named capture groups.
 
     Configuration Options:
-        - ``regex``: The regular expression to match against the filepath
+        - ``glob``: The regular expression to match against the filepath
+        - ``glob_term``: The term to use for regular expression to match against the filepath
 
 
     Example configuration:
         .. code-block:: yaml
 
-            - method: regex
+            - method: glob_assets
               inputs:
-                regex: ^(?:[^_]*_){2}(?P<datetime>\d*)
+                glob: ^(?:[^_]*_){2}(?P<datetime>\d*)
 
     # noqa: W605
     """
 
     def run(self, body: dict, **kwargs) -> dict:
-        assets = body.get("assets", [])
+        assets = body.get("assets", {})
 
-        for path in glob.iglob(self.regex):
+        if not hasattr(self, "glob"):
+            self.glob = body[self.glob_term]
+
+        for path in glob.iglob(self.glob):
             stats = os.stat(path)
-            assets.append(
-                {
-                    Path(path).stem: {
-                        "href": path,
-                        "role": self.role,
-                        "type": magic.from_file(path, mime=True),
-                        "last_modified": datetime.fromtimestamp(
-                            stats.st_mtime
-                        ).isoformat(),
-                        "size": getattr(stats, "st_size"),
-                    }
-                }
-            )
+            asset = {
+                "href": path,
+                "role": self.role,
+                "type": magic.from_file(path, mime=True),
+                "last_modified": datetime.fromtimestamp(
+                    stats.st_mtime
+                ).isoformat(),
+                "size": getattr(stats, "st_size"),
+            }
+
+            if hasattr(self, "extraction_methods"):
+                for extraction_method in self.extraction_methods:
+                    asset = extraction_method.run(asset)
+
+            assets[Path(path).stem] = asset
 
         body["assets"] = assets
 

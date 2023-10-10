@@ -21,7 +21,7 @@ from stac_generator.core.extraction_method import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class ElasticsearchExtract(BaseExtractionMethod):
+class ElasticsearchAggregationExtract(BaseExtractionMethod):
     """
     Description:
         Using an ID. Generate a summary of information for higher level entities.
@@ -41,7 +41,7 @@ class ElasticsearchExtract(BaseExtractionMethod):
 
         .. code-block:: yaml
 
-                name: elasticsearch
+                name: elasticsearch_aggregation
                 inputs:
                     index: ceda-index
                     id_term: item_id
@@ -240,12 +240,9 @@ class ElasticsearchExtract(BaseExtractionMethod):
         LOGGER.info("Elasticsearch query: %s", self.query)
 
         # Run query
-        print(self.query)
         result = self.es.search(
             index=self.index, body=self.query, timeout=f"{self.request_tiemout}s"
         )
-
-        print(result)
 
         self.hits = result["hits"]["hits"]
 

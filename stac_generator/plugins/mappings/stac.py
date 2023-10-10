@@ -44,32 +44,37 @@ class STACMapping(BaseMapping):
             "stac_extensions": self.stac_extensions,
             "id": body.pop(f"{kwargs['TYPE'].value}_id"),
             "geometry": None,
-            "datetime": None,
             "assets": {},
+            "properties": {
+                "datetime": None,
+            },
         }
 
         extent = {}
         if "datetime" in body:
-            extent["datetime"] = body.pop("datetime")
+            output["properties"]["datetime"] = body.pop("datetime")
 
         if "start_datetime" in body:
-            extent["start_datetime"] = body.pop("start_datetime")
+            output["properties"]["start_datetime"] = body.pop("start_datetime")
 
         if "end_datetime" in body:
-            extent["end_datetime"] = body.pop("end_datetime")
+            output["properties"]["end_datetime"] = body.pop("end_datetime")
 
         if "bbox" in body:
-            extent["bbox"] = body.pop("bbox")
+            output["bbox"] = body.pop("bbox")
 
         if "geometry" in body:
-            extent["geometry"] = body.pop("geometry")
+            output["geometry"] = body.pop("geometry")
 
         if "assets" in body:
-            extent["assets"] = body.pop("assets")
+            output["assets"] = body.pop("assets")
 
-        if extent:
-            output["extent"] = extent
+        if "member_of_recipes" in body:
+            output["member_of_recipes"] = body.pop("member_of_recipes")
 
-        output["properties"] = body
+        if "collection_id" in body:
+            output["collection"] = body.pop("collection_id")[0]
+
+        output["properties"] |= body
 
         return output

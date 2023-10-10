@@ -32,7 +32,7 @@ class OsStatsExtract(BaseExtractionMethod):
     .. list-table::
 
         * - Processor Name
-          - ``posix_stats``
+          - ``os_stats``
 
     Description:
         Takes an input filepath and returns a dictionary of file level stats.
@@ -43,9 +43,15 @@ class OsStatsExtract(BaseExtractionMethod):
     Example configuration:
         .. code-block:: yaml
 
-            - method: posix_stats
+            - method: os_stats
 
     """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        if not hasattr(self, "input_term"):
+            self.input_term = "uri"
 
     def extract_stat(self, name: str, stats: os.stat_result, attribute: str) -> None:
         """
@@ -116,7 +122,7 @@ class OsStatsExtract(BaseExtractionMethod):
 
         """
 
-        uri = body["uri"]
+        uri = body[self.input_term]
 
         self.info = body
 

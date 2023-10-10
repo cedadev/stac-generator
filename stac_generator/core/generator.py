@@ -18,7 +18,7 @@ from collections import defaultdict
 from stac_generator.core.bulk_output import BaseBulkOutput
 from stac_generator.types.generators import GeneratorType
 
-from .baker import Recipe, Recipes
+from .baker import ExtractionMethodConf, Recipe, Recipes
 from .extraction_method import BaseExtractionMethod
 from .handler_picker import HandlerPicker
 from .utils import load_plugins
@@ -78,6 +78,18 @@ class BaseGenerator(ABC):
         inputs = extraction_method_conf.inputs
 
         inputs["default_conf"] = kwargs | default_conf
+
+        if "extraction_methods" in inputs:
+            extraction_methods = []
+
+            for extraction_method in inputs.get("extraction_methods", []):
+                if isinstance(extraction_method, dict):
+                    extraction_methods.append(self._load_extraction_method(ExtractionMethodConf(**extraction_method), **kwargs))
+
+                else:
+                    extraction_methods.append(extraction_method)
+
+            inputs["extraction_methods"] = extraction_methods
 
         return self.extraction_methods.get(extraction_method_name, **inputs)
 

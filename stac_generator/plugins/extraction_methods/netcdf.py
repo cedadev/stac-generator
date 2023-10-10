@@ -15,8 +15,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 import os
 from pathlib import Path
-from xml.etree import ElementTree
-from xml.etree.ElementTree import ParseError
+import xarray
+import cf_xarray
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
@@ -26,7 +26,7 @@ from stac_generator.core.extraction_method import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class XMLExtract(BaseExtractionMethod):
+class NetCDFfExtract(BaseExtractionMethod):
     """
     .. list-table::
 
@@ -84,26 +84,56 @@ class XMLExtract(BaseExtractionMethod):
         if not hasattr(self, "input_term"):
             self.input_term = "uri"
 
+        if not hasattr(self, "exists_key"):
+            self.exists_key = "$"
+
+        if not hasattr(self, "variable_id"):
+            self.variable_id = ""
+
+        if not hasattr(self, "variable_terms"):
+            self.variable_terms = []
+
+        if not hasattr(self, "global_terms"):
+            self.global_terms = []
+
+        if not hasattr(self, "cf_terms"):
+            self.cf_terms = []
+
     def run(self, body: dict, **kwargs) -> dict:
         # Extract the keys
-        try:
-            xml_file = ElementTree.parse(body[self.input_term])
+        dataset = xarray.open_dataset(body[self.input_term])
 
-        except ParseError:
-            return body
+        if self.variable_id:
+            if self.variable_id[0] == self.exists_key:
+                self.variable_id = body[self.variable_id[1:]]
 
-        for key in self.extraction_keys:
-            value = xml_file.find(key["key"], self.namespaces)
+            variable = dataset[self.variable_id]
 
-            if value is not None:
-                attribute = key.get("attribute")
+            if self.variable_terms:
+                variable_attributes = variable.attrs
 
-                if attribute:
-                    v = value.get(attribute, "")
+                for variable_term in self.variable_terms:
+                    name = variable_term.get("name")
+                    key = variable_term.get("key", name)
 
-                else:
-                    v = value.text
+                    body[name] = variable_attributes.get(key, None)
 
-                body[key["name"]] = v
+        if self.global_terms:
+            global_attributes = dataset.attrs
+
+            for global_term in self.global_terms:
+                name = global_term.get("name")
+                key = global_term.get("key", name)
+
+                body[name] = global_attributes.get(key, None)
+
+        if self.cf_terms:
+            cf_attributes = dataset.cf
+
+            for cf_term in self.cf_terms:
+                name = cf_term.get("name")
+                key = cf_term.get("key", name)
+
+                body[name] = cf_attributes[key]
 
         return body

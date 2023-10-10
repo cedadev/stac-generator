@@ -8,6 +8,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import importlib
 import logging
 import re
+import ast
+
 
 # Package imports
 from stac_generator.core.extraction_method import BaseExtractionMethod
@@ -15,18 +17,17 @@ from stac_generator.core.extraction_method import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class GeneralFunctionExtract(BaseExtractionMethod):
+class LambdaExtract(BaseExtractionMethod):
     """
 
-    Processor Name: ``string_join``
+    Processor Name: ``lambda``
 
     Description:
         Accepts a dictionary. String values are popped from the dictionary and
         are put back into the dictionary with the ``key`` specified.
 
     Configuration Options:
-        - ``function``: ``REQUIRED`` name of function.
-        - ``delimiter``: Optional text delimiter to put between module/function names ``Default`` "."
+        - ``function``: ``REQUIRED`` lambda function to be run.
         - ``output_key``: Optional name of the key you would like to output else
                           response will be merged.
         - ``exists_key``: Optional key to signify a previously extracted terms ``Default`` "$"
@@ -41,7 +42,7 @@ class GeneralFunctionExtract(BaseExtractionMethod):
     .. code-block:: yaml
 
         - method: general_function
-          funtion: import.path.to.the.fuction
+          function: 'lambda x: x * x'
           input_args:
             - hello
             - world
@@ -69,11 +70,7 @@ class GeneralFunctionExtract(BaseExtractionMethod):
     def run(self, body: dict, **kwargs):
         output_body = body.copy()
 
-        module_name, function_name = self.function.rsplit(self.delimiter, 1)
-
-        module = importlib.import_module(module_name)
-
-        function = getattr(module, function_name)
+        function = eval(self.function)
 
         function_args = []
         for input_arg in self.input_args:

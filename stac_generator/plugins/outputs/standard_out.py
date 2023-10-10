@@ -27,7 +27,7 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import json
+import pprint
 
 from stac_generator.core.output import BaseOutput
 
@@ -45,4 +45,5 @@ class StandardOutOutput(BaseOutput):
         :param data: Data from extraction process
         :param kwargs: Not used
         """
-        print(json.dumps(data, indent=4))
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)

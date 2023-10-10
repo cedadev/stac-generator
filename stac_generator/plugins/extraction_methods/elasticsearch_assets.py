@@ -15,6 +15,10 @@ import logging
 
 # Third party imports
 from elasticsearch import Elasticsearch
+from datetime import datetime
+from pathlib import Path
+
+import magic
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
@@ -52,6 +56,26 @@ class ElasticsearchAssetExtract(BaseExtractionMethod):
                       -
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if hasattr(self, "connection_kwargs"):
+            self.es = Elasticsearch(**self.connection_kwargs)
+
+        if not hasattr(self, "request_tiemout"):
+            self.request_tiemout = 15
+
+        if not hasattr(self, "fields"):
+            self.fields = []
+
+        self.field_keys = []
+
+        for index, field in enumerate(self.fields):
+            if "key" not in field:
+                field["key"] = field["name"]
+
+            self.field_keys.append(field["key"])
+            self.fields[index] = field
+
     def hit_to_asset(self, hit: dict, asset: dict):
         """Convert elasticsearch hit to asset"""
         for term_key, term_value in hit.items():
@@ -64,28 +88,44 @@ class ElasticsearchAssetExtract(BaseExtractionMethod):
         return asset
 
     def run(self, body: dict, **kwargs) -> dict:
+
+        if not hasattr(self, "regex"):
+            self.regex = body[self.regex_term]
+        
         query = {
             "query": {
-                "bool": {
-                    "must_not": [{"term": {"categories.keyword": {"value": "hidden"}}}],
-                    "must": [
-                        {"term": {f"{self.id_term}.keyword": {"value": body["uri"]}}}
-                    ],
-                }
+                "regexp": {
+                    f"{self.search_field}.keyword": {
+                        "value": self.regex,
+                    }
+                },
             },
-            "_source": self.fields + [f"properties.{field}" for field in self.fields],
+            "_source": [self.search_field] + self.field_keys,
         }
 
         # Run query
         result = self.es.search(
-            index=self.index, body=query, timeout=self.request_tiemout
+            index=self.index, body=query, timeout=f"{self.request_tiemout}s"
         )
 
-        assets = {}
-        for hit in result["hits"]["hits"]:
-            asset = hit_to_asset(hit, {})
+        assets = body.get("assets", {})
 
-            assets[hit["_id"]] = asset
+        for hit in result["hits"]["hits"]:
+            source = hit["_source"]
+            path = source["path"]
+            asset = {
+                "href": path,
+            }
+
+            for field in self.fields:
+                if field["key"] in source:
+                    asset[field["name"]] = source[field["key"]]
+
+            if hasattr(self, "extraction_methods"):
+                for extraction_method in self.extraction_methods:
+                    asset = extraction_method.run(asset)
+
+            assets[Path(path).stem] = asset
 
         body["assets"] = assets
 

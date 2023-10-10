@@ -17,6 +17,7 @@ import hashlib
 import logging
 
 # Python imports
+from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
@@ -45,7 +46,7 @@ class Recipe(BaseModel):
     paths: Optional[list[Path]] = []
     id: Optional[list[ExtractionMethodConf]] = []
     extraction_methods: Optional[list[ExtractionMethodConf]] = []
-    links: Optional[list[str]] = []
+    links: Optional[list[dict]] = []
     _member_of: Optional[list[Recipe]] = []
 
     def __init__(self, **kwargs):
@@ -97,8 +98,8 @@ class Recipes:
 
         :param root_path: Path to the root of the yaml files
         """
-        self.recipes = {}
-        self.paths_map = {}
+        self.recipes = {"asset": {}, "item": {}, "collection": {}}
+        self.paths_map = {"asset": {}, "item": {}, "collection": {}}
         self.location_map = {}
 
         for file_path in Path(root_path).rglob("*.y*ml"):
@@ -114,8 +115,9 @@ class Recipes:
 
         :param root_path: Path to root of yaml files
         """
-        if file in self.location_map:
-            return self.recipes[self.location_map[file]]
+        if file in self.location_map.keys():
+            location_map_file = self.location_map[file]
+            return self.recipes[location_map_file["type"]][location_map_file["key"]]
 
         with open(file, "r", encoding="utf-8") as reader:
             data = yaml.safe_load(reader)
@@ -123,30 +125,30 @@ class Recipes:
         links = []
         for path in data.pop("member_of", []):
             link_recipe = self._load_data(path)
-            links.append(link_recipe.key)
+            links.append({"key": link_recipe.key, "type": link_recipe.type})
 
         data["links"] = links
 
         recipe = Recipe(**data)
 
-        self.recipes[recipe.key] = recipe
-        self.location_map[file] = recipe.key
+        self.recipes[recipe.type][recipe.key] = recipe
+        self.location_map[file] = {"key": recipe.key, "type": recipe.type}
 
         for path in recipe.paths:
-            self.paths_map[Path(path)] = recipe.key
+            self.paths_map[recipe.type][Path(path)] = recipe.key
 
         return recipe
 
     @lru_cache(100)
-    def load_recipe(self, key: str) -> Recipe:
+    def load_recipe(self, key: str, stac_type: str) -> Recipe:
         """
         Load the links from recipes member for ID generation.
 
         :param recipe: Recipe for links to be loaded for
         """
-        recipe = self.recipes[key]
+        recipe = self.recipes[stac_type][key]
 
-        recipe.member_of = [self.recipes[link] for link in recipe.links]
+        recipe.member_of = [self.recipes[link["type"]][link["key"]] for link in recipe.links]
 
         return recipe
 
@@ -156,14 +158,13 @@ class Recipes:
 
         :param path: Path for which to retrieve the recipe
         """
-        if path in self.recipes and self.recipes[path].type == stac_type:
+        if path in self.recipes[stac_type]:
             return self.load_recipe(path)
 
         for parent in chain([path], Path(path).parents):
-            if parent in self.paths_map:
-                key = self.paths_map[parent]
+            if parent in self.paths_map[stac_type]:
+                key = self.paths_map[stac_type][parent]
 
-                if self.recipes[key].type == stac_type:
-                    return self.load_recipe(key)
+                return self.load_recipe(key, stac_type)
 
         raise ValueError(f"No Recipe found for path: {path}")
