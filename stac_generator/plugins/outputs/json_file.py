@@ -21,7 +21,6 @@ scale application.
     * - ``filename_term``
       - ``str``
       - ``REQUIRED`` Term to be used for the file name (typically the id).
-      
 
 Example Configuration:
     .. code-block:: yaml

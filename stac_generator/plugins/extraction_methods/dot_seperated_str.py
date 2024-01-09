@@ -13,7 +13,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 # Python imports
-import hashlib
 import logging
 
 from stac_generator.core.extraction_method import BaseExtractionMethod

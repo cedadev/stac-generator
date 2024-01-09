@@ -13,17 +13,13 @@ import logging
 import re
 
 # Python imports
-from datetime import datetime
 from pathlib import Path
 from string import Template
 
 # Typing imports
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
-
-# Third party imports
-from dateutil.parser import parse
 
 from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.handler_picker import HandlerPicker

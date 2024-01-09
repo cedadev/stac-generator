@@ -12,13 +12,10 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "rhys.r.evans@stfc.ac.uk"
 
 import logging
+from pathlib import Path
 
 # Third party imports
 from elasticsearch import Elasticsearch
-from datetime import datetime
-from pathlib import Path
-
-import magic
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
@@ -88,7 +85,6 @@ class ElasticsearchAssetExtract(BaseExtractionMethod):
         return asset
 
     def run(self, body: dict, **kwargs) -> dict:
-
         if not hasattr(self, "regex"):
             self.regex = body[self.regex_term]
 

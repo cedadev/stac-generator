@@ -11,11 +11,10 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
+import logging
+
 # Python imports
 from collections import defaultdict
-import logging
-import os
-from pathlib import Path
 from xml.etree import ElementTree
 from xml.etree.ElementTree import ParseError
 
@@ -103,7 +102,6 @@ class XMLExtract(BaseExtractionMethod):
             values = xml_file.findall(key["key"], self.namespaces)
 
             for value in values:
-
                 if value is not None:
                     attribute = key.get("attribute")
 

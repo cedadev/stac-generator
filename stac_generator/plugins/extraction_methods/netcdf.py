@@ -13,10 +13,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
 import logging
-import os
-from pathlib import Path
+
 import xarray
-import cf_xarray
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 

@@ -6,7 +6,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 import logging
-import re
 
 # Package imports
 from stac_generator.core.extraction_method import BaseExtractionMethod

@@ -92,7 +92,6 @@ class AssetAggregatorExtract(BaseExtractionMethod):
 
             self.sum_terms[index] = sum_term
 
-        len_sum_terms = index + 1
         for index, avg_term in enumerate(self.avg_terms):
             body[avg_term["name"]] = 0
 

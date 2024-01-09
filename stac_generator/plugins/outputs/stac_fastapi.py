@@ -40,8 +40,10 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import requests
+import logging
 from urllib.parse import urljoin
+
+import requests
 
 from stac_generator.core.output import BaseOutput
 
@@ -67,7 +69,6 @@ class STACFastAPIOutput(BaseOutput):
             collections = [collections]
 
         for collection in collections:
-
             collection = data["collection"] = collection.lower()
 
             response = requests.post(
@@ -89,7 +90,7 @@ class STACFastAPIOutput(BaseOutput):
                     }
 
                     response = requests.post(
-                        urljoin(self.api_url, f"collections"),
+                        urljoin(self.api_url, "collections"),
                         json=collection,
                         verify=self.verify,
                     )
@@ -102,17 +103,29 @@ class STACFastAPIOutput(BaseOutput):
 
             elif response.status_code != 200:
                 LOGGER.warning(
-                    f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}"
+                    "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
+                    response.status_code,
+                    response.text,
+                    data,
                 )
 
     def collection(self, data: dict) -> None:
-
-        response = requests.update(
-            urljoin(self.api_url, f"collections"), json=data, verify=self.verify
+        response = requests.post(
+            urljoin(self.api_url, "collections"),
+            json=data,
+            verify=self.verify,
+            timeout=180,
         )
 
-    def export(self, data: dict, **kwargs) -> None:
+        if response.status_code != 200:
+            LOGGER.warning(
+                "FastAPI Output failed to post to STAC Fastapi collections endpoint returned status code: %s and response text: %s request data: %s",
+                response.status_code,
+                response.text,
+                data,
+            )
 
+    def export(self, data: dict, **kwargs) -> None:
         if kwargs["TYPE"].value == "item":
             self.item(data)
 

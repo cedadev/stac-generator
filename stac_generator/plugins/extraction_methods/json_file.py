@@ -12,10 +12,12 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
-# Python imports
-from collections import defaultdict
 import json
 import logging
+import os
+
+# Python imports
+from collections import defaultdict
 from typing import Optional
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
@@ -54,7 +56,6 @@ class JsonFileExtract(BaseExtractionMethod):
         output = defaultdict(list)
 
         for filepath in os.listdir(self.dirpath):
-
             with open(filepath, "r") as file:
                 item = json.load(file)
 
@@ -100,7 +101,7 @@ class JsonFileExtract(BaseExtractionMethod):
     def run(self, body: dict, **kwargs) -> dict:
         output = self.get_facet_values()
 
-        if values:
+        if output:
             body |= output
 
         # No need to include extents since the example scanner has none.

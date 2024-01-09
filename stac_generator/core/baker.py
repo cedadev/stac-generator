@@ -17,7 +17,6 @@ import hashlib
 import logging
 
 # Python imports
-from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional

@@ -5,12 +5,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
-import importlib
 import logging
-import re
-import ast
-import traceback
-
 
 # Package imports
 from stac_generator.core.extraction_method import BaseExtractionMethod
@@ -107,7 +102,7 @@ class LambdaExtract(BaseExtractionMethod):
 
             return output_body
 
-        except Exception as e:
-            LOGGER.warning(f"Lamda function: {self.function} failed.")
+        except Exception:
+            LOGGER.warning("Lamda function: %s failed.", self.function)
 
             return output_body

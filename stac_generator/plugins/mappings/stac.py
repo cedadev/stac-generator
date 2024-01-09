@@ -6,7 +6,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from datetime import datetime
 
 from stac_generator.core.baker import Recipe
 
@@ -45,7 +44,6 @@ class STACMapping(BaseMapping):
             },
         }
 
-        extent = {}
         if "datetime" in body:
             output["properties"]["datetime"] = body.pop("datetime")
 
@@ -93,7 +91,6 @@ class STACMapping(BaseMapping):
             "assets": {},
         }
 
-        extent = {}
         if "interval" in body:
             output["extent"]["temporal"]["interval"] = body.pop("interval")
 

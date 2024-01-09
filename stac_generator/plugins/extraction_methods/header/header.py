@@ -13,10 +13,6 @@ from functools import lru_cache
 
 import pkg_resources as pkg
 
-from stac_generator.core.decorators import (
-    BaseExtractionMethod_postprocessors,
-    accepts_postprocessors,
-)
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)

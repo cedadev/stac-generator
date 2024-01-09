@@ -58,10 +58,8 @@ class CEDAVocabularyExtract(BasExtractionMethod):
         properties = body
 
         # if there is already an unspecified_vocab it is not the first vocab
-        first = True
         if "unspecified_vocab" in body:
             properties = body["unspecified_vocab"]
-            first = False
 
         req_data = {
             "namespace": self.namespace,
