@@ -6,10 +6,10 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 import logging
+from datetime import datetime
 
 # Package imports
 from stac_generator.core.extraction_method import BaseExtractionMethod
-from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 

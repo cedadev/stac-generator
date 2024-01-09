@@ -6,7 +6,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 
 import logging
-
 from datetime import datetime
 
 # Package imports

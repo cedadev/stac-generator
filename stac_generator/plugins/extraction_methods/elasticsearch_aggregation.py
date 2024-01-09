@@ -12,10 +12,10 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "rhys.r.evans@stfc.ac.uk"
 
 import logging
+from collections import defaultdict
 
 # Third party imports
 from elasticsearch import Elasticsearch
-from collections import defaultdict
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
