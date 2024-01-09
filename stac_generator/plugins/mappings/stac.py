@@ -32,17 +32,12 @@ class STACMapping(BaseMapping):
 
     """
 
-    def run(
-        self,
-        body: dict,
-        recipe: Recipe,
-        **kwargs,
-    ) -> dict:
+    def item(self, body:dict) -> dict:
         output = {
             "type": "Feature",
             "stac_version": self.stac_version,
             "stac_extensions": self.stac_extensions,
-            "id": body.pop(f"{kwargs['TYPE'].value}_id"),
+            "id": body.pop("item_id"),
             "geometry": None,
             "assets": {},
             "properties": {
@@ -78,3 +73,51 @@ class STACMapping(BaseMapping):
         output["properties"] |= body
 
         return output
+
+    def collection(self, body: dict) -> dict:
+        output = {
+            "type": "Collection",
+            "stac_version": self.stac_version,
+            "stac_extensions": self.stac_extensions,
+            "id": body.pop("collection_id"),
+            "description": body.pop("description"),
+            "extent": {
+                "temporal": {
+                    "interval": None,
+                },
+                "spatial": {
+                    "bbox": None,
+                }
+            },
+            "summaries": {},
+            "assets": {},
+        }
+
+        extent = {}
+        if "interval" in body:
+            output["extent"]["temporal"]["interval"] = body.pop("interval")
+
+        if "bbox" in body:
+            output["extent"]["spatial"]["bbox"] = body.pop("bbox")
+
+        if "member_of_recipes" in body:
+            output["member_of_recipes"] = body.pop("member_of_recipes")
+
+        output["summaries"] |= body
+
+        return output
+
+
+    def run(
+        self,
+        body: dict,
+        recipe: Recipe,
+        **kwargs,
+    ) -> dict:
+        if kwargs['TYPE'].value == "item":
+            return self.item(body)
+
+        elif kwargs['TYPE'].value == "collection":
+            return self.collection(body)
+
+        return body

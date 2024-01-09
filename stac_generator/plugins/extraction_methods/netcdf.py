@@ -134,6 +134,10 @@ class NetCDFfExtract(BaseExtractionMethod):
                 name = cf_term.get("name")
                 key = cf_term.get("key", name)
 
-                body[name] = cf_attributes[key]
+                try:
+                    body[name] = cf_attributes[key].strip()
+
+                except KeyError:
+                    body[name] = None
 
         return body

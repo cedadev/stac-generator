@@ -41,14 +41,19 @@ class BboxExtract(BaseExtractionMethod):
 
     def run(self, body: dict, **kwargs):
         try:
+            west = body[self.coordinate_keys[0]]
+            south = body[self.coordinate_keys[1]]
+            east = body[self.coordinate_keys[2]]
+            north = body[self.coordinate_keys[3]]
+
             coordinates = [
                 [
-                    float(body[self.coordinate_keys[0]]),
-                    float(body[self.coordinate_keys[1]]),
+                    float(west) if west is not None else west,
+                    float(south) if south is not None else south,
                 ],
                 [
-                    float(body[self.coordinate_keys[2]]),
-                    float(body[self.coordinate_keys[3]]),
+                    float(east) if east is not None else east,
+                    float(north) if north is not None else north,
                 ],
             ]
 
@@ -56,6 +61,9 @@ class BboxExtract(BaseExtractionMethod):
                 "type": "envelope",
                 "coordinates": coordinates,
             }
+
+        except TypeError:
+            LOGGER.warning("Unable to convert bbox.", exc_info=True)
 
         except KeyError:
             LOGGER.warning("Unable to convert bbox.", exc_info=True)

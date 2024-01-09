@@ -15,6 +15,7 @@ import logging
 
 # Third party imports
 from elasticsearch import Elasticsearch
+from collections import defaultdict
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
@@ -68,24 +69,44 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         if not hasattr(self, "request_tiemout"):
             self.request_tiemout = 15
 
+        for position, geo_bound_term in enumerate(self.geo_bounds):
+            if "name" not in geo_bound_term:
+                self.geo_bounds[position]["name"] = geo_bound_term["key"]
+
+        for position, min_term in enumerate(self.min):
+            if "name" not in min_term:
+                self.min[position]["name"] = min_term["key"]
+
+        for position, max_term in enumerate(self.max):
+            if "name" not in max_term:
+                self.max[position]["name"] = max_term["key"]
+
+        for position, sum_term in enumerate(self.sum):
+            if "name" not in sum_term:
+                self.sum[position]["name"] = sum_term["key"]
+
+        for position, list_term in enumerate(self.list):
+            if "name" not in list_term:
+                self.list[position]["name"] = list_term["key"]
+
     @staticmethod
-    def bbox_query(facet: str) -> dict:
+    def geo_bounds_query(facet_key: str, facet_name: str) -> dict:
         """
         Query to retrieve the BBOX from items
         """
-        return {"bbox": {"geo_bounds": {"field": facet, "wrap_longitude": True}}}
+        return {facet_name: {"geo_bounds": {"field": facet_key}}}
 
     @staticmethod
-    def facet_composite_query(facet: str) -> dict:
+    def facet_composite_query(facet_key: str, facet_name: str) -> dict:
         """
         Generate the composite aggregation for the facet
         :param facet: Facet to aggregate on
         """
         return {
-            facet: {
+            facet_name: {
                 "composite": {
                     "sources": [
-                        {facet: {"terms": {"field": f"properties.{facet}.keyword"}}}
+                        {facet_name: {"terms": {"field": facet_key}}}
                     ],
                     "size": 100,
                 }
@@ -93,39 +114,43 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         }
 
     @staticmethod
-    def min_query(facet: str) -> dict:
+    def min_query(facet_key: str, facet_name: str) -> dict:
         """
         Query to retrieve the minimum value from docs
         """
-        return {facet: {"min": {"field": f"properties.{facet}"}}}
+        return {facet_name: {"min": {"field": facet_key}}}
 
     @staticmethod
-    def max_query(facet: str) -> dict:
+    def max_query(facet_key: str, facet_name: str) -> dict:
         """
         Query to retrieve the maximum value from docs
         """
-        return {facet: {"max": {"field": f"properties.{facet}"}}}
+        return {facet_name: {"max": {"field": facet_key}}}
 
     @staticmethod
-    def sum_query(facet: str) -> dict:
+    def sum_query(facet_key: str, facet_name: str) -> dict:
         """
         Query to retrieve the sum of the values from docs
         """
-        return {facet: {"sum": {"field": f"properties.{facet}"}}}
+        return {facet_name: {"sum": {"field": facet_key}}}
 
     def extract_facet(self, facets: list):
         """
         Function to extract the given facets from the aggregation
         """
         for facet in facets:
-            if facet in self.aggregations.keys():
-                if "value_as_string" in self.aggregations[facet].keys():
-                    value = self.aggregations[facet]["value_as_string"]
+            if facet["name"] in self.aggregations.keys():
 
+                if "value_as_string" in self.aggregations[facet["name"]].keys():
+                    value = self.aggregations[facet["name"]]["value_as_string"]
+
+                elif "bounds" in self.aggregations[facet["name"]].keys():
+                    value = self.aggregations[facet["name"]]["bounds"]
+                
                 else:
-                    value = self.aggregations[facet]["value"]
+                    value = self.aggregations[facet["name"]]["value"]
 
-                self.metadata[facet] = value
+                self.metadata[facet["name"]] = value
 
     def extract_first_facet(self, facets: list):
         """
@@ -134,29 +159,29 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         properties = self.hits[0]["_source"]["properties"]
 
         for facet in facets:
-            if facet in properties.keys():
-                self.metadata[facet] = properties[facet]
+            if facet["key"] in properties.keys():
+                self.metadata[facet["name"]] = properties[facet["key"]]
 
     def extract_facet_list(self, facets: list):
         """
         Function to extract the lists of given facets from the aggregation
         """
         next_query = self.base_query
-        items = self.aggregations
+        current_aggregations = self.aggregations
 
         while True:
             for facet in facets:
-                if facet in items.keys():
-                    aggregation = items[facet]
+                if facet["name"] in current_aggregations.keys():
+                    aggregation = current_aggregations[facet["name"]]
 
-                    self.metadata[facet].extend(
-                        [bucket["key"][facet] for bucket in aggregation["buckets"]]
+                    self.metadata[facet["name"]].extend(
+                        [bucket["key"][facet["name"]] for bucket in aggregation["buckets"]]
                     )
 
                     if hasattr(aggregation, "after_key"):
-                        next_query["aggs"] |= self.query["aggs"][facet]
-                        next_query["aggs"][facet]["composite"]["sources"]["after"] = {
-                            facet: aggregation["after_key"][facet]
+                        next_query["aggs"] |= self.query["aggs"][facet["name"]]
+                        next_query["aggs"][facet["name"]]["composite"]["sources"]["after"] = {
+                            facet["name"]: aggregation["after_key"][facet["name"]]
                         }
 
             if next_query == self.base_query:
@@ -164,7 +189,7 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
 
             else:
                 result = self.es.search(index=self.index, body=next_query)
-                items = result["aggregations"].items()
+                current_aggregations = result["aggregations"].items()
 
     def construct_base_query(self, key: str, uri: str) -> dict:
         """
@@ -176,7 +201,7 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
             "query": {
                 "bool": {
                     "must_not": [{"term": {"categories.keyword": {"value": "hidden"}}}],
-                    "must": [{"term": {f"{key}.keyword": {"value": uri}}}],
+                    "must": [{"term": {f"{key}": {"value": uri}}}],
                 }
             },
             "aggs": {},
@@ -188,25 +213,25 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         """
         self.query = self.base_query
 
-        if hasattr(self, "bbox"):
-            for bbox_term in self.bbox:
-                self.query["aggs"].update(self.bbox_query(bbox_term))
+        if hasattr(self, "geo_bounds"):
+            for geo_term in self.geo_bounds:
+                self.query["aggs"].update(self.geo_bounds_query(geo_term["key"], geo_term["name"]))
 
         if hasattr(self, "min"):
             for min_term in self.min:
-                self.query["aggs"].update(self.min_query(min_term))
+                self.query["aggs"].update(self.min_query(min_term["key"], min_term["name"]))
 
         if hasattr(self, "max"):
             for max_term in self.max:
-                self.query["aggs"].update(self.max_query(max_term))
+                self.query["aggs"].update(self.max_query(max_term["key"], max_term["name"]))
 
         if hasattr(self, "sum"):
             for sum_term in self.sum:
-                self.query["aggs"].update(self.sum_query(sum_term))
+                self.query["aggs"].update(self.sum_query(sum_term["key"], sum_term["name"]))
 
         if hasattr(self, "list"):
             for list_term in self.list:
-                self.query["aggs"].update(self.facet_composite_query(list_term))
+                self.query["aggs"].update(self.facet_composite_query(list_term["key"], list_term["name"]))
 
     def extract_metadata(self):
         """
@@ -215,8 +240,8 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         if hasattr(self, "first"):
             self.extract_first_facet(self.first)
 
-        if hasattr(self, "bbox"):
-            self.extract_facet(self.bbox)
+        if hasattr(self, "geo_bounds"):
+            self.extract_facet(self.geo_bounds)
 
         if hasattr(self, "min"):
             self.extract_facet(self.min)
@@ -231,7 +256,7 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
             self.extract_facet_list(self.list)
 
     def run(self, body: dict, **kwargs) -> dict:
-        self.metadata = body
+        self.metadata = defaultdict(list)
 
         self.construct_base_query(self.id_term, body["uri"])
 
@@ -251,4 +276,4 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         # Extract metadata
         self.extract_metadata()
 
-        return self.metadata
+        return body | self.metadata

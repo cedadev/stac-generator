@@ -59,7 +59,6 @@ class RegexExtract(BaseExtractionMethod):
         result = re.search(self.regex, body[self.input_term])
 
         if result:
-            LOGGER.info("Found matches for regex extract")
             body = body | result.groupdict()
 
         else:

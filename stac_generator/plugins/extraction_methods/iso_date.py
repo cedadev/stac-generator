@@ -61,21 +61,23 @@ class ISODateExtract(BaseExtractionMethod):
             date_iso = None
 
             if not date_str:
-                LOGGER.error(f"{date_key} not present in body for {body['uri']}")
-
-            if hasattr(self, "formats"):
+                LOGGER.error(f"{date_key} not present in body for {body.get('uri', body.get('href'))}")
             
-                for date_format in self.formats:
-                    try:
-                        date_iso = datetime.strptime(date_str, date_format).isoformat()
-
-                    except ValueError:
-                        pass
-
             else:
-                date_iso = datetime.strptime(date_str).isoformat()
 
-            if date_iso:
-                body[date_key] = date_iso
+                if hasattr(self, "formats"):
+                
+                    for date_format in self.formats:
+                        try:
+                            date_iso = datetime.strptime(date_str, date_format).isoformat()
+
+                        except ValueError:
+                            pass
+
+                else:
+                    date_iso = datetime.strptime(date_str).isoformat()
+
+                if date_iso:
+                    body[date_key] = date_iso
 
         return body

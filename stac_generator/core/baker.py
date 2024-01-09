@@ -105,9 +105,6 @@ class Recipes:
         for file_path in Path(root_path).rglob("*.y*ml"):
             _ = self._load_data(file_path)
 
-        # only used during the
-        del self.location_map
-
     def _load_data(self, file: Path) -> Recipe:
         """
         Loads the yaml files from the root path and builds the recipe dictionary and map of
@@ -159,7 +156,7 @@ class Recipes:
         :param path: Path for which to retrieve the recipe
         """
         if path in self.recipes[stac_type]:
-            return self.load_recipe(path)
+            return self.load_recipe(path, stac_type)
 
         for parent in chain([path], Path(path).parents):
             if parent in self.paths_map[stac_type]:
@@ -168,3 +165,6 @@ class Recipes:
                 return self.load_recipe(key, stac_type)
 
         raise ValueError(f"No Recipe found for path: {path}")
+
+    def get_maps(self):
+        return self.paths_map, self.location_map

@@ -66,7 +66,7 @@ class GeometryPolygonExtract(BaseExtractionMethod):
 
             body["geometry"] = {
                 "type": "Polygon",
-                "coordinates": coordinates,
+                "coordinates": [coordinates],
             }
 
         except KeyError:

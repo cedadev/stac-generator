@@ -20,14 +20,6 @@ from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import load_plugins
 
-def setup_logging(conf):
-    config = conf.get("logging", {})
-    if not config or (config and not config.get("format")):
-        config["format"] = "%(asctime)s %(name)s %(levelname)s %(message)s"
-
-    logging.basicConfig(**config)
-
-
 def load_config(path):
     with open(path) as reader:
         conf = yaml.safe_load(reader)
@@ -73,31 +65,16 @@ def load_generator(conf: dict) -> BaseGenerator:
     required=True,
     help="Path for generator configuration.",
 )
-@click.option(
-    "--prof",
-    "-p",
-    "prof",
-    help="Path for profile output file.",
-)
-def main(conf, prof):
-    if prof:
-        if not prof.lower().endswith((".pstats")):
-            prof += ".pstats"
-        profiler = cProfile.Profile()
-        profiler.enable()
+def main(conf):
 
     conf = load_config(conf)
 
     generator = load_generator(conf)
 
-    input_plugins = load_plugins(conf["inputs"], "stac_generator.inputs")
+    paths_map, location_map = generator.recipes.get_maps()
 
-    for input_plugin in input_plugins:
-        input_plugin.start(generator)
-
-    if prof:
-        profiler.disable()
-        profiler.dump_stats(prof)
+    print("Path map", path_map)
+    print("Location map", location_map)
 
 
 if __name__ == "__main__":

@@ -125,7 +125,7 @@ class ElasticsearchAssetExtract(BaseExtractionMethod):
                 for extraction_method in self.extraction_methods:
                     asset = extraction_method.run(asset)
 
-            assets[Path(path).stem] = asset
+            assets[Path(path).name] = asset
 
         body["assets"] = assets
 

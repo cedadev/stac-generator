@@ -42,6 +42,7 @@ class RemoveExtract(BaseExtractionMethod):
 
     def run(self, body: dict, **kwargs):
         for key in self.keys:
-            del body[key]
+            if key in body:
+                del body[key]
 
         return body

@@ -9,6 +9,7 @@ import importlib
 import logging
 import re
 import ast
+import traceback
 
 
 # Package imports
@@ -70,28 +71,40 @@ class LambdaExtract(BaseExtractionMethod):
     def run(self, body: dict, **kwargs):
         output_body = body.copy()
 
-        function = eval(self.function)
+        try:
+            function = eval(self.function)
 
-        function_args = []
-        for input_arg in self.input_args:
-            if isinstance(input_arg, str) and input_arg[0] == self.exists_key:
-                input_arg = body[input_arg[1:]]
+            function_args = []
+            for input_arg in self.input_args:
+                if isinstance(input_arg, str) and input_arg[0] == self.exists_key:
+                    if input_arg[1:] in body:
+                        input_arg = body[input_arg[1:]]
+                    else:
+                        return body
 
-            function_args.append(input_arg)
+                function_args.append(input_arg)
 
-        function_kwargs = {}
-        for input_kwarg_key, input_kwarg_value in self.input_kwargs.items():
-            if isinstance(input_kwarg_value, str) and input_kwarg_value[0] == self.exists_key:
-                input_kwarg_value = body[input_kwarg_value[1:]]
+            function_kwargs = {}
+            for input_kwarg_key, input_kwarg_value in self.input_kwargs.items():
+                if isinstance(input_kwarg_value, str) and input_kwarg_value[0] == self.exists_key:
+                    if input_kwarg_value[1:] in body:
+                        input_kwarg_value = body[input_kwarg_value[1:]]
+                    else:
+                        return body
 
-            function_kwargs[input_kwarg_key] = input_kwarg_value
+                function_kwargs[input_kwarg_key] = input_kwarg_value
 
-        result = function(*function_args, **function_kwargs)
+            result = function(*function_args, **function_kwargs)
 
-        if self.output_key:
-            output_body[self.output_key] = result
+            if self.output_key:
+                output_body[self.output_key] = result
 
-        elif isinstance(result, dict):
-            output_body |= result
+            elif isinstance(result, dict):
+                output_body |= result
 
-        return output_body
+            return output_body
+
+        except Exception as e:
+            LOGGER.warning(f"Lamda function: {self.function} failed.")
+
+            return output_body

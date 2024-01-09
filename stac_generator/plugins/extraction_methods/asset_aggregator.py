@@ -124,20 +124,22 @@ class AssetAggregatorExtract(BaseExtractionMethod):
 
         for asset in body["assets"].values():
             for list_term in self.list_terms:
-                body[list_term["name"]].append(asset[list_term["key"]])
+                if list_term["key"] in asset:
+                    body[list_term["name"]].append(asset[list_term["key"]])
 
             for sum_term in self.sum_terms:
-                body[sum_term["name"]] += asset[sum_term["key"]]
+                if sum_term["key"] in asset:
+                    body[sum_term["name"]] += asset[sum_term["key"]]
             
             for avg_term in self.avg_terms:
                 body[avg_term["name"]] /= len(body["assets"])
 
             for min_term in self.min_terms:
-                if asset[min_term["key"]] < body[min_term["name"]]:
+                if min_term["key"] in asset and asset[min_term["key"]] < body[min_term["name"]]:
                     body[min_term["name"]] = asset[min_term["key"]]
 
             for max_term in self.max_terms:
-                if asset[max_term["key"]] < body[max_term["name"]]:
+                if max_term["key"] in asset and asset[max_term["key"]] < body[max_term["name"]]:
                     body[max_term["name"]] = asset[max_term["key"]]
 
         return body

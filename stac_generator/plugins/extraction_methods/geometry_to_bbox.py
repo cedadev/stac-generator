@@ -13,7 +13,7 @@ from stac_generator.core.extraction_method import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class STACBboxExtract(BaseExtractionMethod):
+class GeometryToBboxExtract(BaseExtractionMethod):
     """
 
     Processor Name: ``bbox``
@@ -31,34 +31,38 @@ class STACBboxExtract(BaseExtractionMethod):
 
         - method: stac_bbox
             inputs:
-              coordinate_keys:
-                - west
-                - south
-                - east
-                - north
+              type: polygon
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        if not hasattr(self, "input_term"):
+            self.input_term = "geometry"
+
         if not hasattr(self, "output_term"):
             self.output_term = "bbox"
 
     def run(self, body: dict, **kwargs):
-        try:
-            west = body[self.coordinate_keys[0]]
-            south = body[self.coordinate_keys[1]]
-            east = body[self.coordinate_keys[2]]
-            north = body[self.coordinate_keys[3]]
 
-            body[self.output_term] = [
-                float(west) if west is not None else west,
-                float(south) if south is not None else south,
-                float(east) if east is not None else east,
-                float(north) if north is not None else north,
-            ]
+        coordinates = body[self.input_term]["coordinates"][0]
+        bbox = [coordinates[0][0], coordinates[0][1], coordinates[0][0], coordinates[0][1]]
 
-        except KeyError:
-            LOGGER.warning("Unable to convert bbox.", exc_info=True)
+        if self.type in ["polygon", "line"]:
+            for coordinate in coordinates:
+
+                if coordinate[0] < bbox[0]:
+                    bbox[0] = coordinate[0]
+
+                elif coordinate[0] > bbox[2]:
+                    bbox[2] = coordinate[0]
+
+                if coordinate[1] < bbox[1]:
+                    bbox[1] = coordinate[1]
+
+                elif coordinate[1] > bbox[3]:
+                    bbox[3] = coordinate[1]
+
+        body[self.output_term] = bbox
 
         return body

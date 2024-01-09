@@ -14,7 +14,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 # Python imports
 from collections import defaultdict
 import logging
-import os
+import zipfile
+import tempfile
 from pathlib import Path
 from xml.etree import ElementTree
 from xml.etree.ElementTree import ParseError
@@ -27,7 +28,7 @@ from stac_generator.core.extraction_method import BaseExtractionMethod
 LOGGER = logging.getLogger(__name__)
 
 
-class XMLExtract(BaseExtractionMethod):
+class ZipExtract(BaseExtractionMethod):
     """
     .. list-table::
 
@@ -82,47 +83,35 @@ class XMLExtract(BaseExtractionMethod):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        if not hasattr(self, "input_term"):
-            self.input_term = "uri"
+        if not hasattr(self, "output_key"):
+            self.output_key = "zip_file"
+
+        if not hasattr(self, "inner_file"):
+            self.inner_file = ""
+
+        if not hasattr(self, "zip_file"):
+            self.zip_file = "uri"
 
     def run(self, body: dict, **kwargs) -> dict:
         # Extract the keys
+        self.body = body
         try:
-            if isinstance(body[self.input_term], str):
-              xml_file = ElementTree.parse(body[self.input_term])
+            if self.zip_file[0] == self.exists_key:
+                self.zip_file = body[self.zip_file[1:]]
 
-            else:
-              xml_file = ElementTree.XML(body[self.input_term])
+            if self.inner_file[0] == self.exists_key:
+                self.inner_file = body[self.inner_file[1:]]
 
-        except (ParseError, FileNotFoundError, TypeError):
-            return body
+            with zipfile.ZipFile(self.zip_file) as z:
+                if self.inner_file:
+                  file_obj = z.read(self.inner_file)
+                else:
+                  file_obj = z.read()
 
-        output = defaultdict(list)
+        except FileNotFoundError:
+            # return body
+            file_obj = tempfile.TemporaryFile()
 
-        for key in self.extraction_keys:
-            values = xml_file.findall(key["key"], self.namespaces)
-
-            for value in values:
-
-              if value is not None:
-                  attribute = key.get("attribute")
-
-                  if attribute:
-                      v = value.get(attribute, "")
-
-                  else:
-                      v = value.text
-
-                  if v and v not in output[key["name"]]:
-                      output[key["name"]].append(v.strip())
-
-            if output[key["name"]] and len(output[key["name"]]) == 1:
-                output[key["name"]] = output[key["name"]][0]
-
-            if not output[key["name"]]:
-                output[key["name"]] = None
-
-
-        body |= output
+        body[self.output_key] = file_obj
 
         return body

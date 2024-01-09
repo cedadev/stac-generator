@@ -45,6 +45,7 @@ from urllib.parse import urljoin
 
 from stac_generator.core.output import BaseOutput
 
+LOGGER = logging.getLogger(__name__)
 
 class STACFastAPIOutput(BaseOutput):
     """
@@ -58,14 +59,15 @@ class STACFastAPIOutput(BaseOutput):
         if not hasattr(self, "verify"):
           self.verify = True
 
-    def export(self, data: dict, **kwargs) -> None:
-
+    def item(self, data: dict) -> None:
         collections = data["collection"]
 
         if isinstance(data["collection"], str):
             collections = [collections]
 
         for collection in collections:
+
+            collection = data["collection"] = collection.lower()
 
             response = requests.post(
                 urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
@@ -87,3 +89,21 @@ class STACFastAPIOutput(BaseOutput):
                     response = requests.post(
                         urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
                     )
+
+            elif response.status_code != 200:
+                LOGGER.warning(f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}")
+
+    def collection(self, data: dict) -> None:
+
+        response = requests.update(
+            urljoin(self.api_url, f"collections"), json=data, verify=self.verify
+        )
+
+
+    def export(self, data: dict, **kwargs) -> None:
+
+        if kwargs['TYPE'].value == "item":
+            self.item(data)
+
+        elif kwargs['TYPE'].value == "collection":
+            self.collection(data)

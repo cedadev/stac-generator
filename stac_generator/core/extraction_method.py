@@ -29,6 +29,9 @@ class BaseExtractionMethod(ABC):
         # Override with specific processor settings
         self._set_attrs(kwargs)
 
+        if not hasattr(self, "exists_key"):
+            self.exists_key = "$"
+
     def _set_attrs(self, conf: dict) -> None:
         """
         Set instance attributes
