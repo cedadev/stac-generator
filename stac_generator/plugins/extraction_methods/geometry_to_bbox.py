@@ -34,6 +34,7 @@ class GeometryToBboxExtract(BaseExtractionMethod):
               type: polygon
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -46,7 +47,12 @@ class GeometryToBboxExtract(BaseExtractionMethod):
     def run(self, body: dict, **kwargs):
 
         coordinates = body[self.input_term]["coordinates"][0]
-        bbox = [coordinates[0][0], coordinates[0][1], coordinates[0][0], coordinates[0][1]]
+        bbox = [
+            coordinates[0][0],
+            coordinates[0][1],
+            coordinates[0][0],
+            coordinates[0][1],
+        ]
 
         if self.type in ["polygon", "line"]:
             for coordinate in coordinates:

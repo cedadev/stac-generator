@@ -13,9 +13,6 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 
 import logging
 
-# Third party imports
-from elasticsearch import Elasticsearch
-
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
@@ -78,7 +75,6 @@ class AssetAggregatorExtract(BaseExtractionMethod):
         if not hasattr(self, "max_terms"):
             self.max_terms = []
 
-
     def run(self, body: dict, **kwargs) -> dict:
         for index, list_term in enumerate(self.list_terms):
             body[list_term["name"]] = []
@@ -93,7 +89,7 @@ class AssetAggregatorExtract(BaseExtractionMethod):
 
             if not hasattr(sum_term, "key"):
                 sum_term["key"] = sum_term["name"]
-        
+
             self.sum_terms[index] = sum_term
 
         len_sum_terms = index + 1
@@ -102,23 +98,23 @@ class AssetAggregatorExtract(BaseExtractionMethod):
 
             if not hasattr(avg_term, "key"):
                 avg_term["key"] = avg_term["name"]
-        
+
             self.sum_terms.append(avg_term)
             self.avg_terms[index] = avg_term
 
         for index, min_term in enumerate(self.min_terms):
             if not hasattr(min_term, "key"):
                 min_term["key"] = min_term["name"]
-        
-            min_terms[index] = min_term
+
+            self.min_terms[index] = min_term
 
             body[min_term["name"]] = body["assets"].values()[0][min_term["key"]]
 
         for index, max_term in enumerate(self.max_terms):
             if not hasattr(max_term, "key"):
                 max_term["key"] = max_term["name"]
-        
-            max_terms[index] = max_term
+
+            self.max_terms[index] = max_term
 
             body[max_term["name"]] = body["assets"].values()[0][max_term["key"]]
 
@@ -130,16 +126,22 @@ class AssetAggregatorExtract(BaseExtractionMethod):
             for sum_term in self.sum_terms:
                 if sum_term["key"] in asset:
                     body[sum_term["name"]] += asset[sum_term["key"]]
-            
+
             for avg_term in self.avg_terms:
                 body[avg_term["name"]] /= len(body["assets"])
 
             for min_term in self.min_terms:
-                if min_term["key"] in asset and asset[min_term["key"]] < body[min_term["name"]]:
+                if (
+                    min_term["key"] in asset
+                    and asset[min_term["key"]] < body[min_term["name"]]
+                ):
                     body[min_term["name"]] = asset[min_term["key"]]
 
             for max_term in self.max_terms:
-                if max_term["key"] in asset and asset[max_term["key"]] < body[max_term["name"]]:
+                if (
+                    max_term["key"] in asset
+                    and asset[max_term["key"]] < body[max_term["name"]]
+                ):
                     body[max_term["name"]] = asset[max_term["key"]]
 
         return body

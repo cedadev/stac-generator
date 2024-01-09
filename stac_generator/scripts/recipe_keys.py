@@ -20,6 +20,7 @@ from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import load_plugins
 
+
 def load_config(path):
     with open(path) as reader:
         conf = yaml.safe_load(reader)

@@ -91,7 +91,7 @@ class ElasticsearchAssetExtract(BaseExtractionMethod):
 
         if not hasattr(self, "regex"):
             self.regex = body[self.regex_term]
-        
+
         query = {
             "query": {
                 "regexp": {

@@ -67,9 +67,7 @@ class RegexAssetsExtract(BaseExtractionMethod):
                 "href": path,
                 "role": self.role,
                 "type": magic.from_file(path, mime=True),
-                "last_modified": datetime.fromtimestamp(
-                    stats.st_mtime
-                ).isoformat(),
+                "last_modified": datetime.fromtimestamp(stats.st_mtime).isoformat(),
                 "size": getattr(stats, "st_size"),
             }
 

@@ -84,7 +84,10 @@ class GeneralFunctionExtract(BaseExtractionMethod):
 
         function_kwargs = {}
         for input_kwarg_key, input_kwarg_value in self.input_kwargs.items():
-            if isinstance(input_kwarg_value, str) and input_kwarg_value[0] == self.exists_key:
+            if (
+                isinstance(input_kwarg_value, str)
+                and input_kwarg_value[0] == self.exists_key
+            ):
                 input_kwarg_value = body[input_kwarg_value[1:]]
 
             function_kwargs[input_kwarg_key] = input_kwarg_value

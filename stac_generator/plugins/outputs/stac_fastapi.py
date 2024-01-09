@@ -47,6 +47,7 @@ from stac_generator.core.output import BaseOutput
 
 LOGGER = logging.getLogger(__name__)
 
+
 class STACFastAPIOutput(BaseOutput):
     """
     Connects to an elasticsearch instance and exports the
@@ -57,7 +58,7 @@ class STACFastAPIOutput(BaseOutput):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not hasattr(self, "verify"):
-          self.verify = True
+            self.verify = True
 
     def item(self, data: dict) -> None:
         collections = data["collection"]
@@ -70,28 +71,39 @@ class STACFastAPIOutput(BaseOutput):
             collection = data["collection"] = collection.lower()
 
             response = requests.post(
-                urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
+                urljoin(self.api_url, f"collections/{collection}/items"),
+                json=data,
+                verify=self.verify,
             )
 
             if response.status_code == 404:
                 response_json = response.json()
 
-                if response_json["description"] == f"Collection {collection} does not exist":
+                if (
+                    response_json["description"]
+                    == f"Collection {collection} does not exist"
+                ):
                     collection = {
                         "type": "Collection",
                         "id": collection,
                     }
 
                     response = requests.post(
-                        urljoin(self.api_url, f"collections"), json=collection, verify=self.verify
+                        urljoin(self.api_url, f"collections"),
+                        json=collection,
+                        verify=self.verify,
                     )
 
                     response = requests.post(
-                        urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
+                        urljoin(self.api_url, f"collections/{collection}/items"),
+                        json=data,
+                        verify=self.verify,
                     )
 
             elif response.status_code != 200:
-                LOGGER.warning(f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}")
+                LOGGER.warning(
+                    f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}"
+                )
 
     def collection(self, data: dict) -> None:
 
@@ -99,11 +111,10 @@ class STACFastAPIOutput(BaseOutput):
             urljoin(self.api_url, f"collections"), json=data, verify=self.verify
         )
 
-
     def export(self, data: dict, **kwargs) -> None:
 
-        if kwargs['TYPE'].value == "item":
+        if kwargs["TYPE"].value == "item":
             self.item(data)
 
-        elif kwargs['TYPE'].value == "collection":
+        elif kwargs["TYPE"].value == "collection":
             self.collection(data)

@@ -32,7 +32,7 @@ class STACMapping(BaseMapping):
 
     """
 
-    def item(self, body:dict) -> dict:
+    def item(self, body: dict) -> dict:
         output = {
             "type": "Feature",
             "stac_version": self.stac_version,
@@ -87,7 +87,7 @@ class STACMapping(BaseMapping):
                 },
                 "spatial": {
                     "bbox": None,
-                }
+                },
             },
             "summaries": {},
             "assets": {},
@@ -107,17 +107,16 @@ class STACMapping(BaseMapping):
 
         return output
 
-
     def run(
         self,
         body: dict,
         recipe: Recipe,
         **kwargs,
     ) -> dict:
-        if kwargs['TYPE'].value == "item":
+        if kwargs["TYPE"].value == "item":
             return self.item(body)
 
-        elif kwargs['TYPE'].value == "collection":
+        elif kwargs["TYPE"].value == "collection":
             return self.collection(body)
 
         return body

@@ -20,6 +20,7 @@ from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import load_plugins
 
+
 def setup_logging(conf):
     config = conf.get("logging", {})
     if not config or (config and not config.get("format")):

@@ -12,13 +12,9 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
-from collections import defaultdict
 import logging
-import zipfile
 import tempfile
-from pathlib import Path
-from xml.etree import ElementTree
-from xml.etree.ElementTree import ParseError
+import zipfile
 
 from stac_generator.core.extraction_method import BaseExtractionMethod
 
@@ -104,9 +100,9 @@ class ZipExtract(BaseExtractionMethod):
 
             with zipfile.ZipFile(self.zip_file) as z:
                 if self.inner_file:
-                  file_obj = z.read(self.inner_file)
+                    file_obj = z.read(self.inner_file)
                 else:
-                  file_obj = z.read()
+                    file_obj = z.read()
 
         except FileNotFoundError:
             # return body

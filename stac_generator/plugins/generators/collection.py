@@ -42,7 +42,9 @@ class CollectionGenerator(BaseGenerator):
 
         :return:
         """
-        recipe = self.recipes.get(kwargs.get("recipe_path", body["uri"]), self.TYPE.value)
+        recipe = self.recipes.get(
+            kwargs.get("recipe_path", body["uri"]), self.TYPE.value
+        )
 
         LOGGER.debug(
             "Generating %s : %s with recipe %s", self.TYPE.value, body["uri"], recipe

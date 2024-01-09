@@ -145,7 +145,9 @@ class Recipes:
         """
         recipe = self.recipes[stac_type][key]
 
-        recipe.member_of = [self.recipes[link["type"]][link["key"]] for link in recipe.links]
+        recipe.member_of = [
+            self.recipes[link["type"]][link["key"]] for link in recipe.links
+        ]
 
         return recipe
 

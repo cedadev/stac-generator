@@ -105,9 +105,7 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
         return {
             facet_name: {
                 "composite": {
-                    "sources": [
-                        {facet_name: {"terms": {"field": facet_key}}}
-                    ],
+                    "sources": [{facet_name: {"terms": {"field": facet_key}}}],
                     "size": 100,
                 }
             }
@@ -146,7 +144,7 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
 
                 elif "bounds" in self.aggregations[facet["name"]].keys():
                     value = self.aggregations[facet["name"]]["bounds"]
-                
+
                 else:
                     value = self.aggregations[facet["name"]]["value"]
 
@@ -175,14 +173,17 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
                     aggregation = current_aggregations[facet["name"]]
 
                     self.metadata[facet["name"]].extend(
-                        [bucket["key"][facet["name"]] for bucket in aggregation["buckets"]]
+                        [
+                            bucket["key"][facet["name"]]
+                            for bucket in aggregation["buckets"]
+                        ]
                     )
 
                     if hasattr(aggregation, "after_key"):
                         next_query["aggs"] |= self.query["aggs"][facet["name"]]
-                        next_query["aggs"][facet["name"]]["composite"]["sources"]["after"] = {
-                            facet["name"]: aggregation["after_key"][facet["name"]]
-                        }
+                        next_query["aggs"][facet["name"]]["composite"]["sources"][
+                            "after"
+                        ] = {facet["name"]: aggregation["after_key"][facet["name"]]}
 
             if next_query == self.base_query:
                 break
@@ -215,23 +216,33 @@ class ElasticsearchAggregationExtract(BaseExtractionMethod):
 
         if hasattr(self, "geo_bounds"):
             for geo_term in self.geo_bounds:
-                self.query["aggs"].update(self.geo_bounds_query(geo_term["key"], geo_term["name"]))
+                self.query["aggs"].update(
+                    self.geo_bounds_query(geo_term["key"], geo_term["name"])
+                )
 
         if hasattr(self, "min"):
             for min_term in self.min:
-                self.query["aggs"].update(self.min_query(min_term["key"], min_term["name"]))
+                self.query["aggs"].update(
+                    self.min_query(min_term["key"], min_term["name"])
+                )
 
         if hasattr(self, "max"):
             for max_term in self.max:
-                self.query["aggs"].update(self.max_query(max_term["key"], max_term["name"]))
+                self.query["aggs"].update(
+                    self.max_query(max_term["key"], max_term["name"])
+                )
 
         if hasattr(self, "sum"):
             for sum_term in self.sum:
-                self.query["aggs"].update(self.sum_query(sum_term["key"], sum_term["name"]))
+                self.query["aggs"].update(
+                    self.sum_query(sum_term["key"], sum_term["name"])
+                )
 
         if hasattr(self, "list"):
             for list_term in self.list:
-                self.query["aggs"].update(self.facet_composite_query(list_term["key"], list_term["name"]))
+                self.query["aggs"].update(
+                    self.facet_composite_query(list_term["key"], list_term["name"])
+                )
 
     def extract_metadata(self):
         """

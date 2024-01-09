@@ -38,6 +38,7 @@ class STACBboxExtract(BaseExtractionMethod):
                 - north
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

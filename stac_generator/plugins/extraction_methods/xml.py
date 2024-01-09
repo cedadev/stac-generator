@@ -89,10 +89,10 @@ class XMLExtract(BaseExtractionMethod):
         # Extract the keys
         try:
             if isinstance(body[self.input_term], str):
-              xml_file = ElementTree.parse(body[self.input_term])
+                xml_file = ElementTree.parse(body[self.input_term])
 
             else:
-              xml_file = ElementTree.XML(body[self.input_term])
+                xml_file = ElementTree.XML(body[self.input_term])
 
         except (ParseError, FileNotFoundError, TypeError):
             return body
@@ -104,24 +104,23 @@ class XMLExtract(BaseExtractionMethod):
 
             for value in values:
 
-              if value is not None:
-                  attribute = key.get("attribute")
+                if value is not None:
+                    attribute = key.get("attribute")
 
-                  if attribute:
-                      v = value.get(attribute, "")
+                    if attribute:
+                        v = value.get(attribute, "")
 
-                  else:
-                      v = value.text
+                    else:
+                        v = value.text
 
-                  if v and v not in output[key["name"]]:
-                      output[key["name"]].append(v.strip())
+                    if v and v not in output[key["name"]]:
+                        output[key["name"]].append(v.strip())
 
             if output[key["name"]] and len(output[key["name"]]) == 1:
                 output[key["name"]] = output[key["name"]][0]
 
             if not output[key["name"]]:
                 output[key["name"]] = None
-
 
         body |= output
 

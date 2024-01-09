@@ -36,6 +36,7 @@ class DatetimeBoundToCentroidExtract(BaseExtractionMethod):
               output_term: polygon
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -68,11 +69,17 @@ class DatetimeBoundToCentroidExtract(BaseExtractionMethod):
 
     def run(self, body: dict, **kwargs):
 
-        start_datetime = datetime.strptime(body[self.start_term["name"]], self.start_term["format"])
-        end_datetime = datetime.strptime(body[self.end_term["name"]], self.end_term["format"])
+        start_datetime = datetime.strptime(
+            body[self.start_term["name"]], self.start_term["format"]
+        )
+        end_datetime = datetime.strptime(
+            body[self.end_term["name"]], self.end_term["format"]
+        )
 
         centroid_datetime = start_datetime + (end_datetime - start_datetime) / 2
 
-        body[self.output_term["name"]] = centroid_datetime.strftime(self.output_term["format"])
+        body[self.output_term["name"]] = centroid_datetime.strftime(
+            self.output_term["format"]
+        )
 
         return body

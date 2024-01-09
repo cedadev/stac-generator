@@ -84,7 +84,11 @@ class BaseGenerator(ABC):
 
             for extraction_method in inputs.get("extraction_methods", []):
                 if isinstance(extraction_method, dict):
-                    extraction_methods.append(self._load_extraction_method(ExtractionMethodConf(**extraction_method), **kwargs))
+                    extraction_methods.append(
+                        self._load_extraction_method(
+                            ExtractionMethodConf(**extraction_method), **kwargs
+                        )
+                    )
 
                 else:
                     extraction_methods.append(extraction_method)
