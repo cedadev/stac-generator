@@ -56,7 +56,7 @@ class BaseGenerator(ABC):
 
         :return: HandlerPicker for extraction methods
         """
-        return HandlerPicker("stac_generator.extraction_methods")
+        return HandlerPicker("extraction_methods")
 
     def _load_extraction_method(
         self, extraction_method_conf: dict, **kwargs

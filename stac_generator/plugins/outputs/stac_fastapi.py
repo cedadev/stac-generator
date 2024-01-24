@@ -42,6 +42,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import requests
 from urllib.parse import urljoin
+import logging
 
 from stac_generator.core.output import BaseOutput
 
@@ -89,6 +90,17 @@ class STACFastAPIOutput(BaseOutput):
                     response = requests.post(
                         urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
                     )
+
+            if response.status_code == 409:
+                response_json = response.json()
+
+                if response_json["description"] == f"Item {data['id']} in collection {collection} already exists":
+                    response = requests.put(
+                        urljoin(self.api_url, f"collections/{collection}/items/{data['id']}"), json=data, verify=self.verify
+                    )
+
+                    if response.status_code != 200:
+                        LOGGER.warning(f"FastAPI Output Update failed with status code: {response.status_code} and response text: {response.text}")
 
             elif response.status_code != 200:
                 LOGGER.warning(f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}")

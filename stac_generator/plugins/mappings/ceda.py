@@ -42,7 +42,7 @@ class CEDAMapping(BaseMapping):
             f"{kwargs['TYPE'].value}_id": body.pop(f"{kwargs['TYPE'].value}_id"),
             "stac": {
                 "member_of_recipes": body.pop("member_of_recipes"),
-                "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                "mod_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "status": "new",
             },
         }

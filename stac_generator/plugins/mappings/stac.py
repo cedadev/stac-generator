@@ -7,6 +7,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from datetime import datetime
+from dateutil import parser
 
 from stac_generator.core.baker import Recipe
 
@@ -32,6 +33,10 @@ class STACMapping(BaseMapping):
 
     """
 
+    def datetime_field(self, body:dict, key:str) -> str:
+        dt = parser.parse(body.pop(key))
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
     def item(self, body:dict) -> dict:
         output = {
             "type": "Feature",
@@ -47,13 +52,13 @@ class STACMapping(BaseMapping):
 
         extent = {}
         if "datetime" in body:
-            output["properties"]["datetime"] = body.pop("datetime")
+            output["properties"]["datetime"] = self.datetime_field(body, "datetime")
 
         if "start_datetime" in body:
-            output["properties"]["start_datetime"] = body.pop("start_datetime")
+            output["properties"]["start_datetime"] = self.datetime_field(body, "start_datetime")
 
         if "end_datetime" in body:
-            output["properties"]["end_datetime"] = body.pop("end_datetime")
+            output["properties"]["end_datetime"] = self.datetime_field(body, "end_datetime")
 
         if "bbox" in body:
             output["bbox"] = body.pop("bbox")
