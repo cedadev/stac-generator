@@ -84,7 +84,7 @@ class STACFastAPIOutput(BaseOutput):
                     }
 
                     response = requests.post(
-                        urljoin(self.api_url, f"collections"), json=collection, verify=self.verify
+                        urljoin(self.api_url, "collections"), json=collection, verify=self.verify
                     )
 
                     response = requests.post(
@@ -107,10 +107,9 @@ class STACFastAPIOutput(BaseOutput):
 
     def collection(self, data: dict) -> None:
 
-        response = requests.update(
-            urljoin(self.api_url, f"collections"), json=data, verify=self.verify
+        response = requests.post(
+            urljoin(self.api_url, "collections"), json=data, verify=self.verify
         )
-
 
     def export(self, data: dict, **kwargs) -> None:
 
