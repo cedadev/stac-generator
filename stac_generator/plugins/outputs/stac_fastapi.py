@@ -40,13 +40,16 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import requests
+import logging
 from urllib.parse import urljoin
 import logging
+
+import requests
 
 from stac_generator.core.output import BaseOutput
 
 LOGGER = logging.getLogger(__name__)
+
 
 class STACFastAPIOutput(BaseOutput):
     """
@@ -58,7 +61,7 @@ class STACFastAPIOutput(BaseOutput):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not hasattr(self, "verify"):
-          self.verify = True
+            self.verify = True
 
     def item(self, data: dict) -> None:
         collections = data["collection"]
@@ -67,28 +70,36 @@ class STACFastAPIOutput(BaseOutput):
             collections = [collections]
 
         for collection in collections:
-
             collection = data["collection"] = collection.lower()
 
             response = requests.post(
-                urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
+                urljoin(self.api_url, f"collections/{collection}/items"),
+                json=data,
+                verify=self.verify,
             )
 
             if response.status_code == 404:
                 response_json = response.json()
 
-                if response_json["description"] == f"Collection {collection} does not exist":
+                if (
+                    response_json["description"]
+                    == f"Collection {collection} does not exist"
+                ):
                     collection = {
                         "type": "Collection",
                         "id": collection,
                     }
 
                     response = requests.post(
-                        urljoin(self.api_url, "collections"), json=collection, verify=self.verify
+                        urljoin(self.api_url, "collections"),
+                        json=collection,
+                        verify=self.verify,
                     )
 
                     response = requests.post(
-                        urljoin(self.api_url, f"collections/{collection}/items"), json=data, verify=self.verify
+                        urljoin(self.api_url, f"collections/{collection}/items"),
+                        json=data,
+                        verify=self.verify,
                     )
 
             if response.status_code == 409:
@@ -103,18 +114,32 @@ class STACFastAPIOutput(BaseOutput):
                         LOGGER.warning(f"FastAPI Output Update failed with status code: {response.status_code} and response text: {response.text}")
 
             elif response.status_code != 200:
-                LOGGER.warning(f"FastAPI Output failed with status code: {response.status_code} and response text: {response.text}")
+                LOGGER.warning(
+                    "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
+                    response.status_code,
+                    response.text,
+                    data,
+                )
 
     def collection(self, data: dict) -> None:
-
         response = requests.post(
-            urljoin(self.api_url, "collections"), json=data, verify=self.verify
+            urljoin(self.api_url, "collections"),
+            json=data,
+            verify=self.verify,
+            timeout=180,
         )
 
-    def export(self, data: dict, **kwargs) -> None:
+        if response.status_code != 200:
+            LOGGER.warning(
+                "FastAPI Output failed to post to STAC Fastapi collections endpoint returned status code: %s and response text: %s request data: %s",
+                response.status_code,
+                response.text,
+                data,
+            )
 
-        if kwargs['TYPE'].value == "item":
+    def export(self, data: dict, **kwargs) -> None:
+        if kwargs["TYPE"].value == "item":
             self.item(data)
 
-        elif kwargs['TYPE'].value == "collection":
+        elif kwargs["TYPE"].value == "collection":
             self.collection(data)

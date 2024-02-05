@@ -50,7 +50,6 @@ class STACMapping(BaseMapping):
             },
         }
 
-        extent = {}
         if "datetime" in body:
             output["properties"]["datetime"] = self.datetime_field(body, "datetime")
 
@@ -92,13 +91,12 @@ class STACMapping(BaseMapping):
                 },
                 "spatial": {
                     "bbox": None,
-                }
+                },
             },
             "summaries": {},
             "assets": {},
         }
 
-        extent = {}
         if "interval" in body:
             output["extent"]["temporal"]["interval"] = body.pop("interval")
 
@@ -112,17 +110,16 @@ class STACMapping(BaseMapping):
 
         return output
 
-
     def run(
         self,
         body: dict,
         recipe: Recipe,
         **kwargs,
     ) -> dict:
-        if kwargs['TYPE'].value == "item":
+        if kwargs["TYPE"].value == "item":
             return self.item(body)
 
-        elif kwargs['TYPE'].value == "collection":
+        elif kwargs["TYPE"].value == "collection":
             return self.collection(body)
 
         return body

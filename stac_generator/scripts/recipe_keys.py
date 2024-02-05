@@ -8,17 +8,13 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import argparse
-import cProfile
-import logging
-
 import click
 import pkg_resources
 import yaml
 
 from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.utils import load_plugins
+
 
 def load_config(path):
     with open(path) as reader:
@@ -66,12 +62,11 @@ def load_generator(conf: dict) -> BaseGenerator:
     help="Path for generator configuration.",
 )
 def main(conf):
-
     conf = load_config(conf)
 
     generator = load_generator(conf)
 
-    paths_map, location_map = generator.recipes.get_maps()
+    path_map, location_map = generator.recipes.get_maps()
 
     print("Path map", path_map)
     print("Location map", location_map)

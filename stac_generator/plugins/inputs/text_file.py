@@ -55,7 +55,6 @@ class TextFileInput(BaseInput):
             self.file_list = [self.filepath]
 
     def run(self, generator: BaseGenerator):
-
         start = datetime.now()
         total_generated = 0
         unique_lines = set()

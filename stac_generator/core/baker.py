@@ -17,7 +17,6 @@ import hashlib
 import logging
 
 # Python imports
-from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
@@ -145,7 +144,9 @@ class Recipes:
         """
         recipe = self.recipes[stac_type][key]
 
-        recipe.member_of = [self.recipes[link["type"]][link["key"]] for link in recipe.links]
+        recipe.member_of = [
+            self.recipes[link["type"]][link["key"]] for link in recipe.links
+        ]
 
         return recipe
 
