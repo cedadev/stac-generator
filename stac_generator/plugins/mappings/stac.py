@@ -84,7 +84,6 @@ class STACMapping(BaseMapping):
             "stac_version": self.stac_version,
             "stac_extensions": self.stac_extensions,
             "id": body.pop("collection_id"),
-            "description": body.pop("description"),
             "extent": {
                 "temporal": {
                     "interval": None,
@@ -96,6 +95,9 @@ class STACMapping(BaseMapping):
             "summaries": {},
             "assets": {},
         }
+
+        if "description" in body:
+            output["description"] = body.pop("description")
 
         if "interval" in body:
             output["extent"]["temporal"]["interval"] = body.pop("interval")

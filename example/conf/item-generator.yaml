@@ -1,0 +1,23 @@
+generator: item
+
+recipes_root: example/recipes/
+
+inputs:
+  - name: text_file
+    filepath: tests/file-io/assets.txt
+
+outputs:
+  - name: standard_out
+    mappings:
+      - name: stac
+        stac_version: '1.0.0'
+        stac_extensions: []
+  - name: json_file
+    dirpath: example/output/items
+    filename_term: id
+    mappings:
+      - name: stac
+        stac_version: '1.0.0'
+        stac_extensions: []
+  - name: text_file
+    filepath: example/output/collection.txt

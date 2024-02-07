@@ -31,6 +31,7 @@ import json
 from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
+import traceback
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.input import BaseInput
@@ -59,14 +60,22 @@ class TextFileInput(BaseInput):
         total_generated = 0
         unique_lines = set()
 
+        errors_file = "errors.txt"
+        failed_file = "failed.txt"
+
         for file in self.file_list:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, "r", encoding="utf-8") as f, open(errors_file, "w+", encoding="utf-8") as errors, open(failed_file, "w+", encoding="utf-8") as failed:
                 for line in f:
                     if line not in unique_lines:
                         total_generated += 1
                         unique_lines.add(line)
                         data = json.loads(line)
-                        generator.process(**data)
+                        try:
+                            generator.process(**data)
+                        except Exception:
+                            errors.write(line)
+                            errors.write(traceback.format_exc())
+                            failed.write(line)
 
         end = datetime.now()
         print(f"Processed {total_generated} elasticsearch records in {end-start}")
