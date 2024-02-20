@@ -94,6 +94,8 @@ class STACMapping(BaseMapping):
             },
             "summaries": {},
             "assets": {},
+            "providers": [],
+            "license": "",
         }
 
         if "description" in body:
@@ -104,6 +106,12 @@ class STACMapping(BaseMapping):
 
         if "bbox" in body:
             output["extent"]["spatial"]["bbox"] = body.pop("bbox")
+
+        if "license" in body:
+            output["license"] = body.pop("license")
+
+        if "providers" in body:
+            output["providers"] = body.pop("providers")
 
         if "member_of_recipes" in body:
             output["member_of_recipes"] = body.pop("member_of_recipes")
