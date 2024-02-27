@@ -16,13 +16,6 @@ from stac_generator.core.baker import Recipes
 
 ROOT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_recipes")
 
-default_recipe = {
-    "paths": [],
-    "type": "item",
-    "id": [],
-    "extraction_methods": [],
-}
-
 
 @pytest.fixture
 def recipes():
