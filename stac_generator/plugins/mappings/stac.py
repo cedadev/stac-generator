@@ -6,7 +6,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from datetime import datetime
+
 from dateutil import parser
 
 from stac_generator.core.baker import Recipe

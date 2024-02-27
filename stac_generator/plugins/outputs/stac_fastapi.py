@@ -36,7 +36,6 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 from urllib.parse import urljoin
-import logging
 
 import requests
 

@@ -26,12 +26,11 @@ Example Configuration:
 
 """
 
-
 import json
+import traceback
 from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
-import traceback
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.input import BaseInput
