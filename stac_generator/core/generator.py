@@ -103,7 +103,7 @@ class BaseGenerator(ABC):
     ) -> dict:
         """
         Run the specified extraction method.
-        
+
         :param body: The current body of data
         :param extraction_method_conf: Configuration for the extraction method
         :param kwargs:

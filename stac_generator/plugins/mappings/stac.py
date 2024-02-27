@@ -33,11 +33,11 @@ class STACMapping(BaseMapping):
 
     """
 
-    def datetime_field(self, body:dict, key:str) -> str:
+    def datetime_field(self, body: dict, key: str) -> str:
         dt = parser.parse(body.pop(key))
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    def item(self, body:dict) -> dict:
+    def item(self, body: dict) -> dict:
         output = {
             "type": "Feature",
             "stac_version": self.stac_version,
@@ -54,10 +54,14 @@ class STACMapping(BaseMapping):
             output["properties"]["datetime"] = self.datetime_field(body, "datetime")
 
         if "start_datetime" in body:
-            output["properties"]["start_datetime"] = self.datetime_field(body, "start_datetime")
+            output["properties"]["start_datetime"] = self.datetime_field(
+                body, "start_datetime"
+            )
 
         if "end_datetime" in body:
-            output["properties"]["end_datetime"] = self.datetime_field(body, "end_datetime")
+            output["properties"]["end_datetime"] = self.datetime_field(
+                body, "end_datetime"
+            )
 
         if "bbox" in body:
             output["bbox"] = body.pop("bbox")

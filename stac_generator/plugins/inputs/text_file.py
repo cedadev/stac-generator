@@ -64,7 +64,9 @@ class TextFileInput(BaseInput):
         failed_file = "failed.txt"
 
         for file in self.file_list:
-            with open(file, "r", encoding="utf-8") as f, open(errors_file, "w+", encoding="utf-8") as errors, open(failed_file, "w+", encoding="utf-8") as failed:
+            with open(file, "r", encoding="utf-8") as f, open(
+                errors_file, "w+", encoding="utf-8"
+            ) as errors, open(failed_file, "w+", encoding="utf-8") as failed:
                 for line in f:
                     if line not in unique_lines:
                         total_generated += 1

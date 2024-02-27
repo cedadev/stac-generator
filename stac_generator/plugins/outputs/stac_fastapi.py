@@ -99,13 +99,22 @@ class STACFastAPIOutput(BaseOutput):
             if response.status_code == 409:
                 response_json = response.json()
 
-                if response_json["description"] == f"Item {data['id']} in collection {collection} already exists":
+                if (
+                    response_json["description"]
+                    == f"Item {data['id']} in collection {collection} already exists"
+                ):
                     response = requests.put(
-                        urljoin(self.api_url, f"collections/{collection}/items/{data['id']}"), json=data, verify=self.verify
+                        urljoin(
+                            self.api_url, f"collections/{collection}/items/{data['id']}"
+                        ),
+                        json=data,
+                        verify=self.verify,
                     )
 
                     if response.status_code != 200:
-                        LOGGER.warning(f"FastAPI Output Update failed with status code: {response.status_code} and response text: {response.text}")
+                        LOGGER.warning(
+                            f"FastAPI Output Update failed with status code: {response.status_code} and response text: {response.text}"
+                        )
 
             elif response.status_code != 200:
                 LOGGER.warning(
