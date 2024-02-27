@@ -96,7 +96,7 @@ def get_sub_attr(obj: object, path: str):
     attrs = path.split(".")
 
     for attr in attrs:
-        if type(obj) == CaseInsensitiveDict:
+        if isinstance(obj, CaseInsensitiveDict):
             obj = obj[attr]
             continue
 

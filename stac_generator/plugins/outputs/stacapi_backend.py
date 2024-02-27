@@ -41,14 +41,10 @@ __copyright__ = "Copyright 2022 Computer Research Institute of Montreal"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
-import datetime
 import hashlib
 import os
 
-import pystac
-import pystac.extensions.eo
 import requests
-from shapely.geometry import Polygon, mapping
 
 from stac_generator.core.output import BaseOutput
 
