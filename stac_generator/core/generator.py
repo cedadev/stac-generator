@@ -65,6 +65,7 @@ class BaseGenerator(ABC):
         Load the given extraction method
 
         :param extraction_method_conf: Configuration for the extraction method
+        :param kwargs:
 
         :return: extraction method
         """
@@ -100,7 +101,15 @@ class BaseGenerator(ABC):
     def _run_extraction_method(
         self, body: dict, extraction_method_conf: dict, **kwargs
     ) -> dict:
-        """Run the specified extraction method."""
+        """
+        Run the specified extraction method.
+        
+        :param body: The current body of data
+        :param extraction_method_conf: Configuration for the extraction method
+        :param kwargs:
+
+        :return: body post extraction method
+        """
 
         extraction_method = self._load_extraction_method(
             extraction_method_conf, **kwargs
@@ -116,6 +125,7 @@ class BaseGenerator(ABC):
 
         :param body: current extracted meta data
         :param recipe: Recipe
+        :param kwargs:
 
         :return: result from the processing
         """
@@ -132,7 +142,9 @@ class BaseGenerator(ABC):
         Extract the raw facets from the listed extraction methods
 
         :param body: Dict of current extracted data
-        :param recipe: Recipe
+        :param member_of: list of membership
+        :param kwargs:
+
         :return: updated body
         """
 
@@ -158,6 +170,7 @@ class BaseGenerator(ABC):
         Run all configured outputs export methods.
 
         :param data: data to be output
+        :param kwargs:
         """
         for output in self.outputs:
             output.run(body, recipe, **kwargs)
@@ -176,6 +189,7 @@ class BaseGenerator(ABC):
         Run generator.
 
         :param body: body for object
+        :param kwargs:
         """
 
     def process(self, uri: str, **kwargs) -> None:
@@ -183,6 +197,7 @@ class BaseGenerator(ABC):
         Run generator.
 
         :param uri: uri for object
+        :param kwargs:
         """
         kwargs["TYPE"] = self.TYPE
 

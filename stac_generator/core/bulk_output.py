@@ -48,7 +48,6 @@ class BaseBulkOutput(ABC):
         Output the data.
 
         :param data: list of data from processor to be output.
-        :param kwargs:
         """
 
     def data_to_cache(self, data: dict) -> None:

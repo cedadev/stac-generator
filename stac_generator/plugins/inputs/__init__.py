@@ -1,7 +1,6 @@
 # encoding: utf-8
 """
-The input plugins determine the source of the list. Files are processed
-atomically and the input plugins provide this atomic action.
+The input plugins generate a stream of dictionaries to be passed to the generator for processing.
 
 You can configure more than one input plugin, if you wanted
 to input the content from more than one place.

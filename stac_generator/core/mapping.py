@@ -15,7 +15,7 @@ from stac_generator.core.baker import Recipe
 
 class BaseMapping(ABC):
     """
-    Class to act as a base for all processors. Defines the basic method signature
+    Class to act as a base for all mappings. Defines the basic method signature
     and ensure compliance by all subclasses.
     """
 
@@ -36,4 +36,13 @@ class BaseMapping(ABC):
 
     @abstractmethod
     def run(self, body: dict, recipe: Recipe, **kwargs) -> dict:
+        """
+        Run the mapping
+
+        :param body:
+        :param recipe:
+        :param kwargs:
+
+        :return body:
+        """
         pass

@@ -29,7 +29,7 @@ class STACMapping(BaseMapping):
 
         .. code-block:: yaml
 
-            - method: stac_observation
+            - method: stac_mapping
 
     """
 

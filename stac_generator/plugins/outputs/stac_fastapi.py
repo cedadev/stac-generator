@@ -3,10 +3,10 @@
 Elasticsearch
 -------------
 
-An output backend which outputs the content generated to elasticsearch
-using the Elasticsearch API
+An output backend which outputs the content generated to a STAC FastAPI
+using the Transaction endpoint extension
 
-**Plugin name:** ``elasticsearch``
+**Plugin name:** ``stac_fastapi``
 
 .. list-table::
     :header-rows: 1
@@ -14,25 +14,19 @@ using the Elasticsearch API
     * - Option
       - Value Type
       - Description
-    * - ``connection_kwargs``
-      - ``dict``
-      - ``REQUIRED`` Connection kwargs passed to the `elasticsearch client  <https://elasticsearch-py.readthedocs.io/en/latest/api.html#elasticsearch>`_
-    * - ``index.name``
+    * - ``api_url``
       - ``str``
-      - ``REQUIRED`` The index to output the content.
-    * - ``index.mapping``
-      - ``str``
+      - ``REQUIRED`` root url of STAC API
+    * - ``verify``
+      - ``bool``
       - Path to a yaml file which defines the mapping for the index
 
 Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - method: elasticsearch
-              connection_kwargs:
-                hosts: ['host1','host2']
-              index:
-                name: 'assets-2021-06-02'
+            - name: stac_fastapi
+              api_url: https://localhost
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"

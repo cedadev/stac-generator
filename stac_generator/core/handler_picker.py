@@ -45,9 +45,11 @@ class HandlerPicker:
 
     @staticmethod
     def _get_entrypoints(group) -> dict:
-        """Get entrypoints for given group
+        """
+        Get entrypoints for given group
 
         :param group: The named entry group
+
         :return: dict of entrypoints
         """
         entry_points = {}

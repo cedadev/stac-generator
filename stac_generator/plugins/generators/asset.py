@@ -1,6 +1,14 @@
 # encoding: utf-8
 """
+Generator to create STAC Assets
 
+Configuration
+-------------
+
+.. code-block:: yaml
+
+    generator: asset
+    recipes_root: recipes/
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"

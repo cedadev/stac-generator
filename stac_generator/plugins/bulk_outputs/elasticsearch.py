@@ -6,7 +6,7 @@ Elasticsearch
 An output backend which outputs the content generated to elasticsearch
 using the Elasticsearch API
 
-**Plugin name:** ``elasticsearch``
+**Plugin name:** ``elasticsearch_bulk``
 
 .. list-table::
     :header-rows: 1
@@ -28,7 +28,7 @@ Example Configuration:
     .. code-block:: yaml
 
         outputs:
-            - method: elasticsearch
+            - method: elasticsearch_bulk
               connection_kwargs:
                 hosts: ['host1','host2']
               index:

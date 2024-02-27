@@ -94,7 +94,6 @@ class Recipes:
 
     def __init__(self, root_path: str):
         """
-
         :param root_path: Path to the root of the yaml files
         """
         self.recipes = {"asset": {}, "item": {}, "collection": {}}
@@ -155,6 +154,7 @@ class Recipes:
         Get the most relevant recipe for a given path.
 
         :param path: Path for which to retrieve the recipe
+        :param stac_type: Type of recipe to return
         """
         if path in self.recipes[stac_type]:
             return self.load_recipe(path, stac_type)

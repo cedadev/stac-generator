@@ -1,14 +1,14 @@
 # encoding: utf-8
 """
-
+Generator to create STAC Collections
 
 Configuration
 -------------
 
 .. code-block:: yaml
 
-    item_descriptions:
-        root_directory: /path/to/root/descriptions
+    generator: collection
+    recipes_root: recipes/
 
 """
 __author__ = "Richard Smith"
