@@ -38,4 +38,4 @@ typing-extensions==4.7.1
 urllib3==1.26.18
 xarray==2023.9.0
 git+https://github.com/cedadev/extraction-methods
-yarl==1.6.3
+yarl==1.8.2
