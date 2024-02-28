@@ -9,6 +9,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -24,13 +25,15 @@ def recipes():
 
 def test_retrieve_posix_description(recipes):
 
-    recipe = recipes.get_description("/a/b/c/d/e")
+    recipe = recipes.get("/a/b/c/d/e", "item")
 
-    assert recipe.paths == ["/a/b/c", "gc://a/b/c"]
+    print(recipe.paths)
+
+    assert recipe.paths == [Path("/a/b/c"), Path("gc://a/b/c")]
 
 
 def test_retrieve_remote_description(recipes):
 
-    recipe = recipes.get_description("gc://a/b/c/d/e")
+    recipe = recipes.get("gc://a/b/c/d/e", "item")
 
-    assert recipe.paths == ["/a/b/c", "gc://a/b/c"]
+    assert recipe.paths == [Path("/a/b/c"), Path("gc://a/b/c")]
