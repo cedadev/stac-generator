@@ -9,15 +9,11 @@ Genertators
 
    * - Generator Name
      - Description
-   * - :ref:`asset <stac_generator/generators:asset>`
-     - Used to generate STAC assets.
-   * - :ref:`item <stac_generator/generators:item>`
+   * - :ref:`item <stac_generator/plugins/generators/item>`
      - Used to generate STAC items.
-   * - :ref:`collection <stac_generator/generators:collection>`
+   * - :ref:`collection <stac_generator/plugins/generators/collection>`
      - Used to generate STAC collections.
 
-.. automodule:: stac_generator.plugins.generators.asset
-
 .. automodule:: stac_generator.plugins.generators.item
 
-.. automodule:: stac_generator.plugins.generators.item
+.. automodule:: stac_generator.plugins.generators.collection

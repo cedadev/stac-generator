@@ -1,0 +1,21 @@
+paths:
+  - /a/b
+  - gc://a/b
+
+type: item
+
+id:
+  - method: default
+    inputs:
+      defaults:
+        item_id: another_item
+
+extraction_methods:
+  - method: regex
+    inputs:
+      regex: '\/(?P<mip_era>\w*)\.(?P<activity_id>\w*)\.(?P<institution_id>[\w-]*)\.(?P<source_id>[\w-]*)\/(?P<experiment_id>[\w-]*)\.(?P<member_id>\w*)\.(?P<table_id>\w*)\.(?P<var_id>\w*)\.(?P<grid_label>\w*)\.(?P<version>\w*)'
+
+  - method: remove
+    inputs:
+      keys:
+        - uri

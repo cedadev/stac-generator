@@ -122,6 +122,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 # Python imports
+import ast
 import functools
 import json
 import logging
@@ -175,22 +176,29 @@ class RabbitMQInput(BaseInput):
         # Decode the byte string to utf-8
         body = body.decode("utf-8")
 
+        LOGGER.info("RabbitMQ message recieved: %s", body)
+
         try:
             msg = json.loads(body)
 
-            return msg
-
         except json.JSONDecodeError:
-            # Assume the message is in the old format and split on :
-            split_line = body.strip().split(":")
+            try:
+                msg = ast.literal_eval(body)
 
-            msg = {
-                "datetime": ":".join(split_line[:3]),
-                "uri": split_line[3],
-                "action": split_line[4],
-                "filesize": split_line[5],
-                "message": ":".join(split_line[6:]),
-            }
+            except (ValueError, SyntaxError):
+                # Assume the message is in the old format and split on :
+                split_line = body.strip().split(":")
+
+                msg = {
+                    "datetime": ":".join(split_line[:3]),
+                    "uri": split_line[3],
+                    "action": split_line[4],
+                    "filesize": split_line[5],
+                    "message": ":".join(split_line[6:]),
+                }
+
+        if "uri" not in msg:
+            msg["uri"] = msg["filepath"]
 
         return msg
 
@@ -222,27 +230,15 @@ class RabbitMQInput(BaseInput):
             )
         )
 
-        # Get the exchanges to bind
-        src_exchange = self.exchange_conf.get("source_exchange")
-        dest_exchange = self.exchange_conf.get("destination_exchange")
-
         # Create a new channel
         channel = connection.channel()
 
-        # Declare relevant exchanges
-        if src_exchange:
-            channel.exchange_declare(
-                exchange=src_exchange["name"], exchange_type=src_exchange["type"]
-            )
         channel.exchange_declare(
-            exchange=dest_exchange["name"], exchange_type=dest_exchange["type"]
+            exchange=self.exchange_conf.get("name", "stac"),
+            exchange_type=self.exchange_conf.get("type", "topic"),
+            **self.exchange_conf.get("kwargs", {}),
         )
-
-        # Bind source exchange to dest exchange
-        if src_exchange:
-            channel.exchange_bind(
-                destination=dest_exchange["name"], source=src_exchange["name"]
-            )
+        channel.basic_qos(prefetch_count=1)
 
         # Declare queue and bind queue to the dest exchange
         for queue in self.queues_conf:
@@ -252,7 +248,7 @@ class RabbitMQInput(BaseInput):
 
             channel.queue_declare(queue=queue["name"], **declare_kwargs)
             channel.queue_bind(
-                exchange=dest_exchange["name"], queue=queue["name"], **bind_kwargs
+                exchange=self.exchange_conf["name"], queue=queue["name"], **bind_kwargs
             )
 
             # Set callback
@@ -274,7 +270,7 @@ class RabbitMQInput(BaseInput):
         :param delivery_tag: Message id
         """
 
-        LOGGER.debug(f"Acknowledging message: {delivery_tag}")
+        LOGGER.debug("Acknowledging message: %s", delivery_tag)
         if channel.is_open:
             channel.basic_ack(delivery_tag)
 
@@ -315,15 +311,16 @@ class RabbitMQInput(BaseInput):
             return
 
         # Extract uri
-        uri = message["uri"]
+        uri = message.pop("uri")
 
         if self.should_process(uri):
-            self.acknowledge_message(ch, method.delivery_tag, connection)
-            generator.process(**message)
+            LOGGER.info("Input processing: %s message: %s", uri, message)
 
-            LOGGER.info(f"Input processing: {uri}")
+            self.acknowledge_message(ch, method.delivery_tag, connection)
+            generator.process(uri, **message)
+
         else:
-            LOGGER.info(f"Input skipping: {uri}")
+            LOGGER.info("Input skipping: %s", uri)
 
     def run(self, generator: BaseGenerator):
 

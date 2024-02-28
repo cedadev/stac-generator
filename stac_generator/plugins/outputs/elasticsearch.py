@@ -40,8 +40,6 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from typing import Dict
-
 from elasticsearch import Elasticsearch
 
 from stac_generator.core.output import BaseOutput
@@ -73,7 +71,7 @@ class ElasticsearchOutput(BaseOutput):
                 self.es.indices.create(self.index_name, body=mapping)
 
     @staticmethod
-    def _format_bbox(data: Dict) -> Dict:
+    def _format_bbox(data: dict) -> dict:
         """
         Convert WGS84 coordinates into GeoJSON and
         format for Elasticsearch. Replaces the bbox key.
@@ -95,7 +93,7 @@ class ElasticsearchOutput(BaseOutput):
         return data
 
     @staticmethod
-    def _format_temporal_extent(data: Dict) -> Dict:
+    def _format_temporal_extent(data: dict) -> dict:
         """
         Convert `extent object<https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#extent-object>_` for Elasticsearch.
 
@@ -115,7 +113,7 @@ class ElasticsearchOutput(BaseOutput):
 
         return data
 
-    def clean(self, data: Dict) -> Dict:
+    def clean(self, data: dict) -> dict:
         """
         Condition the input dictionary for elasticsearch
         :param data: Input dictionary
@@ -128,14 +126,28 @@ class ElasticsearchOutput(BaseOutput):
 
         return data
 
-    def export(self, data, **kwargs):
+    def _remove_old(self, data: str, previous_ids: dict) -> dict:
+        """
+        Condition the input dictionary for elasticsearch
+        :param data: Input dictionary
+        :returns: Dictionary produced as a result of the clean methods
+        """
 
+        previous_id = previous_ids[data["type"]]
+
+        if previous_id != data["id"]:
+            self.es.delete(index=self.index_name, id=previous_id)
+
+    def export(self, data: dict, **kwargs) -> None:
         data = self.clean(data)
+
+        if self.remove_old:
+            self._remove_old(data, data["previous_ids"])
 
         index_kwargs = {
             "index": self.index_name,
             "id": data["id"],
-            "body": {"doc": data["body"], "doc_as_upsert": True},
+            "body": {"doc": data, "doc_as_upsert": True},
         }
 
         self.es.update(**index_kwargs)

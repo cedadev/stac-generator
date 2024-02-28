@@ -1,6 +1,14 @@
 # encoding: utf-8
 """
+Generator to create STAC Assets
 
+Configuration
+-------------
+
+.. code-block:: yaml
+
+    generator: asset
+    recipes_root: recipes/
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
@@ -13,9 +21,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 # Framework imports
-from stac_generator.core.collection_describer import CollectionDescription
 from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
@@ -23,65 +29,33 @@ LOGGER = logging.getLogger(__name__)
 
 class AssetGenerator(BaseGenerator):
     """
-    The central class for the asset extraction process.
+    Class defining the metadata extraction process for an asset.
 
-    An instance of the class can be used to atomically process files
-    passed to its ``process`` method.
+    An instance of the class can be used to process files.
     """
 
-    SURTYPE = GeneratorType.ITEM
     TYPE = GeneratorType.ASSET
 
-    def get_categories(self, uri: str, description: CollectionDescription) -> list:
-        """
-        Get category labels
-
-        :param uri: uri for object
-        :param description: CollectionDescription
-        :return:
-
-        """
-        categories = set()
-
-        for conf in description.categories:
-            label = self._get_category(uri, **conf.dict())
-            if label:
-                categories.add(label)
-
-        return list(categories) or ["data"]
-
-    def process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an asset
 
-        :param uri:
-        :param checksum:
+        :param body:
+
         :return:
         """
-
-        body = {"type": self.TYPE.value}
-
-        # Get dataset description file
-        description = self.collection_descriptions.get_description(uri)
-
-        # extract facets, run post extractions and extract ids
-        extraction_methods_output = self.run_extraction_methods(
-            uri, description, **kwargs
+        recipe = self.recipes.get(
+            kwargs.get("recipe_path", body["uri"]), self.TYPE.value
         )
-        body = dict_merge(body, extraction_methods_output)
 
-        body = self.run_post_extraction_methods(body, description, **kwargs)
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.TYPE.value, body["uri"], recipe
+        )
 
-        ids = self.run_id_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
-        body["categories"] = self.get_categories(uri, description)
-        body["item_id"] = ids["item_id"]
+        body = self.run_extraction_methods(body, recipe.id, **kwargs)
 
-        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
+        body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
 
-        message = {
-            f"{self.SURTYPE.value}_id": ids[f"{self.SURTYPE.value}_id"],
-            "uri": uri,
-        }
-
-        self.output(data, message=message)
+        self.output(body, recipe, **kwargs)

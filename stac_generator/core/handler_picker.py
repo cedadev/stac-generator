@@ -13,7 +13,7 @@ from typing import Optional, Union
 
 import pkg_resources
 
-from .processor import BaseProcessor
+from .extraction_method import BaseExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,9 +45,11 @@ class HandlerPicker:
 
     @staticmethod
     def _get_entrypoints(group) -> dict:
-        """Get entrypoints for given group
+        """
+        Get entrypoints for given group
 
         :param group: The named entry group
+
         :return: dict of entrypoints
         """
         entry_points = {}
@@ -57,7 +59,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get_processor(self, name: str, **kwargs) -> Optional[BaseProcessor]:
+    def get(self, name: str, **kwargs) -> Optional[BaseExtractionMethod]:
         """
         Get the processor by name
 
