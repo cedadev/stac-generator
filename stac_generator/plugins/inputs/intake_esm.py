@@ -71,6 +71,7 @@ class IntakeESMInput(BaseInput):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uri = kwargs["uri"]
+
         self.object_attr = kwargs["object_path_attr"]
 
         self.intake_kwargs = kwargs.get("catalog_kwargs", {})
@@ -78,7 +79,7 @@ class IntakeESMInput(BaseInput):
 
     def open_catalog(self):
         """Open the ESM catalog and perform a search, if required."""
-        LOGGER.info("Opening catalog")
+        LOGGER.info(f"Opening catalog {self.uri}")
         catalog = intake.open_esm_datastore(self.uri, **self.intake_kwargs)
 
         if self.search_kwargs:
@@ -92,7 +93,6 @@ class IntakeESMInput(BaseInput):
         start = datetime.now()
 
         catalog = self.open_catalog()
-
         for _, row in catalog.df.iterrows():
             uri = getattr(row, self.object_attr)
 

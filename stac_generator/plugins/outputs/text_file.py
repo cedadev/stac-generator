@@ -56,5 +56,12 @@ class TextFileOutput(BaseOutput):
         else:
             filepath = self.filepath
 
-        with open(f"{filepath}", "a") as file:
-            file.write(f"{json.dumps(kwargs['message'])}\n")
+        with open(filepath, "a", encoding="utf-8") as file:
+            if "member_of_recipes" in data:
+                for uri, recipe_path in data["member_of_recipes"].items():
+                    message = {
+                        "uri": uri,
+                        "recipe_path": recipe_path,
+                    }
+
+                    file.write(f"{json.dumps(message)}\n")

@@ -8,27 +8,16 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import argparse
+import cProfile
 import logging
 
+import click
 import pkg_resources
 import yaml
 
 from stac_generator.core.exceptions import NoPluginsError
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.utils import load_plugins
-
-
-def command_args():
-    """
-    Sets the command line arguments and handles their parsing
-    :return: command line options
-    """
-    parser = argparse.ArgumentParser(description="Run the asset scanner as configured")
-    parser.add_argument("conf", help="Path to a yaml configuration file")
-    args = parser.parse_args()
-
-    return args
 
 
 def setup_logging(conf):
@@ -65,7 +54,6 @@ def load_generator(conf: dict) -> BaseGenerator:
         )
 
         for entry_point in entry_points:
-
             generator = entry_point.load()
 
             # Only load the first one
@@ -77,19 +65,39 @@ def load_generator(conf: dict) -> BaseGenerator:
     return generator(conf)
 
 
-def main():
-    args = command_args()
+@click.command()
+@click.option(
+    "--conf",
+    "-c",
+    "conf",
+    required=True,
+    help="Path for generator configuration.",
+)
+@click.option(
+    "--prof",
+    "-p",
+    "prof",
+    help="Path for profile output file.",
+)
+def main(conf, prof):
+    if prof:
+        if not prof.lower().endswith((".pstats")):
+            prof += ".pstats"
+        profiler = cProfile.Profile()
+        profiler.enable()
 
-    conf = load_config(args.conf)
-
-    setup_logging(conf)
+    conf = load_config(conf)
 
     generator = load_generator(conf)
 
-    input_plugins = load_plugins(conf, "stac_generator.inputs", "inputs")
+    input_plugins = load_plugins(conf["inputs"], "stac_generator.inputs")
 
     for input_plugin in input_plugins:
-        input_plugin.run(generator)
+        input_plugin.start(generator)
+
+    if prof:
+        profiler.disable()
+        profiler.dump_stats(prof)
 
 
 if __name__ == "__main__":

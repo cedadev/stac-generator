@@ -1,14 +1,14 @@
 # encoding: utf-8
 """
-
+Generator to create STAC Items
 
 Configuration
 -------------
 
 .. code-block:: yaml
 
-    item_descriptions:
-        root_directory: /path/to/root/descriptions
+    generator: item
+    recipes_root: recipes/
 
 """
 __author__ = "Richard Smith"
@@ -18,77 +18,42 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from string import Template
 
 from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
 
 
 class ItemGenerator(BaseGenerator):
+    """
+    Class defining the metadata extraction process for an item.
 
-    SURTYPE = GeneratorType.COLLECTION
+    An instance of the class can be used to process files.
+    """
+
     TYPE = GeneratorType.ITEM
-    SUBTYPE = GeneratorType.ASSET
 
-    def process_template(self, uri: str, **kwargs):
+    def _process(self, body: dict, **kwargs) -> None:
         """
         Method to outline the processing pipeline for an item
 
-        :param uri:
+        :param body:
+
         :return:
         """
-        properties = {}
-
-        # Generate title and description properties from templates
-        description = self.collection_descriptions.get_description(uri)
-        templates = description.facets.templates
-
-        if templates:
-            if templates.title:
-                title_template = templates.title
-                title = Template(title_template).safe_substitute(properties)
-                properties["title"] = title
-            if templates.description:
-                desc_template = templates.description
-                desc = Template(desc_template).safe_substitute(properties)
-                properties["description"] = desc
-
-    def process(self, uri: str, **kwargs) -> None:
-        """
-        Method to outline the processing pipeline for an asset
-
-        :param uri:
-        :param checksum:
-        :return:
-        """
-
-        body = {"type": self.TYPE.value}
-
-        # Get dataset description file
-
-        description = self.collection_descriptions.get_description(uri)
-
-        # extract data
-        extraction_methods_output = self.run_extraction_methods(
-            uri, description, **kwargs
+        recipe = self.recipes.get(
+            kwargs.get("recipe_path", body["uri"]), self.TYPE.value
         )
-        body = dict_merge(body, extraction_methods_output)
 
-        body = self.run_post_extraction_methods(body, description, **kwargs)
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.TYPE.value, body["uri"], recipe
+        )
 
-        ids = self.run_id_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
-        body["collection_id"] = ids["collection_id"]
-        body["item_id"] = ids["item_id"]
+        body = self.run_extraction_methods(body, recipe.id, **kwargs)
 
-        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
+        body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
 
-        message = {
-            f"{self.SURTYPE.value}_id": ids[f"{self.SURTYPE.value}_id"],
-            "uri": uri,
-        }
-
-        self.output(data, message=message)
+        self.output(body, recipe, **kwargs)

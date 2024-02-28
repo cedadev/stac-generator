@@ -10,12 +10,11 @@ change the source of the files, the output of the metadata and the processing ch
 which extracts the metadata. The framework leverages a modular, plugin architecture
 to allow users to modify the workflow to fit their needs.
 
-The process expects a stream of "assets" (an asset being a file, zarr object, etc.).
+The process expects a stream of "messages" for which the recipes can be run against.
 The source of this stream is configured with `input plugins <stac_generator/inputs>`_
 which could be as simple as listing directories on a file system or using message
 queues as part of a complex ingest system. The `generators <generators>`_ operate on this stream and
-pass to `output plugins <stac_generator/outputs>`_. The output is at the level
-of an "asset" so higher level aggregated objects may require an aggregation step.
+pass to `output plugins <stac_generator/outputs>`_.
 
 These outputs are also configurable so could dump to the terminal (for debugging), file,
 a data store (postgres, elasticsearch, etc.) or even a message queue for onward processing.
@@ -36,22 +35,17 @@ in a certain space and time.
 Generators
 ==========
 
-The different generators are designed to extract different levels of metadata to build the assets, items, and collections of the STAC Catalog.
+The different generators are designed to extract different levels of metadata to build the items, and collections of the STAC Catalog.
 
 .. list-table::
     :header-rows: 1
 
     * - Name
       - Description
-    * - :ref:`Asset Generator <stac_generator/generators:asset>`
-      - Generates STAC Assets via extraction methods specified in the :ref:`colelction descriptions <collection_descriptions/collection_descriptions:collection descriptions>`
-      focusing on file metadata (name, location, size, etc.)
-    * - :ref:`Item Generator <item_generator/generators:item>`
-      - Generates STAC Items via extraction methods specified in the :ref:`colelction descriptions <collection_descriptions/collection_descriptions:collection descriptions>`
-      focusing on aggregation from asset metadata.
-    * - :ref:`Collection Generator <stac_generator/generators:collection>`
-      - Generates STAC Collections via extraction methods specified in the :ref:`colelction descriptions <collection_descriptions/collection_descriptions:collection descriptions>`
-      focusing on aggregation from item metadata.
+    * - :ref:`Item Generator <item_generator/plugins/generators/item>`
+      - Generates STAC Items via extraction methods specified in the :ref:`colelction descriptions <recipe/recipes>`.
+    * - :ref:`Collection Generator <stac_generator/plugins/generators/collection>`
+      - Generates STAC Collections via extraction methods specified in the relivant :ref:`recipe <recipe/recipes>`.
 
 
 

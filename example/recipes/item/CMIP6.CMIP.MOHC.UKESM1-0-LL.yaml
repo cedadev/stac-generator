@@ -1,0 +1,54 @@
+paths:
+  - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
+  - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.C4MIP.MOHC.UKESM1-0-LL
+
+type: item
+
+id:
+  - method: default
+    inputs:
+      defaults:
+        item_id: $instance_id
+
+extraction_methods:
+  - method: regex
+    inputs:
+      regex: '\/(?P<mip_era>\w*)\.(?P<activity_id>\w*)\.(?P<institution_id>[\w-]*)\.(?P<source_id>[\w-]*)\/(?P<experiment_id>[\w-]*)\.(?P<member_id>\w*)\.(?P<table_id>\w*)\.(?P<var_id>\w*)\.(?P<grid_label>\w*)\.(?P<version>\w*)'
+
+  - method: string_template
+    inputs:
+      template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
+      output_key: instance_id
+
+  - method: intake_assets
+    inputs:
+      uri: https://raw.githubusercontent.com/cedadev/cmip6-object-store/master/catalogs/ceda-zarr-cmip6.json
+      object_path_attr: zarr_path
+      search_kwargs:
+        mip_era: $mip_era
+        activity_id: $activity_id
+        institution_id: $institution_id
+        source_id: $source_id
+        table_id: $table_id
+        variable_id: $var_id
+        version: $version
+      extraction_methods:
+        - method: default
+          inputs:
+            defaults:
+              roles: ["data"]
+
+  - method: lambda
+    inputs:
+      function: 'lambda assets: {f"data{str(en+1).zfill(4)}": assets[key] for en, key in enumerate(sorted(assets))}'
+      input_args:
+        - $assets
+      output_key: assets
+
+  - method: remove
+    inputs:
+      keys:
+        - uri
+
+member_of:
+  - example/recipes/collection/CMIP6.CMIP.MOHC.UKESM1-0-LL.yaml

@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 class FileSystemInput(BaseInput):
     """
-    Performs an os.walk to provide a stream of paths for procesing.
+    Performs an os.walk to provide a stream of messages for procesing.
     """
 
     def __init__(self, **kwargs):

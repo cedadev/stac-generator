@@ -10,17 +10,51 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import ABC, abstractmethod
 
+from stac_generator.core.baker import Recipe
+from stac_generator.core.utils import load_plugins
+
 
 class BaseOutput(ABC):
+    """
+    Base class to define an output
+    """
+
     def __init__(self, **kwargs):
         """
         Set the kwargs to generate instance attributes of the same name
+
         :param kwargs:
         """
+
+        kwargs["mappings"] = (
+            load_plugins(kwargs["mappings"], "stac_generator.mappings")
+            if "mappings" in kwargs
+            else []
+        )
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
     @abstractmethod
-    def export(self, data, **kwargs):
-        pass
+    def export(self, data: dict, **kwargs) -> None:
+        """
+        Output the data.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+
+    # This allows for bulk outputs
+    def run(self, body: dict, recipe: Recipe, **kwargs) -> None:
+        """
+        Run the output.
+
+        :param data: data from processor to be output.
+        :param kwargs:
+        """
+        output_body = body.copy()
+
+        for mapping in self.mappings:
+            output_body = mapping.run(output_body, recipe, **kwargs)
+
+        self.export(output_body, **kwargs)

@@ -15,10 +15,14 @@ from stac_generator.core.utils import load_plugins
 
 
 class BaseInput(ABC):
+    """
+    Base class to define an input
+    """
+
     def __init__(self, **kwargs):
         self.filters = None
         if kwargs.get("filters"):
-            self.filters = load_plugins(kwargs, "stac_generator.filters", "filters")
+            self.filters = load_plugins(kwargs["filters"], "stac_generator.filters")
 
     def should_process(self, uri) -> bool:
         """
@@ -36,6 +40,15 @@ class BaseInput(ABC):
 
         return True
 
+    def start(self, generator: BaseGenerator):
+        """
+        Start the input plugin.
+        """
+        self.run(generator)
+        generator.finished()
+
     @abstractmethod
     def run(self, generator: BaseGenerator):
-        ...
+        """
+        Run the input plugin.
+        """

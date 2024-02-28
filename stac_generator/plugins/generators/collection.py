@@ -1,14 +1,14 @@
 # encoding: utf-8
 """
-
+Generator to create STAC Collections
 
 Configuration
 -------------
 
 .. code-block:: yaml
 
-    item_descriptions:
-        root_directory: /path/to/root/descriptions
+    generator: collection
+    recipes_root: recipes/
 
 """
 __author__ = "Richard Smith"
@@ -20,42 +20,40 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.utils import dict_merge
 from stac_generator.types.generators import GeneratorType
 
 LOGGER = logging.getLogger(__name__)
 
 
 class CollectionGenerator(BaseGenerator):
+    """
+    Class defining the metadata extraction process for an collection.
+
+    An instance of the class can be used to process files.
+    """
 
     TYPE = GeneratorType.COLLECTION
-    SUBTYPE = GeneratorType.ITEM
 
-    def process(self, uri: str, **kwargs) -> None:
+    def _process(self, body: dict, **kwargs) -> None:
         """
-        Method to outline the processing pipeline for an asset
+        Method to outline the processing pipeline for an collection
 
-        :param uri:
-        :param checksum:
+        :param body:
+
         :return:
         """
-
-        body = {"type": self.TYPE.value}
-
-        # Get dataset description file
-
-        description = self.collection_descriptions.get_description(uri)
-
-        # extract data
-        extraction_methods_output = self.run_extraction_methods(
-            uri, description, **kwargs
+        recipe = self.recipes.get(
+            kwargs.get("recipe_path", body["uri"]), self.TYPE.value
         )
-        body = dict_merge(body, extraction_methods_output)
 
-        body = self.run_post_extraction_methods(body, description, **kwargs)
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.TYPE.value, body["uri"], recipe
+        )
 
-        ids = self.run_id_extraction_methods(body, description, **kwargs)
+        body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
-        data = {"id": ids[f"{self.TYPE.value}_id"], "body": body}
+        body = self.run_extraction_methods(body, recipe.id, **kwargs)
 
-        self.output(data)
+        body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
+
+        self.output(body, recipe, **kwargs)

@@ -1,0 +1,20 @@
+generator: collection
+
+recipes_root: example/recipes/
+
+inputs:
+  - name: text_file
+    filepath: example/output/collection.txt
+outputs:
+  - name: standard_out
+    mappings:
+      - name: stac
+        stac_version: '1.0.0'
+        stac_extensions: []
+  - name: json_file
+    dirpath: example/output/collections
+    filename_term: id
+    mappings:
+      - name: stac
+        stac_version: '1.0.0'
+        stac_extensions: []

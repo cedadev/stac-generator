@@ -17,3 +17,5 @@ class GeneratorType(enum.Enum):
     ASSET = "asset"
     ITEM = "item"
     COLLECTION = "collection"
+
+    NONE = None
