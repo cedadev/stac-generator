@@ -1,8 +1,15 @@
-*.*
+.idea
+*.egg-info
 *venv
+.vscode
 conf.yml
 __pycache__
+*.pyc
 docs/build/
+.DS_Store
+.package.lock
 stac_generator-1.0.2.zip
+.lock
 GLOB-0.log
 cprofile
+.python-version
