@@ -9,7 +9,7 @@ jobs:
     # Checkout and build the docs with sphinx
     - uses: actions/checkout@v2
     - name: Install git
-      run: sudo apt install git
+      run: apt-get install git
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
       with: 
