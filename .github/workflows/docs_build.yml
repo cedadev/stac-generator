@@ -1,31 +1,30 @@
 name: Docs
 
-on:
-  release:
-    types:
-      - published
-  workflow_dispatch:
-    inputs: {}
-
+on: push
 
 jobs:
-  sphinx_docs_to_gh-pages:
+  build:
     runs-on: ubuntu-latest
-    name: Sphinx docs to gh-pages
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Installing the library
-        shell: bash -l {0}
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r docs_requirements.txt
-          python setup.py install
-      - name: Running the Sphinx to gh-pages Action
-        uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.0-beta.2
-        with:
-          branch: $GITHUB_REF_NAME
-          dir_docs: docs/source
-          sphinxopts: ''
+    # Checkout and build the docs with sphinx
+    - uses: actions/checkout@v2
+    - name: Install git
+      run: sudo apt-get install git-core
+    - name: Build HTML
+      uses: ammaraskar/sphinx-action@master
+      with: 
+        docs-folder: "docs/"
+        # pre-build-command: "mkdir /tmp/sphinx-log"
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: html-docs
+        path: docs/build/html/
+    # Deploys to the gh-pages branch if the commit was made to master, the 
+    # gh-pages then takes over serving the html
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/master'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/build/html

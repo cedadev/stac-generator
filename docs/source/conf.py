@@ -30,6 +30,7 @@ author = "Richard Smith"
 extensions = [
     "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.githubpages",
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.programoutput",

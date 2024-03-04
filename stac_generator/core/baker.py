@@ -15,6 +15,7 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 
 import hashlib
 import logging
+from collections import defaultdict
 
 # Python imports
 from functools import lru_cache
@@ -96,8 +97,8 @@ class Recipes:
         """
         :param root_path: Path to the root of the yaml files
         """
-        self.recipes = {"asset": {}, "item": {}, "collection": {}}
-        self.paths_map = {"asset": {}, "item": {}, "collection": {}}
+        self.recipes = defaultdict(dict)
+        self.paths_map = defaultdict(dict)
         self.location_map = {}
 
         for file_path in Path(root_path).rglob("*.y*ml"):
@@ -135,13 +136,13 @@ class Recipes:
         return recipe
 
     @lru_cache(100)
-    def load_recipe(self, key: str, stac_type: str) -> Recipe:
+    def load_recipe(self, key: str, recipe_type: str) -> Recipe:
         """
         Load the links from recipes member for ID generation.
 
         :param recipe: Recipe for links to be loaded for
         """
-        recipe = self.recipes[stac_type][key]
+        recipe = self.recipes[recipe_type][key]
 
         recipe.member_of = [
             self.recipes[link["type"]][link["key"]] for link in recipe.links
@@ -149,21 +150,21 @@ class Recipes:
 
         return recipe
 
-    def get(self, path: str, stac_type: str) -> Recipe:
+    def get(self, path: str, recipe_type: str) -> Recipe:
         """
         Get the most relevant recipe for a given path.
 
         :param path: Path for which to retrieve the recipe
-        :param stac_type: Type of recipe to return
+        :param recipe_type: Type of recipe to return
         """
-        if path in self.recipes[stac_type]:
-            return self.load_recipe(path, stac_type)
+        if path in self.recipes[recipe_type]:
+            return self.load_recipe(path, recipe_type)
 
         for parent in chain([path], Path(path).parents):
-            if parent in self.paths_map[stac_type]:
-                key = self.paths_map[stac_type][parent]
+            if parent in self.paths_map[recipe_type]:
+                key = self.paths_map[recipe_type][parent]
 
-                return self.load_recipe(key, stac_type)
+                return self.load_recipe(key, recipe_type)
 
         raise ValueError(f"No Recipe found for path: {path}")
 

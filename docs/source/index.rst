@@ -42,10 +42,10 @@ The different generators are designed to extract different levels of metadata to
 
     * - Name
       - Description
-    * - :ref:`Item Generator <item_generator/plugins/generators/item>`
-      - Generates STAC Items via extraction methods specified in the :ref:`colelction descriptions <recipe/recipes>`.
-    * - :ref:`Collection Generator <stac_generator/plugins/generators/collection>`
-      - Generates STAC Collections via extraction methods specified in the relivant :ref:`recipe <recipe/recipes>`.
+    * - `Item Generator <stac_generator/generators/item>`_
+      - Generates STAC Items via extraction methods specified in the relevant `recipe <recipes/recipes>`_.
+    * - `Collection Generator <stac_generator/plugins/generators/collection>`_
+      - Generates STAC Collections via extraction methods specified in the relevant `recipe <recipes/recipes>`_.
 
 
 
@@ -54,7 +54,8 @@ The different generators are designed to extract different levels of metadata to
    :caption: Contents:
 
    stac_generator/index
-   collection_descriptions/collection_descriptions
+   recipes/recipes
+   stac_generator/user_guide/orientation
 
 .. toctree::
    :maxdepth: 2

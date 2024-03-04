@@ -1,4 +1,5 @@
 .idea
+build*
 *.egg-info
 *venv
 .vscode
@@ -12,3 +13,4 @@ stac_generator-1.0.2.zip
 .lock
 GLOB-0.log
 cprofile
+.python-version

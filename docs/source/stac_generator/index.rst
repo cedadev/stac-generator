@@ -15,7 +15,7 @@ by chaining together different extraction methods to extract and manipulate the 
 The core facet extraction chain works on an atomic basis, where input plugins provide a single object
 for inspection and output a single object.
 
-Read the :ref:`Orientation <stac_generator/user_guide/orientation>` guide as a introduction into the framework.
+Read the :ref:`Orientation <stac_generator/user_guide/orientation:Orientation>` guide as a introduction into the framework.
 
 Installing
 ==========
@@ -62,11 +62,11 @@ Base configuration options:
    * - ``recipes_root``
      - ``REQUIRED`` Path to the root directory for the recipes. Used to describe workflows.
    * - ``inputs``
-     - ``REQUIRED`` Must have at least one `input <stac_generator/inputs>`_.
+     - ``REQUIRED`` Must have at least one :ref:`input <stac_generator/inputs:Inputs>`.
    * - ``outputs``
-     - ``REQUIRED`` Must have at least one `output <stac_generator/outputs>`_.
+     - ``REQUIRED`` Must have at least one :ref:`output <stac_generator/outputs:Outputs>`.
    * - ``extraction_methods``
-     - ``OPTIONAL`` Defaults for any extraction methods that are being used `extraction methods <stac_generator/extraction_methods>`_.
+     - ``OPTIONAL`` Defaults for any extraction methods that are being used :ref:`extraction methods <stac_generator/extraction_methods>`_.
    * - ``logging``
      - Kwargs passed to the `logging.basicConfig <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_ setup method
 
@@ -82,12 +82,16 @@ Sample configuration
    .. code-block:: yaml
 
       generator: item
-      recipe_root: /home/users/rsmith013/search_futures/collections-descriptions/descriptions
+
+      recipe_root: example/recipes
+
       inputs:
         - method: file_system
           path: /badc/faam/data/2005/b069-jan-05
+
       outputs:
         - method: standard_out
+
       logging:
          level: INFO
 
@@ -107,3 +111,4 @@ Extraction Methods, and Mappings have been developed to meet different use cases
    outputs
    extraction_methods
    mappings
+   generators

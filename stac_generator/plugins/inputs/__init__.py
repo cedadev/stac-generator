@@ -10,7 +10,7 @@ Inputs are loaded as named entry points with the namespace:
 
 .. warning::
     Blocking input plugins will prevent others from being run. They are run
-    sequentially. For example, with the `file system input`_ plugin, you
+    sequentially. For example, with the :ref:`file system input plugin <stac_generator/inputs:File System Input>`, you
     could configure several to scan multiple directories but the rabbit plugin
     creates a listening connection which would block any other inputs.
 """
