@@ -8,6 +8,8 @@ jobs:
     steps:
     # Checkout and build the docs with sphinx
     - uses: actions/checkout@v2
+    - name: Install xmllint
+      run: sudo apt-get install -y libxml2-utils
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
       with: 
