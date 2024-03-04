@@ -28,7 +28,7 @@ setup(
         "rabbitmq": ["pika"],
         "thredds": ["siphon"],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.8",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
