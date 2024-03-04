@@ -9,8 +9,4 @@ sphinxcontrib-programoutput==0.17
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 sphinxtogithub==1.1.0
-toolz==0.11.1
-tqdm==4.62.3
-typing-extensions==4.0.0
-urllib3==1.26.18
 -r ../requirements.txt
