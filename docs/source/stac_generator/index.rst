@@ -15,7 +15,7 @@ by chaining together different extraction methods to extract and manipulate the 
 The core facet extraction chain works on an atomic basis, where input plugins provide a single object
 for inspection and output a single object.
 
-Read the :ref:`Orientation <orientation>` guide as a introduction into the framework.
+Read the :ref:`Orientation <stac_generator/user_guide/orientation:Orientation>` guide as a introduction into the framework.
 
 Installing
 ==========
