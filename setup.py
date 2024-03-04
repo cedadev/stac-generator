@@ -8,14 +8,14 @@ setup(
     version="1.0.2",
     description="Framework to provide plugin architecture to allow the scanning of assets to extract metadata and facets.",
     author="Richard Smith",
-    url="https://github.com/cedadev/stac-scanner/",
+    url="https://github.com/cedadev/stac-generator/",
     long_description=_long_description,
     long_description_content_type="text/markdown",
     license="BSD - See stac_generator/LICENSE file for details",
     packages=find_packages(),
     test_suite="tests",
     package_data={"stac_generator": ["LICENSE"]},
-    install_requires=["pyyaml", "ceda-directory-tree", "tqdm", "pydantic"],
+    install_requires=[],
     extras_require={
         "docs": [
             "sphinx",
@@ -28,7 +28,7 @@ setup(
         "rabbitmq": ["pika"],
         "thredds": ["siphon"],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
