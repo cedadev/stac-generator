@@ -10,4 +10,4 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 # sphinxtogithub==1.1.0
 # -r ../requirements.txt
-. --install-option="--no-deps"
+.
