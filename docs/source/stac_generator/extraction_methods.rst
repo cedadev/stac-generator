@@ -1,14 +1,4 @@
 
-**********
-Processors
-**********
-
-Processors take a uri and return a dictionary of extracted information. They
-can be chained, one after the other and the results are merged such that arrays
-are appended to and key:value pairs are overwritten by subsequent write operations.
-
-.. _extraction-methods:
-
 Extraction Methods
 ==================
 

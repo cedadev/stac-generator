@@ -17,7 +17,7 @@ python entry points to allow you to write your own plugins.
 The STAC Generator package stores some :ref:`inputs <stac_generator/inputs:inputs>` which can be used to read from a range of different
 sources messages of STAC objects to genertate.
 The :ref:`item <stac_generator/generators:Item Generator>`, and :ref:`collection <stac_generator/generators:Collection Generator>`
-generators take these messages and extract the required facets to buil the relevant STAC object using a variety of :ref:`extraction methods <stac_generator/extraction_methods:extraction methods>`.
+generators take these messages and extract the required facets to buil the relevant STAC object using a variety of :ref:`extraction methods <stac_generator/extraction_methods:Extraction Methods>`.
 These generated objects can then be passed to a range of :ref:`outputs <stac_generator/outputs:outputs>`.
 
 The generators have two levels of configuration. Global configuration, passed at the command line on
@@ -30,7 +30,7 @@ describe the workflow for extracting facets and other metadata to build the item
 Background for recipes can be found `here <recipes/recipes:Recipes>`_
 and a guide for how to build, and test these files is :ref:`here <recipes/building_a_workflow:building an Recipe>`.
 
-The different available extraction methods which can construct these workflows are found :ref:`here <stac_generator/extraction_methods:extraction methods>`.
+The different available extraction methods which can construct these workflows are found :ref:`here <stac_generator/extraction_methods:Extraction Methods>`.
 
 The `CEDA repository containing these recipes <https://github.com/cedadev/stac-recipes>`_ can
 be used as an example. An example which includes extracting metadata from the NetCDF header is
