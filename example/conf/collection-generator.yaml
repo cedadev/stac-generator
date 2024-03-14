@@ -1,12 +1,18 @@
+# The type of generator to be run
 generator: collection
 
+# The root directory of the recipes
 recipes_root: example/recipes/
 
+# The input plugins to be run for the generator
 inputs:
   - name: text_file
-    filepath: example/output/collection.txt
+    filepath: example/output/asset.txt
+
+# The output plugins to be run for the generator
 outputs:
   - name: standard_out
+# Output plugins can use mappings to reshape the output
     mappings:
       - name: stac
         stac_version: '1.0.0'
