@@ -1,0 +1,42 @@
+{
+    "type": "Collection",
+    "stac_version": "1.0.0",
+    "stac_extensions": [],
+    "id": "cmip6",
+    "extent": {
+        "temporal": {
+            "interval": null
+        },
+        "spatial": {
+            "bbox": null
+        }
+    },
+    "summaries": {
+        "mip_era": [
+            "CMIP6"
+        ],
+        "activity_id": [
+            "CMIP"
+        ],
+        "institution_id": [
+            "MOHC"
+        ],
+        "source_id": [
+            "UKESM1-0-LL"
+        ],
+        "table_id": [
+            "Amon"
+        ],
+        "var_id": [
+            "tas"
+        ],
+        "version": [
+            "v20191210",
+            "v20190502"
+        ]
+    },
+    "assets": {},
+    "providers": [],
+    "license": "",
+    "member_of_recipes": {}
+}

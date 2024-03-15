@@ -46,6 +46,4 @@ class StandardOutOutput(BaseOutput):
         :param kwargs: Not used
         """
         pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(data)
-        pp.pprint(data["instance_id"])
-        # pp.pprint(data["dataset_id"])
+        pp.pprint(data)

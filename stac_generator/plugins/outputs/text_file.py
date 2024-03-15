@@ -25,6 +25,7 @@ Example Configuration:
               filepath: location_to_destination_file
 
 """
+
 __author__ = "Mahir Rahman"
 __date__ = "23 Mar 2022"
 __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
@@ -48,8 +49,6 @@ class TextFileOutput(BaseOutput):
         self.filepath = self.filepath.rstrip("/")
 
     def export(self, data: dict, **kwargs) -> None:
-        if hasattr(self, "deduplicate"):
-            return
 
         if os.path.isdir(self.filepath):
             filepath = f"{self.filepath}/file_out.txt"

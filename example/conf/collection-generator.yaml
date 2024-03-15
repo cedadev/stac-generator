@@ -2,12 +2,12 @@
 generator: collection
 
 # The root directory of the recipes
-recipes_root: example/recipes/
+recipes_root: recipes/
 
 # The input plugins to be run for the generator
 inputs:
   - name: text_file
-    filepath: example/output/asset.txt
+    filepath: input/collections.txt
 
 # The output plugins to be run for the generator
 outputs:
@@ -18,7 +18,7 @@ outputs:
         stac_version: '1.0.0'
         stac_extensions: []
   - name: json_file
-    dirpath: example/output/collections
+    dirpath: output/collections
     filename_term: id
     mappings:
       - name: stac

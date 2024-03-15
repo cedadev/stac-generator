@@ -13,7 +13,7 @@ id:
 extraction_methods:
   - method: json_file
     inputs:
-      filepath: example/output/items/
+      dirpath: output/items/
       terms:
         - mip_era
         - activity_id
@@ -22,3 +22,8 @@ extraction_methods:
         - table_id
         - var_id
         - version
+
+  - method: remove
+    inputs:
+      keys:
+        - uri

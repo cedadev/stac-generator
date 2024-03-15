@@ -1,0 +1,33 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0",
+    "stac_extensions": [],
+    "id": "CMIP6.CMIP.MOHC.UKESM1-0-LL.Amon.tas.v20190502",
+    "geometry": null,
+    "assets": {
+        "data0001": {
+            "href": "https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL/historical.r12i1p1f2.Amon.tas.gn.v20191210.zarr",
+            "roles": [
+                "data"
+            ]
+        }
+    },
+    "properties": {
+        "datetime": null,
+        "mip_era": "CMIP6",
+        "activity_id": "CMIP",
+        "institution_id": "MOHC",
+        "source_id": "UKESM1-0-LL",
+        "experiment_id": "historical",
+        "member_id": "r4i1p1f2",
+        "table_id": "Amon",
+        "var_id": "tas",
+        "grid_label": "gn",
+        "version": "v20190502",
+        "instance_id": "CMIP6.CMIP.MOHC.UKESM1-0-LL.Amon.tas.v20190502"
+    },
+    "member_of_recipes": {
+        "cmip6": "cce91d867703049b5f46f227d8d71bad"
+    },
+    "collection": "cmip6"
+}

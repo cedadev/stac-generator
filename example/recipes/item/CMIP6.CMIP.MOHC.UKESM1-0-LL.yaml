@@ -24,6 +24,7 @@ extraction_methods:
     inputs:
       template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
       output_key: instance_id
+
 # Some extraction methods generate assets which can also include their own list of extration methods to be run on the assets
   - method: intake_assets
     inputs:
@@ -57,4 +58,4 @@ extraction_methods:
 
 # member of defines the other recipes that define a parent of this record
 member_of:
-  - example/recipes/collection/CMIP6.CMIP.MOHC.UKESM1-0-LL.yaml
+  - recipes/collection/CMIP6.CMIP.MOHC.UKESM1-0-LL.yaml
