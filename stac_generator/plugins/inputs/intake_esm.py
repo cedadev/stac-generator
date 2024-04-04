@@ -118,5 +118,7 @@ class IntakeESMInput(BaseInput):
 
                 total_files += 1
 
+            count += 1
+
         end = datetime.now()
         print(f"Processed {total_files} files from {self.uri} in {end-start}")
