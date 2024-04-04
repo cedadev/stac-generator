@@ -32,6 +32,9 @@ as a source for file objects.
       - Optional kwargs to pass to `esm_datastore.search
         <https://intake-esm.readthedocs.io/en/latest
         /api.html#intake_esm.core.esm_datastore.search>`_
+    * - ``skip``
+      - ``int``
+      - Optional value to skip the first n rows
 
 
 Example Configuration:
@@ -81,13 +84,11 @@ class IntakeESMInput(BaseInput):
     def open_catalog(self, uri, intake_kwargs):
         """Open the ESM catalog."""
         LOGGER.info(f"Opening catalog {uri}")
-        catalog = intake.open_esm_datastore(uri, **intake_kwargs)
-
-        return catalog
+        return intake.open_esm_datastore(uri, **intake_kwargs)
 
     def search_catalog(self, catalog, search_kwargs):
         """Perform a search ESM catalog."""
-        LOGGER.info(f"Searching catalog")
+        LOGGER.info("Searching catalog")
 
         if self.search_kwargs:
             catalog = catalog.search(**search_kwargs)
@@ -99,10 +100,10 @@ class IntakeESMInput(BaseInput):
         total_files = 0
         start = datetime.now()
 
-        catalog = self.open_catalog(self.uri, **self.intake_kwargs)
+        catalog = self.open_catalog(self.uri, self.intake_kwargs)
 
         if self.search_kwargs:
-            catalog = self.open_catalog(catalog, **self.intake_kwargs)
+            catalog = self.open_catalog(catalog, self.search_kwargs)
 
         count = 0
         for _, row in catalog.df.iterrows():
