@@ -73,17 +73,24 @@ class IntakeESMInput(BaseInput):
         self.uri = kwargs["uri"]
 
         self.object_attr = kwargs["object_path_attr"]
+        self.skip = kwargs.get("skip", -1)
 
         self.intake_kwargs = kwargs.get("catalog_kwargs", {})
         self.search_kwargs = kwargs.get("search_kwargs")
 
-    def open_catalog(self):
-        """Open the ESM catalog and perform a search, if required."""
-        LOGGER.info(f"Opening catalog {self.uri}")
-        catalog = intake.open_esm_datastore(self.uri, **self.intake_kwargs)
+    def open_catalog(self, uri, intake_kwargs):
+        """Open the ESM catalog."""
+        LOGGER.info(f"Opening catalog {uri}")
+        catalog = intake.open_esm_datastore(uri, **intake_kwargs)
+
+        return catalog
+
+    def search_catalog(self, catalog, search_kwargs):
+        """Perform a search ESM catalog."""
+        LOGGER.info(f"Searching catalog")
 
         if self.search_kwargs:
-            catalog = catalog.search(**self.search_kwargs)
+            catalog = catalog.search(**search_kwargs)
 
         LOGGER.info(f"Found {len(catalog.df)} items")
         return catalog
@@ -92,17 +99,23 @@ class IntakeESMInput(BaseInput):
         total_files = 0
         start = datetime.now()
 
-        catalog = self.open_catalog()
+        catalog = self.open_catalog(self.uri, **self.intake_kwargs)
+
+        if self.search_kwargs:
+            catalog = self.open_catalog(catalog, **self.intake_kwargs)
+
+        count = 0
         for _, row in catalog.df.iterrows():
-            uri = getattr(row, self.object_attr)
+            if count > self.skip:
+                uri = getattr(row, self.object_attr)
 
-            if self.should_process(uri):
-                generator.process(uri)
-                LOGGER.debug(f"Input processing: {uri}")
-            else:
-                LOGGER.debug(f"Input skipping: {uri}")
+                if self.should_process(uri):
+                    generator.process(uri)
+                    LOGGER.debug(f"Input processing: {uri}")
+                else:
+                    LOGGER.debug(f"Input skipping: {uri}")
 
-            total_files += 1
+                total_files += 1
 
         end = datetime.now()
         print(f"Processed {total_files} files from {self.uri} in {end-start}")
