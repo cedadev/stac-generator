@@ -69,6 +69,7 @@ class STACFastAPIOutput(BaseOutput):
                 urljoin(self.api_url, f"collections/{collection}/items"),
                 json=data,
                 verify=self.verify,
+                timeout=180,
             )
 
             if response.status_code == 404:
@@ -108,11 +109,14 @@ class STACFastAPIOutput(BaseOutput):
                         ),
                         json=data,
                         verify=self.verify,
+                        timeout=180,
                     )
 
                     if response.status_code != 200:
                         LOGGER.warning(
-                            f"FastAPI Output Update failed with status code: {response.status_code} and response text: {response.text}"
+                            "FastAPI Output Item update failed with status code: %s and response text: %s",
+                            response.status_code,
+                            response.text,
                         )
 
             elif response.status_code != 200:
@@ -131,7 +135,29 @@ class STACFastAPIOutput(BaseOutput):
             timeout=180,
         )
 
-        if response.status_code != 200:
+        if response.status_code == 409:
+            response_json = response.json()
+
+            if (
+                response_json["description"]
+                == f"Collection {data['id']} already exists"
+            ):
+                response = requests.put(
+                    urljoin(self.api_url, "collections"),
+                    # urljoin(self.api_url, f"collections/{data['id']}"),
+                    json=data,
+                    verify=self.verify,
+                    timeout=180,
+                )
+
+                if response.status_code != 200:
+                    LOGGER.warning(
+                        "FastAPI Output Collection update failed with status code: %s and response text: %s",
+                        response.status_code,
+                        response.text,
+                    )
+
+        elif response.status_code != 200:
             LOGGER.warning(
                 "FastAPI Output failed to post to STAC Fastapi collections endpoint returned status code: %s and response text: %s request data: %s",
                 response.status_code,
