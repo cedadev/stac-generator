@@ -525,13 +525,15 @@ files = [
 test = ["pytest (>=6)"]
 
 [[package]]
-name = "extraction_methods"
+name = "extraction-methods"
 version = "1.0.2"
 description = "Methods to enable the extraction of metadata."
 optional = false
 python-versions = ">=3.7"
-files = []
-develop = false
+files = [
+    {file = "extraction_methods-1.0.2-py3-none-any.whl", hash = "sha256:0204437bbc8bd6b8e0fd91373e7103b9631b75ad61b085f3b3a692dab1b11791"},
+    {file = "extraction_methods-1.0.2.tar.gz", hash = "sha256:cd613b6a33aa5f6f0e911861251454e1dc02e62b95ecede8cc6d22834ac473c0"},
+]
 
 [package.dependencies]
 ceda-directory-tree = "*"
@@ -545,10 +547,6 @@ elasticsearch = ["elasticsearch"]
 intake-esm = ["intake-esm"]
 rabbitmq = ["pika"]
 thredds = ["siphon"]
-
-[package.source]
-type = "directory"
-url = "../extraction-methods"
 
 [[package]]
 name = "frozenlist"
@@ -2004,4 +2002,4 @@ thredds = ["siphon"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7b310c4b6914233d3132a4b85c5923e134ffb12978c84286a36abe6f6dbb601c"
+content-hash = "35df903642e3831349c9cbc16e19ec32ba283c425b893a5f1378768fbb1782dd"
