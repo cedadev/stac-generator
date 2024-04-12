@@ -37,7 +37,8 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 from urllib.parse import urljoin
 
-import requests
+import httpx
+from httpx_auth import OAuth2ClientCredentials
 
 from stac_generator.core.output import BaseOutput
 
@@ -56,6 +57,22 @@ class STACFastAPIOutput(BaseOutput):
         if not hasattr(self, "verify"):
             self.verify = True
 
+        if hasattr(self, "authentication"):
+            auth = OAuth2ClientCredentials(
+                self.authentication.get("token_url"),
+                client_id=self.authentication.get("client_id"),
+                client_secret=self.authentication.get("client_secret"),
+            )
+
+        else:
+            auth = None
+
+        self.client = httpx.Client(
+            auth=auth,
+            verify=self.verify,
+            timeout=180,
+        )
+
     def item(self, data: dict) -> None:
         collections = data["collection"]
 
@@ -65,35 +82,31 @@ class STACFastAPIOutput(BaseOutput):
         for collection in collections:
             collection = data["collection"] = collection.lower()
 
-            response = requests.post(
+            response = self.client.post(
                 urljoin(self.api_url, f"collections/{collection}/items"),
                 json=data,
-                verify=self.verify,
-                timeout=180,
             )
 
             if response.status_code == 404:
                 response_json = response.json()
 
-                if (
-                    response_json["description"]
-                    == f"Collection {collection} does not exist"
-                ):
+                if response_json["description"] == f"Collection {collection} does not exist":
                     collection = {
                         "type": "Collection",
                         "id": collection,
+                        "stac_version": "0.1.0",
+                        "stac_extensions": [],
+                        "license": "",
                     }
 
-                    response = requests.post(
+                    response = self.client.post(
                         urljoin(self.api_url, "collections"),
                         json=collection,
-                        verify=self.verify,
                     )
 
-                    response = requests.post(
+                    response = self.client.post(
                         urljoin(self.api_url, f"collections/{collection}/items"),
                         json=data,
-                        verify=self.verify,
                     )
 
             if response.status_code == 409:
@@ -103,13 +116,9 @@ class STACFastAPIOutput(BaseOutput):
                     response_json["description"]
                     == f"Item {data['id']} in collection {collection} already exists"
                 ):
-                    response = requests.put(
-                        urljoin(
-                            self.api_url, f"collections/{collection}/items/{data['id']}"
-                        ),
+                    response = self.client.put(
+                        urljoin(self.api_url, f"collections/{collection}/items/{data['id']}"),
                         json=data,
-                        verify=self.verify,
-                        timeout=180,
                     )
 
                     if response.status_code != 200:
@@ -128,26 +137,19 @@ class STACFastAPIOutput(BaseOutput):
                 )
 
     def collection(self, data: dict) -> None:
-        response = requests.post(
+        response = self.client.post(
             urljoin(self.api_url, "collections"),
             json=data,
-            verify=self.verify,
-            timeout=180,
         )
 
         if response.status_code == 409:
             response_json = response.json()
 
-            if (
-                response_json["description"]
-                == f"Collection {data['id']} already exists"
-            ):
-                response = requests.put(
+            if response_json["description"] == f"Collection {data['id']} already exists":
+                response = self.client.put(
                     urljoin(self.api_url, "collections"),
                     # urljoin(self.api_url, f"collections/{data['id']}"),
                     json=data,
-                    verify=self.verify,
-                    timeout=180,
                 )
 
                 if response.status_code != 200:
