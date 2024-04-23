@@ -53,7 +53,7 @@ The file in collection-descriptions, describes the workflow to extract the facet
 .. code-block:: yaml
 
     paths:
-  - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
+      - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
 
     asset:
     # The default asset id is a hash of the assets uri
