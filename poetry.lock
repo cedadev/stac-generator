@@ -287,24 +287,6 @@ files = [
 ]
 
 [[package]]
-name = "ceda-directory-tree"
-version = "1.0.2"
-description = "Python package to create a virtual tree data structure to represent a directory tree to be used for efficient search"
-optional = false
-python-versions = ">=3"
-files = [
-    {file = "ceda-directory_tree-1.0.2.tar.gz", hash = "sha256:066e1ca1cb211a7ebc6ca39da02fa71367592d06f0f979c0cb606879cbb40cc8"},
-    {file = "ceda_directory_tree-1.0.2-py3-none-any.whl", hash = "sha256:729b370100fc7bf4992e11787495461f4d4370852fc348d057070209fe3dfdd1"},
-]
-
-[package.dependencies]
-anytree = "*"
-
-[package.extras]
-dev = ["pytest", "requests"]
-docs = ["sphinx", "sphinx-rtd-theme", "sphinxcontrib-programoutput"]
-
-[[package]]
 name = "certifi"
 version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -512,13 +494,13 @@ requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "exceptiongroup"
-version = "1.2.0"
+version = "1.2.1"
 description = "Backport of PEP 654 (exception groups)"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "exceptiongroup-1.2.0-py3-none-any.whl", hash = "sha256:4bfd3996ac73b41e9b9628b04e079f193850720ea5945fc96a08633c66912f14"},
-    {file = "exceptiongroup-1.2.0.tar.gz", hash = "sha256:91f5c769735f051a4290d52edd0858999b57e5876e9f85937691bd4c9fa3ed68"},
+    {file = "exceptiongroup-1.2.1-py3-none-any.whl", hash = "sha256:5258b9ed329c5bbdd31a309f53cbfb0b155341807f6ff7606a1e801a891b29ad"},
+    {file = "exceptiongroup-1.2.1.tar.gz", hash = "sha256:a4785e48b045528f5bfe627b6ad554ff32def154f42372786903b7abcfe1aa16"},
 ]
 
 [package.extras]
@@ -526,27 +508,60 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "extraction-methods"
-version = "1.0.2"
-description = "Methods to enable the extraction of metadata."
+version = "0.0.3"
+description = "Methods to enable the extraction of metadata"
 optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "extraction_methods-1.0.2-py3-none-any.whl", hash = "sha256:0204437bbc8bd6b8e0fd91373e7103b9631b75ad61b085f3b3a692dab1b11791"},
-    {file = "extraction_methods-1.0.2.tar.gz", hash = "sha256:cd613b6a33aa5f6f0e911861251454e1dc02e62b95ecede8cc6d22834ac473c0"},
-]
+python-versions = "^3.10"
+files = []
+develop = false
 
 [package.dependencies]
-ceda-directory-tree = "*"
-pydantic = "*"
-pyyaml = "*"
-tqdm = "*"
+aiohttp = "3.9.2"
+alabaster = "0.7.12"
+anytree = "2.8.0"
+async-timeout = "4.0.3"
+babel = "2.9.1"
+boto3 = "1.18.44"
+botocore = "1.21.44"
+cachetools = "4.2.4"
+certifi = "2023.7.22"
+chardet = "4.0.0"
+docutils = "0.16"
+elasticsearch = "7.13.1"
+fsspec = "2024.3.1"
+gcsfs = "2024.3.1"
+idna = "2.10"
+imagesize = "1.2.0"
+jinja2 = "3.1.3"
+jmespath = "0.10.0"
+multidict = "5.1.0"
+packaging = "21.3"
+pika = "1.2.0"
+pydantic = "2.1.1"
+pygments = "2.15.0"
+pyparsing = "2.4.7"
+python-dateutil = "2.8.2"
+python-magic = "0.4.25"
+pytz = "2021.1"
+pyyaml = "6.0.1"
+requests = "2.31.0"
+s3transfer = "0.5.0"
+siphon = "0.9"
+six = "1.16.0"
+snowballstemmer = "2.1.0"
+tqdm = "4.62.3"
+typing-extensions = "4.7.1"
+urllib3 = "1.26.18"
 
 [package.extras]
-docs = ["elasticsearch", "sphinx", "sphinx-rtd-theme", "sphinxcontrib-programoutput"]
-elasticsearch = ["elasticsearch"]
-intake-esm = ["intake-esm"]
-rabbitmq = ["pika"]
-thredds = ["siphon"]
+docs = []
+intake-esm = []
+
+[package.source]
+type = "git"
+url = "https://github.com/cedadev/extraction-methods.git"
+reference = "HEAD"
+resolved_reference = "2bfca7671b1a2347c7f82ee249628676eec4e455"
 
 [[package]]
 name = "frozenlist"
@@ -1325,13 +1340,13 @@ twisted = ["twisted"]
 
 [[package]]
 name = "pluggy"
-version = "1.4.0"
+version = "1.5.0"
 description = "plugin and hook calling mechanisms for python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pluggy-1.4.0-py3-none-any.whl", hash = "sha256:7db9f7b503d67d1c5b95f59773ebb58a8c1c288129a88665838012cfb07b8981"},
-    {file = "pluggy-1.4.0.tar.gz", hash = "sha256:8c85c2876142a764e5b7548e7d9a0e0ddb46f5185161049a79b7e974454223be"},
+    {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
+    {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
 ]
 
 [package.extras]
@@ -2002,4 +2017,4 @@ thredds = ["siphon"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "35df903642e3831349c9cbc16e19ec32ba283c425b893a5f1378768fbb1782dd"
+content-hash = "90bec2a5666c4823b558277543b6259e4ed5b2eb42888addc39314620c3844a6"
