@@ -1,11 +1,11 @@
+# encoding: utf-8
 """
-Text File
----------
+Kafka
+-----
 
-Takes file or directory path, uses the dictionary
-in the file(s) to pass into the extractor.
+An input plufin which polls a kafka event stream.
 
-**Plugin name:** ``text_file``
+**Plugin name:** ``kafka``
 
 .. list-table::
     :header-rows: 1
@@ -13,22 +13,30 @@ in the file(s) to pass into the extractor.
     * - Option
       - Value Type
       - Description
-    * - ``filepath``
-      - ``string``
-      - ``REQUIRED`` the path to input file(s)
+    * - ``config``
+      - ``dict``
+      - ``REQUIRED`` Configuration for the `Kafka consumer <https://docs.confluent.io/kafka-clients/python/current/overview.html>`_
+    * - ``topics``
+      - ``list``
+      - ``REQUIRED`` The topics to poll for messages.
+    * - ``timeout``
+      - ``str``
+      - ``REQUIRED`` The time between polling the event stream.
 
-Example Configuration:
+Example configuration:
     .. code-block:: yaml
 
-        inputs:
-            - method: text_file
-              filepath: input_file(s)_location
-
+        outputs:
+            - method: kafka
+              config:
+                'bootstrap.servers': 'host1:9092,host2:9092'
+              topics:
+                - stac
 """
 
 import logging
 
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, KafkaException
 
 from stac_generator.core.generator import BaseGenerator
 from stac_generator.core.input import BaseInput
@@ -38,7 +46,7 @@ LOGGER = logging.getLogger(__name__)
 
 class KafkaInput(BaseInput):
     """
-    Use external file(s) as input to enter data to pass to
+    Use Kafka event stream as input to collect messages to pass to
     the processor.
     """
 

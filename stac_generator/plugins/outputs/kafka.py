@@ -13,12 +13,25 @@ An output backend which outputs the generated metadata to a kafka event stream.
     * - Option
       - Value Type
       - Description
+    * - ``config``
+      - ``dict``
+      - ``REQUIRED`` Configuration for the `Kafka producer <https://docs.confluent.io/kafka-clients/python/current/overview.html>`_
+    * - ``topic``
+      - ``str``
+      - ``REQUIRED`` The topic to post the message to.
+    * - ``key_term``
+      - ``str``
+      - Term to be used as the kafka messages key.
 
 Example configuration:
     .. code-block:: yaml
 
         outputs:
             - method: kafka
+              config:
+                'bootstrap.servers': 'host1:9092,host2:9092'
+              topic: stac
+              key_term: item_id
 """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
@@ -43,6 +56,9 @@ class KafkaOutput(BaseOutput):
         super().__init__(**kwargs)
 
         # Create the credentials object
+        if not hasattr(self, "input_term"):
+            self.key_term = "uri"
+
         self.producer = Producer(self.config)
 
     def delivery_callback(err, msg):
@@ -59,10 +75,11 @@ class KafkaOutput(BaseOutput):
 
     def export(self, data: dict, **kwargs) -> None:
         """
-        Print the received data.
+        Post the message to the kafka server.
 
-        :param data: Data from extraction process
+        :param data: Data from extraction processes
         :param kwargs: Not used
         """
+        key = message.get(self.key_term, None)
         message = json.dumps(data).encode("utf8")
-        self.producer.produce(self.topic, self.key, message, callback=self.delivery_callback)
+        self.producer.produce(self.topic, key, message, callback=self.delivery_callback)
