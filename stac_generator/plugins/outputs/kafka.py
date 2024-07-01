@@ -61,18 +61,6 @@ class KafkaOutput(BaseOutput):
 
         self.producer = Producer(self.config)
 
-    def delivery_callback(err, msg):
-        if err:
-            print("ERROR: Message failed delivery: {}".format(err))
-        else:
-            print(
-                "Produced event to topic {topic}: key = {key:12} value = {value:12}".format(
-                    topic=msg.topic(),
-                    key=msg.key().decode("utf-8"),
-                    value=msg.value().decode("utf-8"),
-                )
-            )
-
     def export(self, data: dict, **kwargs) -> None:
         """
         Post the message to the kafka server.
@@ -80,6 +68,7 @@ class KafkaOutput(BaseOutput):
         :param data: Data from extraction processes
         :param kwargs: Not used
         """
-        key = message.get(self.key_term, None)
+        key = data.get(self.key_term, None)
         message = json.dumps(data).encode("utf8")
-        self.producer.produce(self.topic, key, message, callback=self.delivery_callback)
+        self.producer.produce(self.topic, key=key, value=message)
+        self.producer.flush()
