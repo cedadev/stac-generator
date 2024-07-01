@@ -97,6 +97,7 @@ thredds = "stac_generator.plugins.inputs.thredds:ThreddsInput"
 text_file = "stac_generator.plugins.inputs.text_file:TextFileInput"
 solr = "stac_generator.plugins.inputs.solr:SolrInput"
 elasticsearch = "stac_generator.plugins.inputs.elasticsearch:ElasticsearchInput"
+kafka = "stac_generator.plugins.inputs.kafka:KafkaInput"
 
 [tool.poetry.plugins."stac_generator.outputs"]
 standard_out = "stac_generator.plugins.outputs.standard_out:StandardOutOutput"
@@ -110,6 +111,7 @@ rabbitmq = "stac_generator.plugins.outputs.rabbit_mq:RabbitMQOutput"
 rabbitmq_bulk = "stac_generator.plugins.bulk_outputs.rabbit_mq:RabbitMQBulkOutput"
 intake_esm = "stac_generator.plugins.outputs.intake_esm:IntakeESMOutput"
 stac_fastapi = "stac_generator.plugins.outputs.stac_fastapi:STACFastAPIOutput"
+kafka = "stac_generator.plugins.outputs.kafka:KafkaOutput"
 
 [tool.poetry.plugins."stac_generator.mappings"]
 ceda = "stac_generator.plugins.mappings.ceda:CEDAMapping"
