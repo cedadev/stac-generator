@@ -72,7 +72,7 @@ class TextFileInput(BaseInput):
                         unique_lines.add(line)
                         data = json.loads(line)
                         try:
-                            generator.process(**data)
+                            generator.process(data)
                         except Exception:
                             errors.write(line)
                             errors.write(traceback.format_exc())

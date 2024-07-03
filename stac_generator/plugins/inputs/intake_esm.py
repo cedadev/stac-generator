@@ -111,7 +111,7 @@ class IntakeESMInput(BaseInput):
                 uri = getattr(row, self.object_attr)
 
                 if self.should_process(uri):
-                    generator.process(uri)
+                    generator.process({"uri": uri})
                     LOGGER.debug(f"Input processing: {uri}")
                 else:
                     LOGGER.debug(f"Input skipping: {uri}")

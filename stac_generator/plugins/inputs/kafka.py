@@ -35,6 +35,7 @@ Example configuration:
 """
 
 import logging
+import json
 
 from confluent_kafka import Consumer, KafkaError, KafkaException
 
@@ -51,7 +52,10 @@ class KafkaInput(BaseInput):
     """
 
     def __init__(self, **kwargs):
-        self.consumer = Consumer(self.conf)
+        super().__init__(**kwargs)
+        self.timeout = kwargs["timeout"]
+        self.topics = kwargs["topics"]
+        self.consumer = Consumer(**kwargs["config"])
 
     def run(self, generator: BaseGenerator):
         try:
@@ -72,8 +76,8 @@ class KafkaInput(BaseInput):
                         raise KafkaException(msg.error())
 
                 else:
-                    data = msg
-                    generator.process(**data)
+                    data = json.loads(msg.value().decode('utf-8'))
+                    generator.process(data)
         finally:
             # Close down consumer to commit final offsets.
             self.consumer.close()

@@ -58,7 +58,6 @@ class KafkaOutput(BaseOutput):
         # Create the credentials object
         if not hasattr(self, "input_term"):
             self.key_term = "uri"
-
         self.producer = Producer(self.config)
 
     def delivery_callback(err, msg):
@@ -80,6 +79,8 @@ class KafkaOutput(BaseOutput):
         :param data: Data from extraction processes
         :param kwargs: Not used
         """
-        key = message.get(self.key_term, None)
+        key = data.get(self.key_term, None)
         message = json.dumps(data).encode("utf8")
-        self.producer.produce(self.topic, key, message, callback=self.delivery_callback)
+        self.producer.produce(self.topic, key=key, value=message)
+
+        self.producer.flush()
