@@ -138,7 +138,7 @@ class ThreddsInput(BaseInput):
         filepath = get_sub_attr(ds, self.object_attr)
 
         if self.should_process(filepath):
-            generator.process(filepath)
+            generator.process({"uri": filepath})
             logger.debug(f"Input processing: {filepath}")
         else:
             logger.debug(f"Input skipping: {filepath}")

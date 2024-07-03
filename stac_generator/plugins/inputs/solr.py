@@ -106,4 +106,4 @@ class SolrInput(BaseInput):
             # by replacing '.' with '/' up until the filename
             uri = uri.replace(".", "/", uri.split("|")[0].count(".") - 1)
 
-            generator.process(uri)
+            generator.process({"uri": uri})

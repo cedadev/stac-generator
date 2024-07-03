@@ -116,7 +116,7 @@ class ElasticsearchInput(BaseInput):
             for bucket in aggregation["buckets"]:
                 uri = bucket["key"]["uri"]
                 if self.should_process(uri):
-                    generator.process(**bucket["key"])
+                    generator.process(bucket["key"])
                     total_generated += 1
 
             if "after_key" not in aggregation.keys():

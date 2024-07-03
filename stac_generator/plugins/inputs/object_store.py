@@ -96,8 +96,7 @@ class ObjectStoreInput(BaseInput):
             ):
 
                 generator.process(
-                    f"{self.endpoint_url}/{bucket.name}/{obj.key}",
-                    client=self.client,
+                    {"uri": f"{self.endpoint_url}/{bucket.name}/{obj.key}"}
                 )
                 total_files += 1
 

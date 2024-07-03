@@ -69,7 +69,7 @@ class FileSystemInput(BaseInput):
                 filename = os.path.abspath(os.path.join(root, file))
 
                 if self.should_process(filename):
-                    generator.process(filename)
+                    generator.process({"uri": filename})
                     logger.debug(f"Input processing: {filename}")
                 else:
                     logger.debug(f"Input skipping: {filename}")

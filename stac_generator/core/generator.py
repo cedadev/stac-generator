@@ -192,7 +192,7 @@ class BaseGenerator(ABC):
         :param kwargs:
         """
 
-    def process(self, uri: str, **kwargs) -> None:
+    def process(self, body: dict, **kwargs) -> None:
         """
         Run generator.
 
@@ -200,7 +200,5 @@ class BaseGenerator(ABC):
         :param kwargs:
         """
         kwargs["TYPE"] = self.TYPE
-
-        body = {"uri": uri}
 
         self._process(body, **kwargs)
