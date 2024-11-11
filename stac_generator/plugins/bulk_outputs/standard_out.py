@@ -30,21 +30,14 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import json
 
-from cachetools import Cache
-
-from stac_generator.core.bulk_output import BaseBulkOutput
+from stac_generator.core.bulk_output import BulkOutput
 
 
-class StandardOutBulkOutput(BaseBulkOutput):
+class StandardOutBulkOutput(BulkOutput):
     """
     Simple bulk print backend which can be used
     for testing and debugging.
     """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.message_cache = Cache(maxsize=getattr(self, "cache_max_size", 100) + 1)
 
     def export(self, data_list: list):
         """

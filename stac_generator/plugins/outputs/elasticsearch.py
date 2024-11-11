@@ -41,113 +41,66 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from elasticsearch import Elasticsearch
+from pydantic import BaseModel, Field
 
-from stac_generator.core.output import BaseOutput
-from stac_generator.core.utils import Coordinates, load_yaml
+from stac_generator.core.output import Output
+from stac_generator.core.utils import load_yaml
 
 
-class ElasticsearchOutput(BaseOutput):
+class ElasticsearchIndex(BaseModel):
+    """Elasticsearch index model."""
+
+    name: str = Field(
+        description="Name of index.",
+    )
+    mapping: str | dict = Field(
+        default={},
+        description="Index initial mapping.",
+    )
+
+
+class ElasticsearchConf(BaseModel):
+    """Elasticsearch config model."""
+
+    index: ElasticsearchIndex = Field(
+        description="Elasticsearch index to post to.",
+    )
+    client_kwargs: dict = Field(
+        default={},
+        description="Elasticsearch connection kwargs.",
+    )
+    request_timeout: int = Field(
+        default=60,
+        description="Request timeout for search.",
+    )
+
+
+class ElasticsearchOutput(Output):
     """
     Connects to an elasticsearch instance and exports the
     documents to elasticsearch.
 
     """
 
-    CLEAN_METHODS = ["_format_bbox", "_format_temporal_extent"]
+    conf_class = ElasticsearchConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        index_conf = kwargs["index"]
-
-        self.es = Elasticsearch(**kwargs["connection_kwargs"])
-        self.index_name = index_conf["name"]
-        self.pipeline_conf = kwargs.get("pipeline", None)
+        self.es = Elasticsearch(**self.conf.client_kwargs)
 
         # Create the index, if it doesn't already exist
-        if index_conf.get("mapping"):
-            if not self.es.indices.exists(self.index_name):
-                mapping = load_yaml(index_conf.get("mapping"))
-                self.es.indices.create(self.index_name, body=mapping)
-
-    @staticmethod
-    def _format_bbox(data: dict) -> dict:
-        """
-        Convert WGS84 coordinates into GeoJSON and
-        format for Elasticsearch. Replaces the bbox key.
-
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("bbox"):
-            bbox = body.pop("bbox")
-
-            body["spatial"] = {
-                "bbox": {
-                    "type": "envelope",
-                    "coordinates": Coordinates.from_wgs84(bbox).to_geojson(),
-                }
-            }
-
-        return data
-
-    @staticmethod
-    def _format_temporal_extent(data: dict) -> dict:
-        """
-        Convert `extent object<https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#extent-object>_` for Elasticsearch.
-
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("extent", {}).get("temporal"):
-            temporal_extent = body["extent"].pop("temporal")
-
-            if temporal_extent[0][0]:
-                body["extent"]["temporal"] = {"gte": temporal_extent[0][0]}
-            if temporal_extent[0][1]:
-                temporal = body["extent"].get("temporal", {})
-                temporal["lte"] = temporal_extent[0][1]
-                body["extent"]["temporal"] = temporal
-
-        return data
-
-    def clean(self, data: dict) -> dict:
-        """
-        Condition the input dictionary for elasticsearch
-        :param data: Input dictionary
-        :returns: Dictionary produced as a result of the clean methods
-        """
-
-        for method in self.CLEAN_METHODS:
-            m = getattr(self, method)
-            data = m(data)
-
-        return data
-
-    def _remove_old(self, data: str, previous_ids: dict) -> dict:
-        """
-        Condition the input dictionary for elasticsearch
-        :param data: Input dictionary
-        :returns: Dictionary produced as a result of the clean methods
-        """
-
-        previous_id = previous_ids[data["type"]]
-
-        if previous_id != data["id"]:
-            self.es.delete(index=self.index_name, id=previous_id)
+        if mapping := self.conf.index.mapping:
+            if not self.es.indices.exists(self.conf.index.name):
+                if isinstance(mapping, str):
+                    mapping = load_yaml(mapping)
+                self.es.indices.create(self.conf.index.name, body=mapping)
 
     def export(self, data: dict, **kwargs) -> None:
-        data = self.clean(data)
 
-        if self.remove_old:
-            self._remove_old(data, data["previous_ids"])
-
-        index_kwargs = {
-            "index": self.index_name,
-            "id": data["id"],
-            "body": {"doc": data, "doc_as_upsert": True},
-        }
-
-        self.es.update(**index_kwargs)
+        self.es.update(
+            index=self.conf.index.name,
+            id=data["id"],
+            body={"doc": data, "doc_as_upsert": True},
+            request_timeout=self.conf.request_timeout,
+        )

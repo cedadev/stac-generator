@@ -41,97 +41,68 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from typing import Dict
+from collections.abc import Iterator
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
+from pydantic import BaseModel, Field
 
-from stac_generator.core.bulk_output import BaseBulkOutput
-from stac_generator.core.utils import Coordinates, load_yaml
+from stac_generator.core.bulk_output import BulkOutput, BulkOutputConf
+from stac_generator.core.utils import load_yaml
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ElasticsearchBulkOutput(BaseBulkOutput):
+class ElasticsearchIndex(BaseModel):
+    """Elasticsearch index model."""
+
+    name: str = Field(
+        description="Name of index.",
+    )
+    mapping: str | dict = Field(
+        default={},
+        description="Index initial mapping.",
+    )
+
+
+class ElasticsearchConf(BulkOutputConf):
+    """Elasticsearch config model."""
+
+    index: ElasticsearchIndex = Field(
+        description="Elasticsearch index to post to.",
+    )
+    client_kwargs: dict = Field(
+        default={},
+        description="Elasticsearch connection kwargs.",
+    )
+    request_timeout: int = Field(
+        default=60,
+        description="Request timeout for search.",
+    )
+
+
+class ElasticsearchBulkOutput(BulkOutput):
     """
     Connects to an elasticsearch instance and exports the
     documents to elasticsearch.
 
     """
 
-    CLEAN_METHODS = ["_format_bbox", "_format_temporal_extent"]
+    conf_class = ElasticsearchConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        index_conf = kwargs["index"]
-
-        self.es = Elasticsearch(**kwargs["connection_kwargs"])
-        self.index_name = index_conf["name"]
+        self.es = Elasticsearch(**self.conf.client_kwargs)
 
         # Create the index, if it doesn't already exist
-        if index_conf.get("mapping"):
-            if not self.es.indices.exists(self.index_name):
-                mapping = load_yaml(index_conf.get("mapping"))
-                self.es.indices.create(self.index_name, body=mapping)
+        if mapping := self.conf.index.mapping:
+            if not self.es.indices.exists(self.conf.index.name):
+                if isinstance(mapping, str):
+                    mapping = load_yaml(mapping)
+                self.es.indices.create(self.conf.index.name, body=mapping)
 
-    @staticmethod
-    def _format_bbox(data: Dict) -> Dict:
-        """
-        Convert WGS84 coordinates into GeoJSON and
-        format for Elasticsearch. Replaces the bbox key.
-
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("bbox"):
-            bbox = body.pop("bbox")
-
-            body["spatial"] = {
-                "bbox": {
-                    "type": "envelope",
-                    "coordinates": Coordinates.from_wgs84(bbox).to_geojson(),
-                }
-            }
-
-        return data
-
-    @staticmethod
-    def _format_temporal_extent(data: Dict) -> Dict:
-        """
-        Convert `extent object<https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#extent-object>_` for Elasticsearch.
-
-        :param data: Input data dictionary
-        """
-        body = data["body"]
-
-        if body.get("extent", {}).get("temporal"):
-            temporal_extent = body["extent"].pop("temporal")
-
-            if temporal_extent[0][0]:
-                body["extent"]["temporal"] = {"gte": temporal_extent[0][0]}
-            if temporal_extent[0][1]:
-                temporal = body["extent"].get("temporal", {})
-                temporal["lte"] = temporal_extent[0][1]
-                body["extent"]["temporal"] = temporal
-
-        return data
-
-    def clean(self, data: Dict) -> Dict:
-        """
-        Condition the input dictionary for elasticsearch
-        :param data: Input dictionary
-        :returns: Dictionary produced as a result of the clean methods
-        """
-
-        for method in self.CLEAN_METHODS:
-            m = getattr(self, method)
-            data = m(data)
-
-        return data
-
-    def action_iterator(self, data_list: list) -> dict:
+    def action_iterator(self, data_list: list) -> Iterator[dict]:
         """
         Generate an iterator of elasticsearch actions.
 
@@ -140,11 +111,10 @@ class ElasticsearchBulkOutput(BaseBulkOutput):
         :returns: elasticsearch action
         """
         for data in data_list:
-            data = self.clean(data)
 
             yield {
                 "_op_type": "update",
-                "_index": self.index_name,
+                "_index": self.conf.index.name,
                 "_id": data["id"],
                 "doc": data["body"],
                 "doc_as_upsert": True,
@@ -154,9 +124,7 @@ class ElasticsearchBulkOutput(BaseBulkOutput):
         """
         Export using elasticsearch bulk helper.
         """
-        for okay, info in streaming_bulk(
-            self.es, self.action_iterator(data_list), yield_ok=False
-        ):
+        for okay, info in streaming_bulk(self.es, self.action_iterator(data_list), yield_ok=False):
             if not okay:
                 LOGGER.error(
                     "Unable to index %s: %s",

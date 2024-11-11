@@ -31,6 +31,7 @@ Example Configuration:
               filename_term: item_id
 
 """
+
 __author__ = "Mahir Rahman"
 __date__ = "23 Mar 2022"
 __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
@@ -40,17 +41,33 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 import json
 import os
 
-from stac_generator.core.output import BaseOutput
+from pydantic import BaseModel, Field
+
+from stac_generator.core.output import Output
 
 
-class JsonFileOutput(BaseOutput):
+class JsonFileConf(BaseModel):
+    """JSON config model."""
+
+    filename_term: str = Field(
+        default="id",
+        description="Term to use for the JSON file name.",
+    )
+    dirpath: str = Field(
+        description="Root directory for JSON files.",
+    )
+
+
+class JsonFileOutput(Output):
     """
     Export data to a json file
     """
 
+    conf_class = JsonFileConf
+
     def export(self, data: dict, **kwargs) -> None:
-        filename = f"{data[self.filename_term].strip('/').replace('/', '.')}.json"
-        filepath = os.path.join(self.dirpath, filename)
+        filename = f"{data[self.conf.filename_term].strip('/').replace('/', '.')}.json"
+        filepath = os.path.join(self.conf.dirpath, filename)
 
         with open(filepath, "w+", encoding="utf-8") as file:
             json.dump(data, file, indent=4)

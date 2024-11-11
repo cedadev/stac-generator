@@ -29,10 +29,10 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import pprint
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.output import Output
 
 
-class StandardOutOutput(BaseOutput):
+class StandardOutOutput(Output):
     """
     Simple print backend which can be used
     for testing and debugging.

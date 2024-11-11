@@ -16,7 +16,7 @@ import pkg_resources
 import yaml
 
 from stac_generator.core.exceptions import NoPluginsError
-from stac_generator.core.generator import BaseGenerator
+from stac_generator.core.generator import Generator
 from stac_generator.core.utils import load_plugins
 
 
@@ -86,14 +86,12 @@ def main(conf, prof):
         profiler = cProfile.Profile()
         profiler.enable()
 
-    conf = load_config(conf)
+    with open(conf, mode="r", encoding="utf-8") as reader:
+        conf = yaml.safe_load(reader)
 
-    generator = load_generator(conf)
+    generator = Generator(conf)
 
-    input_plugins = load_plugins(conf["inputs"], "stac_generator.inputs")
-
-    for input_plugin in input_plugins:
-        input_plugin.start(generator)
+    generator.run()
 
     if prof:
         profiler.disable()

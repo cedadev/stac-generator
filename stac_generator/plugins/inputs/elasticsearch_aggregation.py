@@ -47,49 +47,90 @@ __date__ = "28 Jun 2023"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "rhys.r.evans@stfc.ac.uk"
-
 # Python imports
 import logging
 from datetime import datetime
 
 # Thirdparty imports
 from elasticsearch import Elasticsearch
-
-from stac_generator.core.generator import BaseGenerator
+from extraction_methods.core.extraction_method import KeyOutputKey
+from pydantic import BaseModel, Field
 
 # Package imports
-from stac_generator.core.input import BaseInput
+from stac_generator.core.input import Input
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ElasticsearchInput(BaseInput):
+class ElasticsearchIndex(BaseModel):
+    """Elasticsearch index model."""
+
+    name: str = Field(
+        description="Name of index.",
+    )
+    mapping: str | dict = Field(
+        default={},
+        description="Index initial mapping.",
+    )
+
+
+class ElasticsearchConf(BaseModel):
+    """Elasticsearch config model."""
+
+    index: ElasticsearchIndex = Field(
+        description="Elasticsearch index to post to.",
+    )
+    uri_term: str = Field(
+        default="uri.keyword",
+        description="Term to use as uri.",
+    )
+    client_kwargs: dict = Field(
+        default={},
+        description="Elasticsearch connection kwargs.",
+    )
+    extra_terms: list[KeyOutputKey] = Field(
+        default=[],
+        description="List of extra terms.",
+    )
+    query: dict = Field(
+        default={},
+        description="Elasticsearch search query.",
+    )
+    request_timeout: int = Field(
+        default=60,
+        description="Request timeout for search.",
+    )
+
+
+class ElasticsearchAggregationInput(Input):
     """
     Performs an os.walk to provide a stream of paths for procesing.
     """
+
+    config_class = ElasticsearchConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.id_term = kwargs["id_term"]
         self.index = kwargs["index"]
 
-        self.connection_kwargs = kwargs.get("connection_kwargs", {})
         self.search_kwargs = kwargs.get("search_kwargs")
 
-    def run(self, generator: BaseGenerator):
+    def run(self):
         start = datetime.now()
         total_generated = 0
 
-        es_client = Elasticsearch(**self.connection_kwargs)
+        es_client = Elasticsearch(**self.conf.client_kwargs)
 
-        query = {
+        body = {
+            "query": self.conf.query,
             "aggs": {
                 "bucket": {
                     "composite": {
                         "sources": [
                             {
                                 "uri": {
-                                    "terms": {"field": f"{self.id_term}.keyword"},
+                                    "terms": {"field": {self.conf.uri_term}},
                                 }
                             },
                             {
@@ -105,24 +146,31 @@ class ElasticsearchInput(BaseInput):
             "size": 0,
         }
 
-        if self.search_kwargs:
-            query["query"] = self.search_kwargs
+        for extra_term in self.conf.extra_terms:
+            body["bucket"]["composite"][extra_term.key] = {
+                "terms": {"field": f"{extra_term.key}"},
+            }
 
         while True:
-            result = es_client.search(index=self.index, body=query)
+            result = es_client.search(
+                index=self.index, body=body, request_timeout=self.conf.request_timeout
+            )
 
             aggregation = result["aggregations"]["bucket"]
 
             for bucket in aggregation["buckets"]:
-                uri = bucket["key"]["uri"]
-                if self.should_process(uri):
-                    generator.process(**bucket["key"])
-                    total_generated += 1
+                output = {"uri": bucket["key"]["uri"]}
+
+                for extra_term in self.conf.extra_terms:
+                    output[extra_term.output_key] = bucket["key"][extra_term.key]
+
+                yield output
+                total_generated += 1
 
             if "after_key" not in aggregation.keys():
                 break
 
-            query["aggs"]["bucket"]["composite"]["after"] = aggregation["after_key"]
+            body["aggs"]["bucket"]["composite"]["after"] = aggregation["after_key"]
 
         end = datetime.now()
         print(f"Processed {total_generated} elasticsearch records in {end-start}")

@@ -130,26 +130,100 @@ from collections import namedtuple
 
 # Third-party imports
 import pika
+from extraction_methods.core.extraction_method import KeyOutputKey
+from pydantic import BaseModel, Field
 
-from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.input import BaseInput
+from stac_generator.core.input import Input
 
 LOGGER = logging.getLogger(__name__)
 
-IngestMessage = namedtuple(
-    "IngestMessage", ["datetime", "filepath", "action", "filesize", "message"]
-)
+
+class RabbitMQConnection(BaseModel):
+    """RabbitMQ Connection model."""
+
+    user: str = Field(
+        description="RabbitMQ user.",
+    )
+    password: str = Field(
+        description="RabbitMQ password.",
+    )
+    host: str = Field(
+        description="RabbitMQ host.",
+    )
+    host: str = Field(
+        description="RabbitMQ vhost.",
+    )
+    kwargs: dict = Field(
+        default={},
+        description="RabbitMQ additional kwargs.",
+    )
 
 
-class RabbitMQInput(BaseInput):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.connection_conf = kwargs.get("connection", {})
-        self.exchange_conf = kwargs.get("exchange", {})
-        self.queues_conf = kwargs.get("queues", [])
+class RabbitMQExchange(BaseModel):
+    """RabbitMQ Exchange model."""
+
+    name: str = Field(
+        description="RabbitMQ exchange name.",
+    )
+    type: str = Field(
+        default="topic",
+        description="RabbitMQ exchange type.",
+    )
+    routing_key: str = Field(
+        default="",
+        description="RabbitMQ exchange routing key.",
+    )
+
+
+class RabbitMQQueue(BaseModel):
+    """RabbitMQ Queue model."""
+
+    name: str = Field(
+        description="RabbitMQ queue name.",
+    )
+    declare_kwargs: dict = Field(
+        default={},
+        description="RabbitMQ declare kwargs.",
+    )
+    bind_kwargs: dict = Field(
+        default={},
+        description="RabbitMQ bind kwargs.",
+    )
+    consume_kwargs: dict = Field(
+        default={},
+        description="RabbitMQ consume kwargs.",
+    )
+
+
+class RabbitMQConf(BaseModel):
+    """RabbitMQ config model."""
+
+    connection: RabbitMQConnection = Field(
+        description="RabbitMQ connection kwargs.",
+    )
+    exchange: RabbitMQExchange = Field(
+        description="RabbitMQ exchange info.",
+    )
+    queues: list[RabbitMQQueue] = Field(
+        default=[],
+        description="RabbitMQ queues to bind.",
+    )
+    uri_term: str = Field(
+        description="Attritube to use as uri.",
+    )
+    regex: str = Field()
+    extra_terms: list[KeyOutputKey] = Field(
+        default=[],
+        description="List of extra attributes.",
+    )
+
+
+class RabbitMQInput(Input):
+
+    config_class = RabbitMQConf
 
     @staticmethod
-    def decode_message(body: bytes) -> IngestMessage:
+    def decode_message(body: bytes) -> dict:
         """
         Takes the message and turns into a dictionary.
         String message format when split on :
@@ -162,14 +236,6 @@ class RabbitMQInput(BaseInput):
             message = ":".join(split_line[6:])
 
         :param body: Message body, either a json string or text
-        :return: IngestMessage
-            {
-                'datetime': ':'.join(split_line[:3]),
-                'uri': split_line[3],
-                'action': split_line[4],
-                'filesize': split_line[5],
-                'message': ':'.join(split_line[6:])
-            }
 
         """
 
@@ -202,31 +268,25 @@ class RabbitMQInput(BaseInput):
 
         return msg
 
-    def _connect(self, generator) -> pika.channel.Channel:
+    def _connect(self) -> pika.channel.Channel:
         """
         Start Pika connection to server. This is run in each thread.
 
         :return: pika channel
         """
 
-        # Get the username and password for rabbit
-        rabbit_user = self.connection_conf.get("user")
-        rabbit_password = self.connection_conf.get("password")
-
-        # Get the server variables
-        rabbit_server = self.connection_conf.get("host")
-        rabbit_vhost = self.connection_conf.get("vhost")
-
         # Create the credentials object
-        credentials = pika.PlainCredentials(rabbit_user, rabbit_password)
+        credentials = pika.PlainCredentials(
+            self.conf.connection.user, self.conf.connection.password
+        )
 
         # Start the rabbitMQ connection
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(
-                host=rabbit_server,
+                host=self.conf.connection.host,
                 credentials=credentials,
-                virtual_host=rabbit_vhost,
-                **self.connection_conf.get("kwargs", {}),
+                virtual_host=self.conf.connection.vhost,
+                **self.conf.connection.kwargs,
             )
         )
 
@@ -234,29 +294,24 @@ class RabbitMQInput(BaseInput):
         channel = connection.channel()
 
         channel.exchange_declare(
-            exchange=self.exchange_conf.get("name", "stac"),
-            exchange_type=self.exchange_conf.get("type", "topic"),
-            **self.exchange_conf.get("kwargs", {}),
+            exchange=self.conf.exchange.name,
+            exchange_type=self.conf.exchange.type,
+            **self.conf.exchange.kwargs,
         )
         channel.basic_qos(prefetch_count=1)
 
         # Declare queue and bind queue to the dest exchange
-        for queue in self.queues_conf:
-            declare_kwargs = queue.get("kwargs", {})
-            bind_kwargs = queue.get("bind_kwargs", {})
-            consume_kwargs = queue.get("consume_kwargs", {})
+        for queue in self.conf.queues:
+            channel.queue_declare(queue=queue.name, **queue.declare_kwargs)
 
-            channel.queue_declare(queue=queue["name"], **declare_kwargs)
             channel.queue_bind(
-                exchange=self.exchange_conf["name"], queue=queue["name"], **bind_kwargs
+                exchange=self.conf.exchange.name, queue=queue.name, **queue.bind_kwargs
             )
 
             # Set callback
-            callback = functools.partial(
-                self.callback, connection=connection, generator=generator
-            )
+            callback = functools.partial(self.callback, connection=connection)
             channel.basic_consume(
-                queue=queue["name"], on_message_callback=callback, **consume_kwargs
+                queue=queue.name, on_message_callback=callback, **queue.consume_kwargs
             )
 
         return channel
@@ -298,7 +353,6 @@ class RabbitMQInput(BaseInput):
         properties: pika.frame.Header,
         body: bytes,
         connection: pika.connection.Connection,
-        generator: BaseGenerator,
     ) -> None:
 
         # Get message
@@ -307,29 +361,29 @@ class RabbitMQInput(BaseInput):
 
         except IndexError:
             # Acknowledge message if the message is not compliant
+            LOGGER.error("Unable to decode input message: %s", body)
             self.acknowledge_message(ch, method.delivery_tag, connection)
             return
 
         # Extract uri
-        uri = message.pop("uri")
+        output = {"uri": message["uri"]}
 
-        if self.should_process(uri):
-            LOGGER.info("Input processing: %s message: %s", uri, message)
+        for extra_term in self.conf.extra_terms:
+            output[extra_term.output_key] = message[extra_term.key]
 
-            self.acknowledge_message(ch, method.delivery_tag, connection)
-            generator.process(uri, **message)
+        LOGGER.info("Input processing: %s message: %s", message["uri"], message)
 
-        else:
-            LOGGER.info("Input skipping: %s", uri)
+        yield output
+        self.acknowledge_message(ch, method.delivery_tag, connection)
 
-    def run(self, generator: BaseGenerator):
+    def run(self):
 
         while True:
-            channel = self._connect(generator)
+            channel = self._connect()
 
             try:
                 LOGGER.info("READY")
-                channel.start_consuming()
+                yield from channel.start_consuming()
 
             except KeyboardInterrupt:
                 channel.stop_consuming()

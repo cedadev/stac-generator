@@ -51,112 +51,101 @@ __copyright__ = "Copyright 2021 Computer Research Institute of Montreal"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "mathieu.provencher@crim.ca"
 
-# Python imports
 import logging
+
+# Python imports
+from collections.abc import Iterator
 from datetime import datetime
+
+from extraction_methods.core.extraction_method import KeyOutputKey
+from pydantic import BaseModel, Field
 
 # Thirdparty imports
 from siphon.catalog import CaseInsensitiveDict, TDSCatalog
 
-from stac_generator.core.generator import BaseGenerator
-
 # Package imports
-from stac_generator.core.input import BaseInput
+from stac_generator.core.input import Input
 
 logger = logging.getLogger(__name__)
 
 
-def walk_tds(cat: TDSCatalog, depth: int = 1):
-    """
-    Return a generator walking a THREDDS data catalog for datasets.
+class ThreddsConf(BaseModel):
+    """Thredds Config."""
 
-    :param cat: THREDDS catalog.
-    :param depth: Maximum recursive depth. Setting 0 will return only datasets within the top-level catalog. If None,
-      depth is set to 1000.
-    """
-    yield from cat.datasets.items()
-
-    if depth is None:
-        depth = 1000
-
-    if depth > 0:
-        for name, ref in cat.catalog_refs.items():
-            child = ref.follow()
-            yield from walk_tds(child, depth=depth - 1)
-
-
-def get_sub_attr(obj: object, path: str):
-    """
-    Returns a child or sub-child attribute of a dict object.
-
-    :param obj: Object
-    :param path: 'attr1.attr2.etc'
-    :return: obj.attr1.attr2.etc
-    """
-    attrs = path.split(".")
-
-    for attr in attrs:
-        if isinstance(obj, CaseInsensitiveDict):
-            obj = obj[attr]
-            continue
-
-        obj = getattr(obj, attr)
-
-    return obj
+    url: str = Field(
+        description="URL of Thredds server.",
+    )
+    depth: int = Field(
+        default=1000,
+        description="Depth of catalog walk.",
+    )
+    uri_term: str = Field(
+        description="Attritube to use as uri.",
+    )
+    extra_terms: list[KeyOutputKey] = Field(
+        default=[],
+        description="List of extra attributes.",
+    )
 
 
-class ThreddsInput(BaseInput):
+class ThreddsInput(Input):
     """
     Process each dataset underneath a TDS catalog.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uri = kwargs["uri"]
-        self.object_attr = kwargs["object_path_attr"]
+    config_class = ThreddsConf
 
-        self.thredds_kwargs = kwargs.get("catalog_kwargs", {})
-
-    def open_catalog(self):
+    def walk_tds(self, catalog: TDSCatalog, depth: int) -> Iterator:
         """
-        Open the Thredds catalog.
+        Return a generator walking a THREDDS data catalog for datasets.
 
-        :return: TDSCatalog
+        :param cat: THREDDS catalog.
+        :param depth: Maximum recursive depth.
         """
-        logger.info("Opening catalog")
-        catalog = TDSCatalog(self.uri, **self.thredds_kwargs)
+        yield from catalog.datasets.items()
 
-        return catalog
+        if depth > 0:
+            for _, ref in catalog.catalog_refs.items():
+                child = ref.follow()
+                yield from self.walk_tds(catalog=child, depth=depth - 1)
 
-    def process_ds(self, ds, generator: BaseGenerator):
+    def get_sub_attr(self, obj: object, path: str):
         """
-        Process a single dataset.
+        Returns a child or sub-child attribute of a dict object.
 
-        :param ds: siphon.catalog.TDSCatalog.datasets
-        :param generator: BaseGenerator
+        :param obj: Object
+        :param path: 'attr1.attr2.etc'
+        :return: obj.attr1.attr2.etc
         """
-        filepath = get_sub_attr(ds, self.object_attr)
+        attrs = path.split(".")
 
-        if self.should_process(filepath):
-            generator.process(filepath)
-            logger.debug(f"Input processing: {filepath}")
-        else:
-            logger.debug(f"Input skipping: {filepath}")
+        for attr in attrs:
+            if isinstance(obj, CaseInsensitiveDict):
+                obj = obj[attr]
+                continue
 
-    def run(self, generator: BaseGenerator):
+            obj = getattr(obj, attr)
+
+        return obj
+
+    def run(self):
         """
         Plugin's entrypoint.
 
-        :param generator: BaseGenerator
         """
-        total_files = 0
+        total_generated = 0
         start = datetime.now()
 
-        catalog = self.open_catalog()
+        catalog = TDSCatalog(self.conf.url, **self.conf.thredds_kwargs)
 
-        for _, ds in walk_tds(catalog, depth=None):
-            self.process_ds(ds, generator)
-            total_files += 1
+        for _, dataset in self.walk_tds(catalog=catalog, depth=self.conf.depth):
+            output = {"uri": self.get_sub_attr(dataset, self.conf.uri_term)}
+
+            for extra_term in self.conf.extra_terms:
+                output[extra_term.output_key] = self.get_sub_attr(dataset, extra_term.key)
+
+            yield output
+            total_generated += 1
 
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.uri} in {end - start}")
+        print(f"Processed {total_generated} records from {self.conf.url} in {end - start}")

@@ -41,7 +41,7 @@ Example Configuration:
     .. code-block:: yaml
 
         inputs:
-            - method: intake_catalog
+            - name: intake_esm
               uri: test_directory
 
 """
@@ -57,68 +57,75 @@ from datetime import datetime
 
 # Thirdparty imports
 import intake
-
-from stac_generator.core.generator import BaseGenerator
+from extraction_methods.core.extraction_method import KeyOutputKey
+from pydantic import BaseModel, Field
 
 # Package imports
-from stac_generator.core.input import BaseInput
+from stac_generator.core.input import Input
 
 LOGGER = logging.getLogger(__name__)
 
 
-class IntakeESMInput(BaseInput):
+class IntakeESMConf(BaseModel):
+    """IntakeESM config."""
+
+    url: str = Field(
+        description="URL of datastore.",
+    )
+    uri_term: str = Field(
+        description="Attritube to use as uri.",
+    )
+    extra_terms: list[KeyOutputKey] = Field(
+        default=[],
+        description="List of extra attributes.",
+    )
+    skip: int = Field(
+        default=-1,
+        description="Number of rows to skip.",
+    )
+    catalog_kwargs: dict = Field(
+        default={},
+        description="catalog kwargs.",
+    )
+    search_kwargs: dict = Field(
+        default={},
+        description="search kwargs.",
+    )
+
+
+class IntakeESMInput(Input):
     """
     Performs an os.walk to provide a stream of paths for procesing.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uri = kwargs["uri"]
+    config_class = IntakeESMConf
 
-        self.object_attr = kwargs["object_path_attr"]
-        self.skip = kwargs.get("skip", -1)
-
-        self.intake_kwargs = kwargs.get("catalog_kwargs", {})
-        self.search_kwargs = kwargs.get("search_kwargs")
-
-    def open_catalog(self, uri, intake_kwargs):
-        """Open the ESM catalog."""
-        LOGGER.info(f"Opening catalog {uri}")
-        return intake.open_esm_datastore(uri, **intake_kwargs)
-
-    def search_catalog(self, catalog, search_kwargs):
-        """Perform a search ESM catalog."""
-        LOGGER.info("Searching catalog")
-
-        if self.search_kwargs:
-            catalog = catalog.search(**search_kwargs)
-
-        LOGGER.info(f"Found {len(catalog.df)} items")
-        return catalog
-
-    def run(self, generator: BaseGenerator):
+    def run(self):
         total_files = 0
         start = datetime.now()
 
-        catalog = self.open_catalog(self.uri, self.intake_kwargs)
+        LOGGER.info("Opening catalog %s", self.conf.url)
+        catalog = intake.open_esm_datastore(self.conf.url, **self.conf.catalog_kwargs)
 
-        if self.search_kwargs:
-            catalog = self.open_catalog(catalog, self.search_kwargs)
+        if self.conf.search_kwargs:
+            LOGGER.info("Searching catalog")
+            catalog = catalog.search(**self.conf.search_kwargs)
+
+        LOGGER.info("Found %s items", len(catalog.df))
 
         count = 0
         for _, row in catalog.df.iterrows():
-            if count > self.skip:
-                uri = getattr(row, self.object_attr)
+            if count > self.conf.skip:
+                output = {"uri": getattr(row, self.conf.uri_term)}
+                LOGGER.debug("Input processing: %s", output["uri"])
 
-                if self.should_process(uri):
-                    generator.process(uri)
-                    LOGGER.debug(f"Input processing: {uri}")
-                else:
-                    LOGGER.debug(f"Input skipping: {uri}")
+                for extra_term in self.conf.extra_terms:
+                    output[extra_term.output_key] = getattr(row, extra_term.key)
 
+                yield output
                 total_files += 1
 
             count += 1
 
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.uri} in {end-start}")
+        print(f"Processed {total_files} files from {self.conf.url} in {end-start}")

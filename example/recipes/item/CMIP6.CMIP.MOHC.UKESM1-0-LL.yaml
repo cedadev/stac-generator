@@ -3,15 +3,19 @@ paths:
   - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
   - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.C4MIP.MOHC.UKESM1-0-LL
 
-# The type of STAC record that will be generated
+# The type of record that will be generated
 type: item
 
-# These extraction methods will be run after `extraction_methods` and should generate the id of the record
+# This section is optional and can be run seperatly to find the id of a record
 id:
-  - method: default
+  - method: regex
     inputs:
-      defaults:
-        item_id: $instance_id
+      regex: '\/(?P<mip_era>\w*)\.(?P<activity_id>\w*)\.(?P<institution_id>[\w-]*)\.(?P<source_id>[\w-]*)\/(?P<experiment_id>[\w-]*)\.(?P<member_id>\w*)\.(?P<table_id>\w*)\.(?P<var_id>\w*)\.(?P<grid_label>\w*)\.(?P<version>\w*)'
+
+  - method: string_template
+    inputs:
+      template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
+      output_key: id
 
 # The extaction methods are run in series with the output dictionary is passed from one to the next
 # extaction methods add, update or remove the data from the output dictionary
@@ -23,13 +27,14 @@ extraction_methods:
   - method: string_template
     inputs:
       template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
-      output_key: instance_id
+      output_key: id
 
 # Some extraction methods generate assets which can also include their own list of extration methods to be run on the assets
-  - method: intake_assets
+  - method: assets
     inputs:
-      uri: https://raw.githubusercontent.com/cedadev/cmip6-object-store/master/catalogs/ceda-zarr-cmip6.json
-      object_path_attr: zarr_path
+      backend: intake_esm
+      input_term: https://raw.githubusercontent.com/cedadev/cmip6-object-store/master/catalogs/ceda-zarr-cmip6.json
+      href_term: zarr_path
       search_kwargs:
         mip_era: $mip_era
         activity_id: $activity_id
@@ -47,7 +52,7 @@ extraction_methods:
   - method: lambda
     inputs:
       function: 'lambda assets: {f"data{str(en+1).zfill(4)}": assets[key] for en, key in enumerate(sorted(assets))}'
-      input_args:
+      args:
         - $assets
       output_key: assets
 

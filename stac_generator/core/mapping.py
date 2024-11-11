@@ -8,12 +8,13 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from stac_generator.core.baker import Recipe
+from stac_generator.core.process_config import SetConfig
 
 
-class BaseMapping(ABC):
+class BaseMapping(SetConfig):
     """
     Class to act as a base for all mappings. Defines the basic method signature
     and ensure compliance by all subclasses.
@@ -45,4 +46,3 @@ class BaseMapping(ABC):
 
         :return body:
         """
-        pass

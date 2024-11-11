@@ -8,6 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 from dateutil import parser
+from pydantic import BaseModel, Field
 
 from stac_generator.core.baker import Recipe
 
@@ -15,6 +16,18 @@ from stac_generator.core.baker import Recipe
 from stac_generator.core.mapping import BaseMapping
 
 LOGGER = logging.getLogger(__name__)
+
+
+class STACConf(BaseModel):
+    """STAC mapping config model."""
+
+    stac_version: str = Field(
+        description="STAC version.",
+    )
+    stac_extensions: list[str] = Field(
+        default=[],
+        description="STAC extensions.",
+    )
 
 
 class STACMapping(BaseMapping):
@@ -33,6 +46,8 @@ class STACMapping(BaseMapping):
 
     """
 
+    conf_class = STACConf
+
     def datetime_field(self, body: dict, key: str) -> str:
         dt = parser.parse(body.pop(key))
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -40,9 +55,9 @@ class STACMapping(BaseMapping):
     def item(self, body: dict) -> dict:
         output = {
             "type": "Feature",
-            "stac_version": self.stac_version,
-            "stac_extensions": self.stac_extensions,
-            "id": body.pop("item_id"),
+            "stac_version": self.conf.stac_version,
+            "stac_extensions": self.conf.stac_extensions,
+            "id": body.pop("id"),
             "geometry": None,
             "assets": {},
             "properties": {
@@ -54,14 +69,10 @@ class STACMapping(BaseMapping):
             output["properties"]["datetime"] = self.datetime_field(body, "datetime")
 
         if "start_datetime" in body:
-            output["properties"]["start_datetime"] = self.datetime_field(
-                body, "start_datetime"
-            )
+            output["properties"]["start_datetime"] = self.datetime_field(body, "start_datetime")
 
         if "end_datetime" in body:
-            output["properties"]["end_datetime"] = self.datetime_field(
-                body, "end_datetime"
-            )
+            output["properties"]["end_datetime"] = self.datetime_field(body, "end_datetime")
 
         if "bbox" in body:
             output["bbox"] = body.pop("bbox")
@@ -85,9 +96,9 @@ class STACMapping(BaseMapping):
     def collection(self, body: dict) -> dict:
         output = {
             "type": "Collection",
-            "stac_version": self.stac_version,
-            "stac_extensions": self.stac_extensions,
-            "id": body.pop("collection_id"),
+            "stac_version": self.conf.stac_version,
+            "stac_extensions": self.conf.stac_extensions,
+            "id": body.pop("id"),
             "extent": {
                 "temporal": {
                     "interval": None,
@@ -130,10 +141,10 @@ class STACMapping(BaseMapping):
         recipe: Recipe,
         **kwargs,
     ) -> dict:
-        if kwargs["TYPE"].value == "item":
+        if kwargs["GENERATOR_TYPE"] == "item":
             return self.item(body)
 
-        elif kwargs["TYPE"].value == "collection":
+        if kwargs["GENERATOR_TYPE"] == "collection":
             return self.collection(body)
 
         return body

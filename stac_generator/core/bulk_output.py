@@ -8,15 +8,28 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from cachetools import Cache
+from pydantic import BaseModel, Field
+
+from stac_generator.core.process_config import SetConfig
 
 
-class BaseBulkOutput(ABC):
+class BulkOutputConf(BaseModel):
+    """Elasticsearch config model."""
+
+    cache_max_size: str = Field(
+        description="Max size of cache.",
+    )
+
+
+class BulkOutput(SetConfig):
     """
     Base class to define an bulk output
     """
+
+    config_class = BulkOutputConf
 
     def __init__(self, **kwargs):
         """
@@ -24,13 +37,9 @@ class BaseBulkOutput(ABC):
 
         :param kwargs:
         """
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        super().__init__(**kwargs)
 
-        if not hasattr(self, "cache_max_size"):
-            self.cache_max_size = 100
-
-        self.data_cache = Cache(maxsize=self.cache_max_size + 1)
+        self.data_cache = Cache(maxsize=self.conf.cache_max_size + 1)
 
     def __del__(self):
         self.clear_cache()
@@ -68,7 +77,7 @@ class BaseBulkOutput(ABC):
         # add to cache
         self.data_cache.update(self.data_to_cache(data))
 
-        if self.data_cache.currsize >= self.cache_max_size:
+        if self.data_cache.currsize >= self.conf.cache_max_size:
             self.clear_cache()
 
     def clear_cache(self) -> None:

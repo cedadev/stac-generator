@@ -1,20 +1,25 @@
-# The type of STAC record that will be generated
+# The type of record that will be generated
 type: collection
 
-# These extraction methods will be run after `extraction_methods` and should generate the id of the record
+# This section is optional and can be run seperatly to find the id of a record
 id:
   - method: default
     inputs:
       defaults:
-        collection_id: cmip6
+        id: dkrz
 
 # The extaction methods are run in series with the output dictionary is passed from one to the next
 # extaction methods add, update or remove the data from the output dictionary
 extraction_methods:
+  - method: default
+    inputs:
+      defaults:
+        id: dkrz
+
   - method: json_file
     inputs:
       dirpath: output/items/
-      terms:
+      properties:
         - mip_era
         - activity_id
         - institution_id

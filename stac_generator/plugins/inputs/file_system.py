@@ -43,36 +43,43 @@ import logging
 import os
 from datetime import datetime
 
+from pydantic import BaseModel, Field
 from tqdm import tqdm
 
-from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.input import BaseInput
+from stac_generator.core.input import Input
 
 logger = logging.getLogger(__name__)
 
 
-class FileSystemInput(BaseInput):
+class FileSystemConf(BaseModel):
+    """File system config."""
+
+    path: str = Field(
+        description="Root path to begin walk.",
+    )
+    kwargs: dict = Field(
+        default={},
+        description="os walk kwargs.",
+    )
+
+
+class FileSystemInput(Input):
     """
     Performs an os.walk to provide a stream of messages for procesing.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.root_path = kwargs["path"]
-        self.kwargs = kwargs.get("kwargs", {})
+    config_class = FileSystemConf
 
-    def run(self, generator: BaseGenerator):
+    def run(self):
         total_files = 0
         start = datetime.now()
-        for root, _, files in tqdm(os.walk(self.root_path, **self.kwargs)):
+        for root, _, files in tqdm(os.walk(self.conf.path, **self.conf.kwargs)):
             for file in files:
                 filename = os.path.abspath(os.path.join(root, file))
+                logger.debug("Input processing: %s", filename)
 
-                if self.should_process(filename):
-                    generator.process(filename)
-                    logger.debug(f"Input processing: {filename}")
-                else:
-                    logger.debug(f"Input skipping: {filename}")
+                yield {"uri": filename}
                 total_files += 1
+
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.root_path} in {end-start}")
+        print(f"Processed {total_files} files from {self.conf.path} in {end-start}")

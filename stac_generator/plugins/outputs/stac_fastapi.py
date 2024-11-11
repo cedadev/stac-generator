@@ -39,29 +39,62 @@ from urllib.parse import urljoin
 
 import httpx
 from httpx_auth import OAuth2ClientCredentials
+from pydantic import BaseModel, Field
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.output import Output
 
 LOGGER = logging.getLogger(__name__)
 
 
-class STACFastAPIOutput(BaseOutput):
+class STACAuthentication(BaseModel):
+    """STAC authentication model."""
+
+    token_url: str = Field(
+        description="Token URL for authentication server.",
+    )
+    client_id: str = Field(
+        description="Client id.",
+    )
+    client_secret: str = Field(
+        description="Client secret.",
+    )
+
+
+class STACFastAPIConf(BaseModel):
+    """STAC FastAPI config model."""
+
+    api_url: str = Field(
+        description="URL for API.",
+    )
+    authentication: STACAuthentication = Field(
+        default=None,
+        description="Authentication for STAC API.",
+    )
+    verify: bool = Field(
+        default=False,
+        description="API certificate verifcation.",
+    )
+
+
+class STACFastAPIOutput(Output):
     """
     Connects to an elasticsearch instance and exports the
     documents to elasticsearch.
 
     """
 
+    conf_class = STACFastAPIConf
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if not hasattr(self, "verify"):
             self.verify = True
 
-        if hasattr(self, "authentication"):
+        if self.conf.authentication:
             auth = OAuth2ClientCredentials(
-                self.authentication.get("token_url"),
-                client_id=self.authentication.get("client_id"),
-                client_secret=self.authentication.get("client_secret"),
+                self.conf.authentication.token_url,
+                client_id=self.conf.authentication.client_id,
+                client_secret=self.conf.authentication.client_secret,
             )
 
         else:
@@ -69,7 +102,7 @@ class STACFastAPIOutput(BaseOutput):
 
         self.client = httpx.Client(
             auth=auth,
-            verify=self.verify,
+            verify=self.conf.verify,
             timeout=180,
         )
 
@@ -83,7 +116,7 @@ class STACFastAPIOutput(BaseOutput):
             collection = data["collection"] = collection.lower()
 
             response = self.client.post(
-                urljoin(self.api_url, f"collections/{collection}/items"),
+                urljoin(self.conf.api_url, f"collections/{collection}/items"),
                 json=data,
             )
 
@@ -100,12 +133,12 @@ class STACFastAPIOutput(BaseOutput):
                     }
 
                     response = self.client.post(
-                        urljoin(self.api_url, "collections"),
+                        urljoin(self.conf.api_url, "collections"),
                         json=collection,
                     )
 
                     response = self.client.post(
-                        urljoin(self.api_url, f"collections/{collection}/items"),
+                        urljoin(self.conf.api_url, f"collections/{collection}/items"),
                         json=data,
                     )
 
@@ -117,7 +150,7 @@ class STACFastAPIOutput(BaseOutput):
                     == f"Item {data['id']} in collection {collection} already exists"
                 ):
                     response = self.client.put(
-                        urljoin(self.api_url, f"collections/{collection}/items/{data['id']}"),
+                        urljoin(self.conf.api_url, f"collections/{collection}/items/{data['id']}"),
                         json=data,
                     )
 
@@ -138,7 +171,7 @@ class STACFastAPIOutput(BaseOutput):
 
     def collection(self, data: dict) -> None:
         response = self.client.post(
-            urljoin(self.api_url, "collections"),
+            urljoin(self.conf.api_url, "collections"),
             json=data,
         )
 
@@ -147,7 +180,7 @@ class STACFastAPIOutput(BaseOutput):
 
             if response_json["description"] == f"Collection {data['id']} already exists":
                 response = self.client.put(
-                    urljoin(self.api_url, "collections"),
+                    urljoin(self.conf.api_url, "collections"),
                     # urljoin(self.api_url, f"collections/{data['id']}"),
                     json=data,
                 )
@@ -168,8 +201,8 @@ class STACFastAPIOutput(BaseOutput):
             )
 
     def export(self, data: dict, **kwargs) -> None:
-        if kwargs["TYPE"].value == "item":
+        if kwargs["GENERATOR_TYPE"] == "item":
             self.item(data)
 
-        elif kwargs["TYPE"].value == "collection":
+        elif kwargs["GENERATOR_TYPE"] == "collection":
             self.collection(data)
