@@ -91,6 +91,29 @@ class STACMapping(BaseMapping):
 
         output["properties"] |= body
 
+        output["links"] = [
+            {
+                "rel": "self",
+                "type": "application/geo+json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}/items/{output['id']}",
+            },
+            {
+                "rel": "parent",
+                "type": "application/json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}",
+            },
+            {
+                "rel": "collection",
+                "type": "application/json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}",
+            },
+            {
+                "rel": "root",
+                "type": "application/json",
+                "href": "https://api.stac.ceda.ac.uk/",
+            },
+        ]
+
         return output
 
     def collection(self, body: dict) -> dict:
@@ -132,6 +155,30 @@ class STACMapping(BaseMapping):
             output["member_of_recipes"] = body.pop("member_of_recipes")
 
         output["summaries"] |= body
+
+        output["links"] = [
+            {
+                "rel": "self",
+                "type": "application/geo+json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/{output['id']}",
+            },
+            {"rel": "parent", "type": "application/json", "href": f"https://api.stac.ceda.ac.uk/"},
+            {
+                "rel": "queryables",
+                "type": "application/json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/{output['id']}/queryables",
+            },
+            {
+                "rel": "items",
+                "type": "application/geo+json",
+                "href": f"https://api.stac.ceda.ac.uk/collections/cmip6/{output['id']}",
+            },
+            {
+                "rel": "root",
+                "type": "application/json",
+                "href": "https://api.stac.ceda.ac.uk/",
+            },
+        ]
 
         return output
 

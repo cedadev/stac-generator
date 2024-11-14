@@ -37,7 +37,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 from urllib.parse import urljoin
 
-import httpx
+from httpx import Client
 from httpx_auth import OAuth2ClientCredentials
 from pydantic import BaseModel, Field
 
@@ -85,28 +85,7 @@ class STACFastAPIOutput(Output):
 
     conf_class = STACFastAPIConf
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if not hasattr(self, "verify"):
-            self.verify = True
-
-        if self.conf.authentication:
-            auth = OAuth2ClientCredentials(
-                self.conf.authentication.token_url,
-                client_id=self.conf.authentication.client_id,
-                client_secret=self.conf.authentication.client_secret,
-            )
-
-        else:
-            auth = None
-
-        self.client = httpx.Client(
-            auth=auth,
-            verify=self.conf.verify,
-            timeout=180,
-        )
-
-    def item(self, data: dict) -> None:
+    def item(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
         collections = data["collection"]
 
         if isinstance(data["collection"], str):
@@ -115,31 +94,68 @@ class STACFastAPIOutput(Output):
         for collection in collections:
             collection = data["collection"] = collection.lower()
 
-            response = self.client.post(
+            response = client.post(
                 urljoin(self.conf.api_url, f"collections/{collection}/items"),
                 json=data,
+                auth=auth,
             )
 
             if response.status_code == 404:
                 response_json = response.json()
 
                 if response_json["description"] == f"Collection {collection} does not exist":
-                    collection = {
+                    collection_data = {
                         "type": "Collection",
                         "id": collection,
+                        "description": collection,
                         "stac_version": "0.1.0",
                         "stac_extensions": [],
-                        "license": "",
+                        "license": data.get("license", "No License"),
+                        "extent": {
+                            "spatial": {"bbox": [[-180, -90, 180, 90]]},
+                            "temporal": {
+                                "interval": [["1992-01-01T00:00:00Z", "2015-12-31T00:00:00Z"]]
+                            },
+                        },
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "application/geo+json",
+                                "href": f"https://api.stac.ceda.ac.uk/collections/{collection}",
+                            },
+                            {
+                                "rel": "parent",
+                                "type": "application/json",
+                                "href": "https://api.stac.ceda.ac.uk/",
+                            },
+                            {
+                                "rel": "queryables",
+                                "type": "application/json",
+                                "href": f"https://api.stac.ceda.ac.uk/collections/{collection}/queryables",
+                            },
+                            {
+                                "rel": "items",
+                                "type": "application/geo+json",
+                                "href": f"https://api.stac.ceda.ac.uk/collections/cmip6/{collection}",
+                            },
+                            {
+                                "rel": "root",
+                                "type": "application/json",
+                                "href": "https://api.stac.ceda.ac.uk/",
+                            },
+                        ],
                     }
 
-                    response = self.client.post(
+                    response = client.post(
                         urljoin(self.conf.api_url, "collections"),
-                        json=collection,
+                        json=collection_data,
+                        auth=auth,
                     )
 
-                    response = self.client.post(
+                    response = client.post(
                         urljoin(self.conf.api_url, f"collections/{collection}/items"),
                         json=data,
+                        auth=auth,
                     )
 
             if response.status_code == 409:
@@ -149,9 +165,10 @@ class STACFastAPIOutput(Output):
                     response_json["description"]
                     == f"Item {data['id']} in collection {collection} already exists"
                 ):
-                    response = self.client.put(
+                    response = client.put(
                         urljoin(self.conf.api_url, f"collections/{collection}/items/{data['id']}"),
                         json=data,
+                        auth=auth,
                     )
 
                     if response.status_code != 200:
@@ -169,20 +186,18 @@ class STACFastAPIOutput(Output):
                     data,
                 )
 
-    def collection(self, data: dict) -> None:
-        response = self.client.post(
-            urljoin(self.conf.api_url, "collections"),
-            json=data,
-        )
+    def collection(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
+        response = client.post(urljoin(self.conf.api_url, "collections"), json=data, auth=auth)
 
         if response.status_code == 409:
             response_json = response.json()
 
             if response_json["description"] == f"Collection {data['id']} already exists":
-                response = self.client.put(
+                response = client.put(
                     urljoin(self.conf.api_url, "collections"),
                     # urljoin(self.api_url, f"collections/{data['id']}"),
                     json=data,
+                    auth=auth,
                 )
 
                 if response.status_code != 200:
@@ -201,8 +216,23 @@ class STACFastAPIOutput(Output):
             )
 
     def export(self, data: dict, **kwargs) -> None:
+        client = Client(
+            verify=self.conf.verify,
+            timeout=180,
+        )
+
+        if self.conf.authentication:
+            auth = OAuth2ClientCredentials(
+                self.conf.authentication.token_url,
+                client_id=self.conf.authentication.client_id,
+                client_secret=self.conf.authentication.client_secret,
+            )
+
+        else:
+            auth = None
+
         if kwargs["GENERATOR_TYPE"] == "item":
-            self.item(data)
+            self.item(data, client, auth)
 
         elif kwargs["GENERATOR_TYPE"] == "collection":
-            self.collection(data)
+            self.collection(data, client, auth)
