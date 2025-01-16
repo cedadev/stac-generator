@@ -32,7 +32,7 @@ from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
 
-from extraction_methods.core.extraction_method import KeyOutputKey
+from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 from stac_generator.core.input import Input

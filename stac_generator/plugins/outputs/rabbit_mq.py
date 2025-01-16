@@ -160,7 +160,7 @@ class RabbitMQOutput(Output):
     RabbitMQ output for sending grouped messages.
     """
 
-    conf_class = RabbitMQConf
+    config_class = RabbitMQConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

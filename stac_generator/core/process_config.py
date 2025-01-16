@@ -8,13 +8,11 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from abc import ABC
-
 from pydantic import BaseModel
 
 
-class SetConfig(ABC):
-    config_class: BaseModel
+class SetConfig():
+    config_class: BaseModel | None = None
 
     def __init__(self, **kwargs):
         """
@@ -22,5 +20,5 @@ class SetConfig(ABC):
 
         :param kwargs:
         """
-        super().__init__(**kwargs)
-        self.conf = self.config_class(**kwargs["conf"])
+        if self.config_class:
+            self.conf = self.config_class(**kwargs["conf"])

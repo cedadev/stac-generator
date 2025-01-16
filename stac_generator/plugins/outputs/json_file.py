@@ -63,7 +63,7 @@ class JsonFileOutput(Output):
     Export data to a json file
     """
 
-    conf_class = JsonFileConf
+    config_class = JsonFileConf
 
     def export(self, data: dict, **kwargs) -> None:
         filename = f"{data[self.conf.filename_term].strip('/').replace('/', '.')}.json"

@@ -20,21 +20,6 @@ class BaseMapping(SetConfig):
     and ensure compliance by all subclasses.
     """
 
-    def __init__(self, **kwargs):
-        """
-        Set the kwargs to generate instance attributes of the same name
-        :param kwargs:
-        """
-        # Set default processor settings
-        if "default_conf" in kwargs:
-            self._set_attrs(kwargs["default_conf"])
-        # Override with specific processor settings
-        self._set_attrs(kwargs)
-
-    def _set_attrs(self, conf: dict) -> None:
-        for k, v in conf.items():
-            setattr(self, k, v)
-
     @abstractmethod
     def run(self, body: dict, recipe: Recipe, **kwargs) -> dict:
         """

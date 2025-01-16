@@ -54,7 +54,7 @@ class TextFileOutput(Output):
     the processor.
     """
 
-    conf_class = TextFileConf
+    config_class = TextFileConf
 
     def export(self, data: dict, **kwargs) -> None:
 

@@ -83,7 +83,7 @@ class STACFastAPIOutput(Output):
 
     """
 
-    conf_class = STACFastAPIConf
+    config_class = STACFastAPIConf
 
     def item(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
         collections = data["collection"]

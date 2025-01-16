@@ -74,7 +74,6 @@ class HandlerPicker:
             LOGGER.error("Failed to load processor: %s", name)
             return
 
-        # Try to load the processor
         processor = entry_point.load()
 
         return processor(**kwargs)

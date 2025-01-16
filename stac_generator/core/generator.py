@@ -102,7 +102,7 @@ class Generator:
 
         extraction_method = self._load_extraction_method(extraction_method_conf, **kwargs)
 
-        return extraction_method.run(body)
+        return extraction_method._run(body)
 
     def run_extraction_methods(self, body: dict, extraction_methods: list, **kwargs: dict) -> dict:
         """
@@ -136,9 +136,9 @@ class Generator:
         update["member_of_recipes"] = {}
 
         for link in member_of:
-            body = self.run_extraction_methods(body, link.id, **kwargs)
+            member_body = self.run_extraction_methods({}, link.id, **kwargs)
 
-            link_id = body.pop("id")
+            link_id = member_body.pop("id")
 
             update[f"{link.type}_id"].append(link_id)
 
@@ -173,11 +173,11 @@ class Generator:
         :param body: body for object
         :param kwargs:
         """
-        kwargs["GENERATOR_TYPE"] = self.conf.generator
+        kwargs["GENERATOR_TYPE"] = self.conf.get("generator")
 
-        recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.generator)
+        recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
 
-        LOGGER.debug("Generating %s : %s with recipe %s", self.conf.generator, body["uri"], recipe)
+        LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
 
         body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
@@ -190,7 +190,7 @@ class Generator:
         Run generator.
         """
         for input_plugin in self.inputs:
-            for body in input_plugin.start():
+            for body in input_plugin.run():
                 self.process(body)
 
         self.finished()

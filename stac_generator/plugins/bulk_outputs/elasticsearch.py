@@ -88,7 +88,7 @@ class ElasticsearchBulkOutput(BulkOutput):
 
     """
 
-    conf_class = ElasticsearchConf
+    config_class = ElasticsearchConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

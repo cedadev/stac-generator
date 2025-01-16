@@ -130,7 +130,7 @@ from collections import namedtuple
 
 # Third-party imports
 import pika
-from extraction_methods.core.extraction_method import KeyOutputKey
+from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 from stac_generator.core.input import Input

@@ -166,7 +166,7 @@ class RabbitMQBulkOutput(BulkOutput):
     RabbitMQ Bulk output for sending grouped messages.
     """
 
-    conf_class = RabbitMQConf
+    config_class = RabbitMQConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -57,7 +57,7 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 import logging
 
 import boto3
-from extraction_methods.core.extraction_method import KeyOutputKey
+from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 # Package imports

@@ -28,9 +28,9 @@ cachetools = "4.2.4"
 certifi = "2023.7.22"
 cf-xarray = "0.8.4"
 chardet = "4.0.0"
-click = "8.1.3"
+click = "8.1.7"
 docutils = "0.16"
-elasticsearch = "7.13.1"
+elasticsearch = "7.17.12"
 extraction-methods = {git = "https://github.com/cedadev/extraction-methods.git", branch="refactor_inputs"}
 fsspec = "2024.3.1"
 gcsfs = "2024.3.1"
@@ -61,8 +61,8 @@ snowballstemmer = "2.1.0"
 tqdm = "4.62.3"
 typing-extensions = "4.7.1"
 urllib3 = "1.26.18"
-xarray = "2023.9.0"
-yarl = "1.8.2"
+xarray = "2024.10.0"
+yarl = "1.17.1"
 
 [tool.poetry.extras]
 docs = [

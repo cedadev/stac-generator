@@ -46,7 +46,7 @@ class STACMapping(BaseMapping):
 
     """
 
-    conf_class = STACConf
+    config_class = STACConf
 
     def datetime_field(self, body: dict, key: str) -> str:
         dt = parser.parse(body.pop(key))
