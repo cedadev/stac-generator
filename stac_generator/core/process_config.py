@@ -21,4 +21,4 @@ class SetConfig():
         :param kwargs:
         """
         if self.config_class:
-            self.conf = self.config_class(**kwargs["conf"])
+            self.conf = self.config_class(**kwargs.get("conf", {}))

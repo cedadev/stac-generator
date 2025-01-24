@@ -21,6 +21,9 @@ LOGGER = logging.getLogger(__name__)
 class STACConf(BaseModel):
     """STAC mapping config model."""
 
+    stac_root_url: str = Field(
+        description="STAC root URL.",
+    )
     stac_version: str = Field(
         description="STAC version.",
     )
@@ -56,7 +59,7 @@ class STACMapping(BaseMapping):
         output = {
             "type": "Feature",
             "stac_version": self.conf.stac_version,
-            "stac_extensions": self.conf.stac_extensions,
+            "stac_extensions": body.pop("stac_extensions", []) + self.conf.stac_extensions,
             "id": body.pop("id"),
             "geometry": None,
             "assets": {},
@@ -95,22 +98,22 @@ class STACMapping(BaseMapping):
             {
                 "rel": "self",
                 "type": "application/geo+json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}/items/{output['id']}",
+                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}/items/{output['id']}",
             },
             {
                 "rel": "parent",
                 "type": "application/json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}",
+                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
             },
             {
                 "rel": "collection",
                 "type": "application/json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/{output['collection']}",
+                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
             },
             {
                 "rel": "root",
                 "type": "application/json",
-                "href": "https://api.stac.ceda.ac.uk/",
+                "href": "{self.conf.stac_root_url}/",
             },
         ]
 
@@ -160,23 +163,27 @@ class STACMapping(BaseMapping):
             {
                 "rel": "self",
                 "type": "application/geo+json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/{output['id']}",
+                "href": f"{self.conf.stac_root_url}/collections/{output['id']}",
             },
-            {"rel": "parent", "type": "application/json", "href": f"https://api.stac.ceda.ac.uk/"},
+            {
+                "rel": "parent",
+                "type": "application/json",
+                "href": f"{self.conf.stac_root_url}/",
+            },
             {
                 "rel": "queryables",
                 "type": "application/json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/{output['id']}/queryables",
+                "href": f"{self.conf.stac_root_url}/collections/{output['id']}/queryables",
             },
             {
                 "rel": "items",
                 "type": "application/geo+json",
-                "href": f"https://api.stac.ceda.ac.uk/collections/cmip6/{output['id']}",
+                "href": f"{self.conf.stac_root_url}/collections/cmip6/{output['id']}",
             },
             {
                 "rel": "root",
                 "type": "application/json",
-                "href": "https://api.stac.ceda.ac.uk/",
+                "href": "{self.conf.stac_root_url}/",
             },
         ]
 

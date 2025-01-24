@@ -121,27 +121,27 @@ class STACFastAPIOutput(Output):
                             {
                                 "rel": "self",
                                 "type": "application/geo+json",
-                                "href": f"https://api.stac.ceda.ac.uk/collections/{collection}",
+                                "href": f"{self.conf.api_url}/collections/{collection}",
                             },
                             {
                                 "rel": "parent",
                                 "type": "application/json",
-                                "href": "https://api.stac.ceda.ac.uk/",
+                                "href": f"{self.conf.api_url}/",
                             },
                             {
                                 "rel": "queryables",
                                 "type": "application/json",
-                                "href": f"https://api.stac.ceda.ac.uk/collections/{collection}/queryables",
+                                "href": f"{self.conf.api_url}/collections/{collection}/queryables",
                             },
                             {
                                 "rel": "items",
                                 "type": "application/geo+json",
-                                "href": f"https://api.stac.ceda.ac.uk/collections/cmip6/{collection}",
+                                "href": f"{self.conf.api_url}/collections/cmip6/{collection}",
                             },
                             {
                                 "rel": "root",
                                 "type": "application/json",
-                                "href": "https://api.stac.ceda.ac.uk/",
+                                "href": f"{self.conf.api_url}/",
                             },
                         ],
                     }

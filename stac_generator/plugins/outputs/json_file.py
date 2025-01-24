@@ -49,8 +49,8 @@ from stac_generator.core.output import Output
 class JsonFileConf(BaseModel):
     """JSON config model."""
 
-    filename_term: str = Field(
-        default="id",
+    filename: str = Field(
+        default="$id",
         description="Term to use for the JSON file name.",
     )
     dirpath: str = Field(
@@ -66,7 +66,7 @@ class JsonFileOutput(Output):
     config_class = JsonFileConf
 
     def export(self, data: dict, **kwargs) -> None:
-        filename = f"{data[self.conf.filename_term].strip('/').replace('/', '.')}.json"
+        filename = f"{data[self.conf.filename].strip('/').replace('/', '.')}.json"
         filepath = os.path.join(self.conf.dirpath, filename)
 
         with open(filepath, "w+", encoding="utf-8") as file:
