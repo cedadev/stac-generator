@@ -36,8 +36,6 @@ class Generator:
 
         self.recipes = Recipes(recipes_root)
 
-        self.default_id_methods = conf.pop("default_id_methods", {})
-
         self.inputs = load_plugins(conf.pop("inputs", []), "stac_generator.inputs")
 
         self.outputs = load_plugins(conf.pop("outputs", []), "stac_generator.outputs")
@@ -71,6 +69,7 @@ class Generator:
             | kwargs
         )
 
+        # Collect "sub" extraction methods
         if "extraction_methods" in inputs:
             extraction_methods = []
 
@@ -104,7 +103,7 @@ class Generator:
 
         return extraction_method._run(body)
 
-    def run_extraction_methods(self, body: dict, extraction_methods: list, **kwargs: dict) -> dict:
+    def run_extraction_methods(self, body: dict, extraction_methods: list, **kwargs) -> dict:
         """
         Extract facets from the listed extraction methods
 
@@ -117,34 +116,6 @@ class Generator:
 
         for extraction_method in extraction_methods:
             body = self._run_extraction_method(body, extraction_method, **kwargs)
-
-        return body
-
-    def run_member_of_methods(self, body: dict, member_of: list, **kwargs: dict) -> dict:
-        """
-        Extract the raw facets from the listed extraction methods
-
-        :param body: Dict of current extracted data
-        :param member_of: list of membership
-        :param kwargs:
-
-        :return: updated body
-        """
-
-        update = defaultdict(list)
-
-        update["member_of_recipes"] = {}
-
-        for link in member_of:
-            member_body = self.run_extraction_methods({}, link.id, **kwargs)
-
-            link_id = member_body.pop("id")
-
-            update[f"{link.type}_id"].append(link_id)
-
-            update["member_of_recipes"][link_id] = link.key
-
-        body.update(update)
 
         return body
 
@@ -180,8 +151,6 @@ class Generator:
         LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
 
         body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
-
-        body = self.run_member_of_methods(body, recipe.member_of, **kwargs)
 
         self.output(body, recipe, **kwargs)
 

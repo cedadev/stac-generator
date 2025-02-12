@@ -51,8 +51,8 @@ class STACMapping(BaseMapping):
 
     config_class = STACConf
 
-    def datetime_field(self, body: dict, key: str) -> str:
-        dt = parser.parse(body.pop(key))
+    def datetime_field(self, date_str: str) -> str:
+        dt = parser.parse(date_str)
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def item(self, body: dict) -> dict:
@@ -61,40 +61,27 @@ class STACMapping(BaseMapping):
             "stac_version": self.conf.stac_version,
             "stac_extensions": body.pop("stac_extensions", []) + self.conf.stac_extensions,
             "id": body.pop("id"),
-            "geometry": None,
-            "assets": {},
+            "collection": body.pop("collection"),
+            "geometry": body.pop("geometry", None),
+            "assets": body.pop("assets", {}),
             "properties": {
                 "datetime": None,
             },
         }
 
         if "datetime" in body:
-            output["properties"]["datetime"] = self.datetime_field(body, "datetime")
+            output["properties"]["datetime"] = self.datetime_field(body.pop("datetime"))
 
         if "start_datetime" in body:
-            output["properties"]["start_datetime"] = self.datetime_field(body, "start_datetime")
+            output["properties"]["start_datetime"] = self.datetime_field(body.pop("start_datetime"))
 
         if "end_datetime" in body:
-            output["properties"]["end_datetime"] = self.datetime_field(body, "end_datetime")
+            output["properties"]["end_datetime"] = self.datetime_field(body.pop("end_datetime"))
 
         if "bbox" in body:
             output["bbox"] = body.pop("bbox")
 
-        if "geometry" in body:
-            output["geometry"] = body.pop("geometry")
-
-        if "assets" in body:
-            output["assets"] = body.pop("assets")
-
-        if "member_of_recipes" in body:
-            output["member_of_recipes"] = body.pop("member_of_recipes")
-
-        if "collection_id" in body:
-            output["collection"] = body.pop("collection_id")[0]
-
-        output["properties"] |= body
-
-        output["links"] = [
+        output["links"] = body.pop("links") + [
             {
                 "rel": "self",
                 "type": "application/geo+json",
@@ -113,9 +100,11 @@ class STACMapping(BaseMapping):
             {
                 "rel": "root",
                 "type": "application/json",
-                "href": "{self.conf.stac_root_url}/",
+                "href": self.conf.stac_root_url,
             },
         ]
+
+        output["properties"] |= body
 
         return output
 
@@ -183,7 +172,7 @@ class STACMapping(BaseMapping):
             {
                 "rel": "root",
                 "type": "application/json",
-                "href": "{self.conf.stac_root_url}/",
+                "href": self.conf.stac_root_url,
             },
         ]
 

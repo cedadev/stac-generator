@@ -70,6 +70,10 @@ class STACFastAPIConf(BaseModel):
         default=None,
         description="Authentication for STAC API.",
     )
+    headers: dict = Field(
+        default={},
+        description="Headers for API request.",
+    )
     verify: bool = Field(
         default=False,
         description="API certificate verifcation.",
@@ -86,99 +90,98 @@ class STACFastAPIOutput(Output):
     config_class = STACFastAPIConf
 
     def item(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
-        collections = data["collection"]
 
-        if isinstance(data["collection"], str):
-            collections = [collections]
+        collection = data["collection"]
 
-        for collection in collections:
-            collection = data["collection"] = collection.lower()
+        response = client.post(
+            urljoin(self.conf.api_url, f"collections/{collection}/items"),
+            json=data,
+            auth=auth,
+            headers=self.conf.headers,
+        )
 
-            response = client.post(
-                urljoin(self.conf.api_url, f"collections/{collection}/items"),
-                json=data,
-                auth=auth,
-            )
+        if response.status_code == 404:
+            
+            response_json = response.json()
 
-            if response.status_code == 404:
-                response_json = response.json()
-
-                if response_json["description"] == f"Collection {collection} does not exist":
-                    collection_data = {
-                        "type": "Collection",
-                        "id": collection,
-                        "description": collection,
-                        "stac_version": "0.1.0",
-                        "stac_extensions": [],
-                        "license": data.get("license", "No License"),
-                        "extent": {
-                            "spatial": {"bbox": [[-180, -90, 180, 90]]},
-                            "temporal": {
-                                "interval": [["1992-01-01T00:00:00Z", "2015-12-31T00:00:00Z"]]
-                            },
+            if response_json["description"] == f"Collection {collection} does not exist":
+                collection_data = {
+                    "type": "Collection",
+                    "id": collection,
+                    "description": collection,
+                    "stac_version": "0.1.0",
+                    "stac_extensions": [],
+                    "license": data.get("license", "other"),
+                    "extent": {
+                        "spatial": {"bbox": [[-180, -90, 180, 90]]},
+                        "temporal": {
+                            "interval": [["1992-01-01T00:00:00Z", "2015-12-31T00:00:00Z"]]
                         },
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "application/geo+json",
-                                "href": f"{self.conf.api_url}/collections/{collection}",
-                            },
-                            {
-                                "rel": "parent",
-                                "type": "application/json",
-                                "href": f"{self.conf.api_url}/",
-                            },
-                            {
-                                "rel": "queryables",
-                                "type": "application/json",
-                                "href": f"{self.conf.api_url}/collections/{collection}/queryables",
-                            },
-                            {
-                                "rel": "items",
-                                "type": "application/geo+json",
-                                "href": f"{self.conf.api_url}/collections/cmip6/{collection}",
-                            },
-                            {
-                                "rel": "root",
-                                "type": "application/json",
-                                "href": f"{self.conf.api_url}/",
-                            },
-                        ],
-                    }
+                    },
+                    "links": data.get("links", []) + [
+                        {
+                            "rel": "self",
+                            "type": "application/geo+json",
+                            "href": f"{self.conf.api_url}/collections/{collection}",
+                        },
+                        {
+                            "rel": "parent",
+                            "type": "application/json",
+                            "href": f"{self.conf.api_url}/",
+                        },
+                        {
+                            "rel": "queryables",
+                            "type": "application/json",
+                            "href": f"{self.conf.api_url}/collections/{collection}/queryables",
+                        },
+                        {
+                            "rel": "items",
+                            "type": "application/geo+json",
+                            "href": f"{self.conf.api_url}/collections/cmip6/{collection}",
+                        },
+                        {
+                            "rel": "root",
+                            "type": "application/json",
+                            "href": self.conf.api_url,
+                        },
+                    ],
+                }
 
-                    response = client.post(
-                        urljoin(self.conf.api_url, "collections"),
-                        json=collection_data,
-                        auth=auth,
+                response = client.post(
+                    urljoin(self.conf.api_url, "collections"),
+                    json=collection_data,
+                    auth=auth,
+                    headers=headers,
+                )
+
+                response = client.post(
+                    urljoin(self.conf.api_url, f"collections/{collection}/items"),
+                    json=data,
+                    auth=auth,
+                    headers=headers,
+                )
+
+        if response.status_code == 409:
+            response_json = response.json()
+
+            if (
+                response_json["description"]
+                == f"Item {data['id']} in collection {collection} already exists"
+            ):
+                response = client.put(
+                    urljoin(self.conf.api_url, f"collections/{collection}/items/{data['id']}"),
+                    json=data,
+                    auth=auth,
+                )
+
+                if response.status_code != 200:
+                    LOGGER.warning(
+                        "FastAPI Output Item update failed with status code: %s and response text: %s",
+                        response.status_code,
+                        response.text,
                     )
 
-                    response = client.post(
-                        urljoin(self.conf.api_url, f"collections/{collection}/items"),
-                        json=data,
-                        auth=auth,
-                    )
-
-            if response.status_code == 409:
-                response_json = response.json()
-
-                if (
-                    response_json["description"]
-                    == f"Item {data['id']} in collection {collection} already exists"
-                ):
-                    response = client.put(
-                        urljoin(self.conf.api_url, f"collections/{collection}/items/{data['id']}"),
-                        json=data,
-                        auth=auth,
-                    )
-
-                    if response.status_code != 200:
-                        LOGGER.warning(
-                            "FastAPI Output Item update failed with status code: %s and response text: %s",
-                            response.status_code,
-                            response.text,
-                        )
-
-            elif response.status_code != 200:
+        elif response.status_code != 200:
                 LOGGER.warning(
                     "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
                     response.status_code,
