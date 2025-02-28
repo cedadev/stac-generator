@@ -21,8 +21,7 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: |
-          pipx install 'poetry
-          >=2.0.1'
+          pipx install 'poetry>=2.0.1'
       - name: Build package
         run: |
           poetry build
