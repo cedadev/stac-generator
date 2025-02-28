@@ -1,6 +1,6 @@
 [project]
 name = "stac-generator"
-version = "2.0.0"
+version = "2.0.1"
 description = "Framework providing a plugin architecture for metadata extraction and the generation of STACs."
 authors = [
     {"name" = "Rhys Evans", "email" = "rhys.r.evans@stfc.ac.uk"}
