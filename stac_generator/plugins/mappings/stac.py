@@ -81,7 +81,7 @@ class STACMapping(BaseMapping):
         if "bbox" in body:
             output["bbox"] = body.pop("bbox")
 
-        output["links"] = body.pop("links") + [
+        output["links"] = body.pop("links", []) + [
             {
                 "rel": "self",
                 "type": "application/geo+json",

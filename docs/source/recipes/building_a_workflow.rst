@@ -14,12 +14,10 @@ workflow file, with several iterations until you are happy.
 1. Write a recipe
 =================
 
-A basic recipe consists of up to 5 sections:
+A basic recipe consists of up to 3 sections:
     1. ``paths``
     2. ``type``
-    3. ``id``
-    4. ``extraction_methods``
-    5. ``member_of``
+    3. ``extraction_methods``
 
 An example recipe can be found :ref:`here <recipes/recipes:Example Recipe>`
 

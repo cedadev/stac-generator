@@ -13,11 +13,13 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
+import traceback
 from collections import defaultdict
 
 from extraction_methods.core.extraction_method import ExtractionMethod
 
 from stac_generator.core.bulk_output import BulkOutput
+from stac_generator.core.output import Output
 
 from .baker import ExtractionMethodConf, Recipe, Recipes
 from .handler_picker import HandlerPicker
@@ -39,6 +41,8 @@ class Generator:
         self.inputs = load_plugins(conf.pop("inputs", []), "stac_generator.inputs")
 
         self.outputs = load_plugins(conf.pop("outputs", []), "stac_generator.outputs")
+
+        self.failed_outputs = load_plugins(conf.pop("failed_outputs", []), "stac_generator.outputs")
 
         self.conf = conf
 
@@ -119,14 +123,14 @@ class Generator:
 
         return body
 
-    def output(self, body: dict, recipe: Recipe, **kwargs) -> None:
+    def output(self, body: dict, outputs: list[Output], recipe: Recipe, **kwargs) -> None:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         :param kwargs:
         """
-        for output in self.outputs:
+        for output in outputs:
             output.run(body, recipe, **kwargs)
 
     def finished(self) -> None:
@@ -137,22 +141,17 @@ class Generator:
             if isinstance(output, BulkOutput):
                 output.clear_cache()
 
-    def process(self, body: dict, **kwargs) -> None:
+    def process(self, body: dict, recipe: Recipe, **kwargs) -> None:
         """
         process a generator record.
 
         :param body: body for object
         :param kwargs:
         """
-        kwargs["GENERATOR_TYPE"] = self.conf.get("generator")
-
-        recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
-
         LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
 
-        body = self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
+        return self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
-        self.output(body, recipe, **kwargs)
 
     def run(self) -> None:
         """
@@ -160,6 +159,15 @@ class Generator:
         """
         for input_plugin in self.inputs:
             for body in input_plugin.run():
-                self.process(body)
+                kwargs = {"GENERATOR_TYPE": self.conf.get("generator")}
+                recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
+
+                try:
+                    body = self.process(body, recipe, **kwargs)
+                    self.output(body, self.outputs, recipe, **kwargs)
+
+                except Exception:
+                    body["ERROR"] = traceback.format_exc()
+                    self.output(body, self.failed_outputs, recipe, **kwargs)
 
         self.finished()

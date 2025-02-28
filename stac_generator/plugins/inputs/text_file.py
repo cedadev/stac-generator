@@ -78,34 +78,22 @@ class TextFileInput(Input):
         total_generated = 0
         unique_lines = set()
 
-        errors_file = "errors.txt"
-        failed_file = "failed.txt"
-
         for file in file_list:
             with (
                 open(file, "r", encoding="utf-8") as f,
-                open(errors_file, "w+", encoding="utf-8") as errors,
-                open(failed_file, "w+", encoding="utf-8") as failed,
             ):
                 for line in f:
                     if line not in unique_lines:
                         unique_lines.add(line)
 
-                        try:
-                            data = json.loads(line)
-                            output = {"uri": data[self.conf.uri_term]}
+                        data = json.loads(line)
+                        output = {"uri": data[self.conf.uri_term]}
 
-                            for extra_term in self.conf.extra_terms:
-                                output[extra_term.output_key] = data[extra_term.key]
+                        for extra_term in self.conf.extra_terms:
+                            output[extra_term.output_key] = data[extra_term.key]
 
-                            yield output
-                            total_generated += 1
-
-                        except Exception:
-                            failed.write(line)
-
-                            errors.write(line)
-                            errors.write(traceback.format_exc())
+                        yield output
+                        total_generated += 1
 
         end = datetime.now()
         print(f"Processed {total_generated} elasticsearch records in {end-start}")

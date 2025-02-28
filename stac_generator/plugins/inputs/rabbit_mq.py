@@ -150,7 +150,7 @@ class RabbitMQConnection(BaseModel):
     host: str = Field(
         description="RabbitMQ host.",
     )
-    host: str = Field(
+    vhost: str = Field(
         description="RabbitMQ vhost.",
     )
     kwargs: dict = Field(
@@ -169,9 +169,9 @@ class RabbitMQExchange(BaseModel):
         default="topic",
         description="RabbitMQ exchange type.",
     )
-    routing_key: str = Field(
-        default="",
-        description="RabbitMQ exchange routing key.",
+    kwargs: str = Field(
+        default={},
+        description="RabbitMQ exchange kwargs.",
     )
 
 

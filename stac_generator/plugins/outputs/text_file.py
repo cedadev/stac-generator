@@ -62,11 +62,4 @@ class TextFileOutput(Output):
             self.conf.filepath = os.path.join(self.conf.filepath, "file_out.txt")
 
         with open(self.conf.filepat, "a", encoding="utf-8") as file:
-            if "member_of_recipes" in data:
-                for uri, recipe_path in data["member_of_recipes"].items():
-                    message = {
-                        "uri": uri,
-                        "recipe_path": recipe_path,
-                    }
-
-                    file.write(f"{json.dumps(message)}\n")
+            file.write(f"{data}\n")

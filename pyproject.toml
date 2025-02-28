@@ -1,70 +1,55 @@
-[tool.poetry]
+[project]
 name = "stac-generator"
 version = "2.0.0"
 description = "Framework providing a plugin architecture for metadata extraction and the generation of STACs."
-authors = ["Rhys Evans <rhys.r.evans@stfc.ac.uk>"]
+authors = [
+    {"name" = "Rhys Evans", "email" = "rhys.r.evans@stfc.ac.uk"}
+]
+requires-python = ">=3.10, <4"
 license = "BSD - See stac_generator/LICENSE file for details"
 readme = "README.md"
-homepage = "https://github.com/cedadev/stac-generator"
 keywords = ['stac', 'metadata', 'plugin', 'framework']
-
-packages = [
-    { include = "stac_generator" }
+dependencies = [
+    "botocore == 1.21.44",
+    "cachetools == 4.2.4",
+    "certifi == 2023.7.22",
+    "click == 8.1.7",
+    "docutils == 0.20",
+    "elasticsearch == 7.17.12",
+    "httpx (>=0.28.0,<0.29.0)",
+    "httpx-auth (>=0.23.0,<0.24.0)",
+    "jinja2 == 3.1.3",
+    "jmespath == 0.10.0",
+    "packaging == 24.1",
+    "pika == 1.2.0",
+    "pydantic == 2.1.1",
+    "pygments == 2.17.0",
+    "pyparsing == 2.4.7",
+    "python-dateutil == 2.8.2",
+    "python-magic == 0.4.25",
+    "pytz == 2021.1",
+    "pyyaml == 6.0.1",
+    "requests == 2.31.0",
+    "s3transfer == 0.5.0",
+    "siphon == 0.9",
+    "snowballstemmer == 2.2.0",
+    "tqdm == 4.62.3",
+    "typing-extensions == 4.7.1",
+    "setuptools (>=75.8.2,<75.9.0)",
+    "extraction-methods (==1.0.1)",
+    "bokeh (>=3.6.3,<4.0.0)",
+    "dask (>=2025.2.0,<2026.0.0)",
+    "distributed (>=2025.2.0,<2026.0.0)",
 ]
 
-[tool.poetry.scripts]
+[project.urls]
+Homepage = "https://github.com/cedadev/stac-generator"
+
+[project.scripts]
 stac_generator = 'stac_generator.scripts.stac_generator:main'
 recipe_keys = 'stac_generator.scripts.recipe_keys:main'
 
-[tool.poetry.dependencies]
-aiohttp = "3.9.2"
-alabaster = "0.7.12"
-anytree = "2.8.0"
-async-timeout = "4.0.3"
-babel = "2.9.1"
-boto3 = "1.18.44"
-botocore = "1.21.44"
-cachetools = "4.2.4"
-certifi = "2023.7.22"
-cf-xarray = "0.8.4"
-chardet = "4.0.0"
-click = "8.1.7"
-docutils = "0.16"
-elasticsearch = "7.17.12"
-extraction-methods = {git = "https://github.com/cedadev/extraction-methods.git", branch="refactor_inputs"}
-fsspec = "2024.3.1"
-gcsfs = "2024.3.1"
-httpx = "^0.27.0"
-httpx-auth = "^0.22.0"
-idna = "2.10"
-imagesize = "1.2.0"
-jinja2 = "3.1.3"
-jmespath = "0.10.0"
-multidict = "5.1.0"
-packaging = "24.1"
-pika = "1.2.0"
-pydantic = "2.1.1"
-pygments = "2.15.0"
-pyparsing = "2.4.7"
-python = "^3.10"
-python-dateutil = "2.8.2"
-python-magic = "0.4.25"
-pytz = "2021.1"
-pyyaml = "6.0.1"
-rasterio = "^1.4.2"
-requests = "2.31.0"
-rioxarray = "^0.17.0"
-s3transfer = "0.5.0"
-siphon = "0.9"
-six = "1.16.0"
-snowballstemmer = "2.1.0"
-tqdm = "4.62.3"
-typing-extensions = "4.7.1"
-urllib3 = "1.26.18"
-xarray = "2024.10.0"
-yarl = "1.17.1"
-
-[tool.poetry.extras]
+[project.optional-dependencies]
 docs = [
     "elasticsearch",
     "sphinx",
@@ -91,7 +76,7 @@ strict = false
 ignore_missing_imports = true
 packages = "stac_generator"
 
-[tool.poetry.plugins."stac_generator.inputs"]
+[project.entry-points."stac_generator.inputs"]
 elasticsearch_aggregation = "stac_generator.plugins.inputs.elasticsearch_aggregation:ElasticsearchAggregationInput"
 file_system = "stac_generator.plugins.inputs.file_system:FileSystemInput"
 intake_esm = "stac_generator.plugins.inputs.intake_esm:IntakeESMInput"
@@ -101,7 +86,7 @@ solr = "stac_generator.plugins.inputs.solr:SolrInput"
 text_file = "stac_generator.plugins.inputs.text_file:TextFileInput"
 thredds = "stac_generator.plugins.inputs.thredds:ThreddsInput"
 
-[tool.poetry.plugins."stac_generator.outputs"]
+[project.entry-points."stac_generator.outputs"]
 elasticsearch = "stac_generator.plugins.outputs.elasticsearch:ElasticsearchOutput"
 elasticsearch_bulk = "stac_generator.plugins.bulk_outputs.elasticsearch:ElasticsearchBulkOutput"
 intake_esm = "stac_generator.plugins.outputs.intake_esm:IntakeESMOutput"
@@ -113,12 +98,12 @@ standard_out = "stac_generator.plugins.outputs.standard_out:StandardOutOutput"
 standard_out_bulk = "stac_generator.plugins.bulk_outputs.standard_out:StandardOutBulkOutput"
 text_file = "stac_generator.plugins.outputs.text_file:TextFileOutput"
 
-[tool.poetry.plugins."stac_generator.mappings"]
+[project.entry-points."stac_generator.mappings"]
 ceda = "stac_generator.plugins.mappings.ceda:CEDAMapping"
 jinja = "stac_generator.plugins.mappings.jinja2:Jinja2Mapping"
 stac = "stac_generator.plugins.mappings.stac:STACMapping"
 
-[tool.poetry.plugins."stac_generator.generator"]
+[project.entry-points."stac_generator.generator"]
 generator = "stac_generator.core.generator:Generator"
 
 [build-system]
