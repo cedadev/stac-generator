@@ -8,13 +8,14 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from stac_generator.core.baker import Recipe
+from stac_generator.core.process_config import SetConfig
 from stac_generator.core.utils import load_plugins
 
 
-class BaseOutput(ABC):
+class Output(SetConfig):
     """
     Base class to define an output
     """
@@ -25,15 +26,13 @@ class BaseOutput(ABC):
 
         :param kwargs:
         """
-
-        kwargs["mappings"] = (
+        self.mappings = (
             load_plugins(kwargs["mappings"], "stac_generator.mappings")
             if "mappings" in kwargs
             else []
         )
 
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        super().__init__(**kwargs)
 
     @abstractmethod
     def export(self, data: dict, **kwargs) -> None:

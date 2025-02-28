@@ -7,7 +7,8 @@ recipes_root: recipes/
 # The input plugins to be run for the generator
 inputs:
   - name: text_file
-    filepath: input/assets.txt
+    conf:
+      filepath: input/assets.txt
 
 # The output plugins to be run for the generator
 outputs:
@@ -17,12 +18,7 @@ outputs:
       - name: stac
         stac_version: '1.0.0'
         stac_extensions: []
-  - name: json_file
-    dirpath: output/items
-    filename_term: id
-    mappings:
-      - name: stac
-        stac_version: '1.0.0'
-        stac_extensions: []
   - name: text_file
-    filepath: input/collections.txt
+    conf:
+      filepath: input/collections.txt
+

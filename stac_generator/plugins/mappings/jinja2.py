@@ -8,6 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 
 from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel, Field
 
 from stac_generator.core.baker import Recipe
 
@@ -15,6 +16,17 @@ from stac_generator.core.baker import Recipe
 from stac_generator.core.mapping import BaseMapping
 
 LOGGER = logging.getLogger(__name__)
+
+
+class Jinja2Conf(BaseModel):
+    """JINJA2 config model."""
+
+    template_directory: str = Field(
+        description="Template directory.",
+    )
+    template: str = Field(
+        description="JINJA template.",
+    )
 
 
 class Jinja2Mapping(BaseMapping):
@@ -33,13 +45,15 @@ class Jinja2Mapping(BaseMapping):
 
     """
 
+    config_class = Jinja2Conf
+
     def run(
         self,
         body: dict,
         recipe: Recipe,
         **kwargs,
     ) -> dict:
-        environment = Environment(loader=FileSystemLoader(self.template_directory))
-        template = environment.get_template(self.template)
+        environment = Environment(loader=FileSystemLoader(self.conf.template_directory))
+        template = environment.get_template(self.conf.template)
 
         return template.render(**body)

@@ -35,32 +35,31 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 import json
 import os
 
-from stac_generator.core.output import BaseOutput
+from pydantic import BaseModel, Field
+
+from stac_generator.core.output import Output
 
 
-class TextFileOutput(BaseOutput):
+class TextFileConf(BaseModel):
+    """Text File config model."""
+
+    filepath: str = Field(
+        description="Path to text file.",
+    )
+
+
+class TextFileOutput(Output):
     """
     Create/Append to files to export data from
     the processor.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.filepath = self.filepath.rstrip("/")
+    config_class = TextFileConf
 
     def export(self, data: dict, **kwargs) -> None:
 
-        if os.path.isdir(self.filepath):
-            filepath = f"{self.filepath}/file_out.txt"
-        else:
-            filepath = self.filepath
+        if os.path.isdir(self.conf.filepath):
+            self.conf.filepath = os.path.join(self.conf.filepath, "file_out.txt")
 
-        with open(filepath, "a", encoding="utf-8") as file:
-            if "member_of_recipes" in data:
-                for uri, recipe_path in data["member_of_recipes"].items():
-                    message = {
-                        "uri": uri,
-                        "recipe_path": recipe_path,
-                    }
-
-                    file.write(f"{json.dumps(message)}\n")
+        with open(self.conf.filepat, "a", encoding="utf-8") as file:
+            file.write(f"{data}\n")

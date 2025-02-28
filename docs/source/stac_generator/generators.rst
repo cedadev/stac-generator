@@ -1,6 +1,6 @@
 
-Genertators
-===========
+Genertator
+==========
 
 .. automodule:: stac_generator.plugins.generators
 

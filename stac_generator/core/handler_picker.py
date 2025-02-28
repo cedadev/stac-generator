@@ -12,8 +12,7 @@ import logging
 from typing import Optional, Union
 
 import pkg_resources
-
-from .extraction_method import BaseExtractionMethod
+from extraction_methods.core.extraction_method import ExtractionMethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +58,7 @@ class HandlerPicker:
 
         return entry_points
 
-    def get(self, name: str, **kwargs) -> Optional[BaseExtractionMethod]:
+    def get(self, name: str, **kwargs) -> Optional[ExtractionMethod]:
         """
         Get the processor by name
 
@@ -75,7 +74,6 @@ class HandlerPicker:
             LOGGER.error("Failed to load processor: %s", name)
             return
 
-        # Try to load the processor
         processor = entry_point.load()
 
         return processor(**kwargs)

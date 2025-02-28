@@ -39,6 +39,7 @@ Example Configuration:
               description: A long form description of the dataset catalog.
 
 """
+
 __author__ = "David Huard"
 __date__ = "June 2022"
 __copyright__ = "Copyright 2022 Ouranos"
@@ -48,58 +49,49 @@ __contact__ = "huard.david@ouranos.ca"
 import json
 import os
 
-from stac_generator.core.output import BaseOutput
+from pydantic import BaseModel, Field
+
+from stac_generator.core.output import Output
 
 ESMCAT_VERSION = "0.1.0"
 ASSET_FORMAT = {".nc": "netcdf", ".zarr": "zarr"}
 
 
-class IntakeESMOutput(BaseOutput):
+class ElasticsearchConf(BaseModel):
+    """IntakeESM config model."""
+
+    filepath: str = Field(
+        description="Elasticsearch index to post to.",
+    )
+    namespace: str = Field(
+        default="asset",
+        description="Elasticsearch index to post to.",
+    )
+    collection: str = Field(
+        default="collection",
+        description="Term to use for the JSON file name.",
+    )
+    description: str = Field(
+        default="",
+        description="Term to use for the JSON file name.",
+    )
+
+
+class IntakeESMOutput(Output):
     """
     Export data to
     - a json catalog description file
     - a zipped CSV content file
     """
 
-    def __init__(self, collection="", description="", **kwargs):
-        super().__init__(namespace="asset", **kwargs)
-        self.filepath: str = kwargs["filepath"]
-        self.filepath = self.filepath.rstrip("/")
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.collection = collection or "collection"
-        self.description = description
-
-        if os.path.isdir(self.filepath):
-            self.filepath = self.filepath + "/" + self.collection
+        if os.path.isdir(self.conf.filepath):
+            self.filepath = os.path.join(self.conf.filepath, self.conf.collection)
 
         self.json_path = self.filepath + ".json"
         self.csv_path = self.filepath + ".csv.gz"
-
-    def export(self, data: dict, **kwargs) -> None:
-        """Write data to disk."""
-        import csv
-        import gzip
-
-        if not os.path.exists(self.json_path):
-            # Create catalog spec file and CSV file with header and first data row
-            mode = "wt"
-
-            # Write ESM-Collection json file
-            with open(self.json_path, mode) as f:
-                json.dump(self.to_intake_spec(data), f)
-
-            # Write catalog data in csv.gz format
-            with gzip.open(filename=self.csv_path, mode=mode) as f:
-                w = csv.writer(f)
-                w.writerow(self.properties(data))
-                w.writerow(self.data2row(data))
-
-        else:
-            # Append new data row to CSV file
-            mode = "at"
-            with gzip.open(filename=self.csv_path, mode=mode) as f:
-                w = csv.writer(f)
-                w.writerow(self.data2row(data))
 
     @staticmethod
     def properties(data):
@@ -122,10 +114,34 @@ class IntakeESMOutput(BaseOutput):
 
         spec = {
             "esmcat_version": ESMCAT_VERSION,
-            "id": self.namespace,
-            "description": self.description,
+            "id": self.conf.namespace,
+            "description": self.conf.description,
             "catalog_file": self.csv_path,
             "attributes": attributes,
             "assets": {"column_name": "path", "format": ASSET_FORMAT[ext]},
         }
         return spec
+
+    def export(self, data: dict, **kwargs) -> None:
+        """Write data to disk."""
+        import csv
+        import gzip
+
+        if not os.path.exists(self.json_path):
+            # Create catalog spec file and CSV file with header and first data row
+
+            # Write ESM-Collection json file
+            with open(self.json_path, mode="wt") as f:
+                json.dump(self.to_intake_spec(data), f)
+
+            # Write catalog data in csv.gz format
+            with gzip.open(filename=self.csv_path, mode="wt") as f:
+                w = csv.writer(f)
+                w.writerow(self.properties(data))
+                w.writerow(self.data2row(data))
+
+        else:
+            # Append new data row to CSV file
+            with gzip.open(filename=self.csv_path, mode="at") as f:
+                w = csv.writer(f)
+                w.writerow(self.data2row(data))

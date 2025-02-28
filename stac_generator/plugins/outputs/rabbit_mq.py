@@ -100,42 +100,91 @@ Example Configuration:
                 routing_key: asset
 """
 
-
 import json
 
 import pika
+from pydantic import BaseModel, Field
 
-from stac_generator.core.output import BaseOutput
+from stac_generator.core.output import Output
 
 
-class RabbitMQOutput(BaseOutput):
+class RabbitMQConnection(BaseModel):
+    """JSON config model."""
+
+    user: str = Field(
+        description="RabbitMQ user.",
+    )
+    password: str = Field(
+        description="RabbitMQ password.",
+    )
+    host: str = Field(
+        description="RabbitMQ host.",
+    )
+    host: str = Field(
+        description="RabbitMQ vhost.",
+    )
+    kwargs: dict = Field(
+        default={},
+        description="RabbitMQ additional kwargs.",
+    )
+
+
+class RabbitMQExchange(BaseModel):
+    """JSON config model."""
+
+    name: str = Field(
+        description="RabbitMQ exchange name.",
+    )
+    type: str = Field(
+        description="RabbitMQ exchange type.",
+    )
+    routing_key: str = Field(
+        default="",
+        description="RabbitMQ exchange routing key.",
+    )
+
+
+class RabbitMQConf(BaseModel):
+    """RabbitMQ config model."""
+
+    connection: RabbitMQConnection = Field(
+        description="RabbitMQ connection kwargs.",
+    )
+    exchange: RabbitMQExchange = Field(
+        description="RabbitMQ exchange info.",
+    )
+
+
+class RabbitMQOutput(Output):
     """
     RabbitMQ output for sending grouped messages.
     """
+
+    config_class = RabbitMQConf
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         # Create the credentials object
         credentials = pika.PlainCredentials(
-            self.connection["user"], self.connection["password"]
+            self.conf.connection.user, self.conf.connection.password
         )
 
         # Start the rabbitMQ connection
         rabbit_connection = pika.BlockingConnection(
             pika.ConnectionParameters(
-                host=self.connection["host"],
+                host=self.conf.connection.host,
                 credentials=credentials,
-                virtual_host=self.connection["vhost"],
-                **self.connection.get("kwargs", {}),
+                virtual_host=self.conf.connection.vhost,
+                **self.conf.connection.kwargs,
             )
         )
 
         # Create a new channel
         self.channel = rabbit_connection.channel()
         self.channel.exchange_declare(
-            exchange=self.exchange["name"],
-            exchange_type=self.exchange["type"],
+            exchange=self.conf.exchange.name,
+            exchange_type=self.conf.exchange.type,
         )
 
     def export(self, data: dict, **kwargs) -> None:
@@ -151,7 +200,7 @@ class RabbitMQOutput(BaseOutput):
         }
 
         self.channel.basic_publish(
-            exchange=self.exchange["name"],
+            exchange=self.conf.exchange.name,
             body=json.dumps(message),
-            routing_key=self.exchange.get("routing_key", ""),
+            routing_key=self.conf.exchange.routing_key,
         )

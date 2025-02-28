@@ -106,7 +106,7 @@ class Stats:
         )
 
 
-def load_plugins(plugin_confs: list, entry_point: str) -> List:
+def load_plugins(plugins: list, entry_point: str) -> list:
     """
     Load plugins from the entry points
 
@@ -119,21 +119,16 @@ def load_plugins(plugin_confs: list, entry_point: str) -> List:
     :return: List of loaded plugins
     """
 
-    if not isinstance(plugin_confs, list):
-        plugin_confs = [plugin_confs]
-
     loaded_plugins = []
 
-    plugins = HandlerPicker(entry_point)
+    plugins_picker = HandlerPicker(entry_point)
 
-    for plugin_conf in plugin_confs:
+    for plugin in plugins:
         try:
-            loaded_plugin = plugins.get(**plugin_conf)
+            loaded_plugin = plugins_picker.get(**plugin)
             loaded_plugins.append(loaded_plugin)
         except Exception:
-            LOGGER.error(
-                "Failed to load plugin: %s", plugin_conf["name"], exc_info=True
-            )
+            LOGGER.error("Failed to load plugin: %s", plugin["name"], exc_info=True)
 
     if not loaded_plugins:
         raise NoPluginsError(f"No plugins were successfully loaded from {entry_point}")
@@ -156,9 +151,7 @@ def dict_merge(*args, add_keys=True) -> dict:
 
     for merge_dct in merge_dicts:
         if add_keys is False:
-            merge_dct = {
-                key: merge_dct[key] for key in set(rtn_dct).intersection(set(merge_dct))
-            }
+            merge_dct = {key: merge_dct[key] for key in set(rtn_dct).intersection(set(merge_dct))}
 
         for k, v in merge_dct.items():
             # This is a new key. Add as is.
@@ -171,9 +164,7 @@ def dict_merge(*args, add_keys=True) -> dict:
                     if rtn_dct[k] not in v:
                         v.append(rtn_dct[k])
 
-                elif isinstance(rtn_dct[k], list) and isinstance(
-                    rtn_dct[k][0], type(v)
-                ):
+                elif isinstance(rtn_dct[k], list) and isinstance(rtn_dct[k][0], type(v)):
                     if v not in rtn_dct[k]:
                         rtn_dct[k].append(v)
 
@@ -183,9 +174,7 @@ def dict_merge(*args, add_keys=True) -> dict:
                     )
 
             # Recursive merge the next level
-            elif isinstance(rtn_dct[k], dict) and isinstance(
-                merge_dct[k], collections.abc.Mapping
-            ):
+            elif isinstance(rtn_dct[k], dict) and isinstance(merge_dct[k], collections.abc.Mapping):
                 rtn_dct[k] = dict_merge(rtn_dct[k], merge_dct[k], add_keys=add_keys)
 
             # If the item is a list, append items avoiding duplictes

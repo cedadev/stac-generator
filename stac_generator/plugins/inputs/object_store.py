@@ -41,7 +41,8 @@ Example Configuration:
                     aws_access_key_id: ACCESS_KEY,
                     aws_secret_access_key: SECRET_KEY
                 }
-                bucket: my_bucket
+                buckets: 
+                  - my_bucket
                 prefix: directory_or_file
                 delimiter: .zarr/
 
@@ -56,49 +57,67 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 import logging
 
 import boto3
+from extraction_methods.core.types import KeyOutputKey
+from pydantic import BaseModel, Field
 
-from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.input import BaseInput
+# Package imports
+from stac_generator.core.input import Input
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ObjectStoreInput(BaseInput):
+class ObjectStoreConf(BaseModel):
+    """Object Store Config."""
+
+    url: str = Field(
+        description="URL of datastore.",
+    )
+    buckets: list[str] = Field(
+        default=-1,
+        description="Number of rows to skip.",
+    )
+    prefix: str = Field(
+        description="URL of datastore.",
+    )
+    delimiter: str = Field(
+        description="URL of datastore.",
+    )
+    session_kwargs: dict = Field(
+        default={},
+        description="session kwargs.",
+    )
+
+
+class ObjectStoreInput(Input):
     """ """
 
-    def __init__(self, **kwargs):
+    config_class = ObjectStoreConf
 
-        super().__init__(**kwargs)
+    def run(self):
 
-        self.endpoint_url = kwargs.get("endpoint_url")
-        session = boto3.session.Session(**kwargs["session_kwargs"])
-
+        session = boto3.session.Session(**self.conf.session_kwargs)
         s3 = session.resource(
             "s3",
-            endpoint_url=self.endpoint_url,
+            endpoint_url=self.conf.url,
         )
 
-        self.client = s3.meta.client
-        self.buckets = (
-            [s3.Bucket(kwargs["bucket"])] if "bucket" in kwargs else s3.buckets.all()
+        buckets = (
+            [s3.Bucket(bucket) for bucket in self.conf.buckets]
+            if self.conf.buckets
+            else s3.buckets.all()
         )
 
-        self.prefix = kwargs.get("prefix", "")
-        self.delimiter = kwargs.get("delimiter", "")
-
-    def run(self, generator: BaseGenerator):
-
-        for bucket in self.buckets:
+        for bucket in buckets:
             total_files = 0
 
             for obj in bucket.objects.filter(
-                Prefix=self.prefix, Delimiter=self.delimiter
+                Prefix=self.conf.prefix, Delimiter=self.conf.delimiter
             ):
 
-                generator.process(
-                    f"{self.endpoint_url}/{bucket.name}/{obj.key}",
-                    client=self.client,
-                )
+                yield {
+                    "uri": f"{self.conf.url}/{bucket.name}/{obj.key}",
+                    "client": s3.meta.client,
+                }
                 total_files += 1
 
-            LOGGER.info(f"Processed {total_files} files from {bucket}")
+            LOGGER.info("Processed %s files from %s", total_files, bucket)

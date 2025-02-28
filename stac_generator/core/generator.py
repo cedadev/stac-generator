@@ -12,39 +12,37 @@ __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from abc import ABC, abstractmethod
+import logging
+import traceback
 from collections import defaultdict
 
-from stac_generator.core.bulk_output import BaseBulkOutput
-from stac_generator.types.generators import GeneratorType
+from extraction_methods.core.extraction_method import ExtractionMethod
+
+from stac_generator.core.bulk_output import BulkOutput
+from stac_generator.core.output import Output
 
 from .baker import ExtractionMethodConf, Recipe, Recipes
-from .extraction_method import BaseExtractionMethod
 from .handler_picker import HandlerPicker
 from .utils import load_plugins
 
+LOGGER = logging.getLogger(__name__)
 
-class BaseGenerator(ABC):
+
+class Generator:
     """
-    Base class to define an interface for other generator classes
-
-    Attributes:
-
-        TYPE:
-            Defines the stac levels the extraction is occuring at.
-
+    Generator class
     """
-
-    TYPE = GeneratorType.NONE
 
     def __init__(self, conf: dict):
         recipes_root = conf.get("recipes_root", "recipes")
 
         self.recipes = Recipes(recipes_root)
 
-        self.default_id_methods = conf.pop("default_id_methods", {})
+        self.inputs = load_plugins(conf.pop("inputs", []), "stac_generator.inputs")
 
         self.outputs = load_plugins(conf.pop("outputs", []), "stac_generator.outputs")
+
+        self.failed_outputs = load_plugins(conf.pop("failed_outputs", []), "stac_generator.outputs")
 
         self.conf = conf
 
@@ -58,9 +56,7 @@ class BaseGenerator(ABC):
         """
         return HandlerPicker("extraction_methods")
 
-    def _load_extraction_method(
-        self, extraction_method_conf: dict, **kwargs
-    ) -> BaseExtractionMethod:
+    def _load_extraction_method(self, extraction_method_conf: dict, **kwargs) -> ExtractionMethod:
         """
         Load the given extraction method
 
@@ -70,16 +66,14 @@ class BaseGenerator(ABC):
         :return: extraction method
         """
 
-        extraction_method_name = extraction_method_conf.method
+        # Overide less specific inputs
+        inputs = (
+            self.conf.get("extraction_methods", {}).get(extraction_method_conf.method, {})
+            | extraction_method_conf.inputs
+            | kwargs
+        )
 
-        generator_conf = self.conf.get("extraction_methods", {})
-
-        default_conf = generator_conf.get(extraction_method_name, {})
-
-        inputs = extraction_method_conf.inputs
-
-        inputs["default_conf"] = kwargs | default_conf
-
+        # Collect "sub" extraction methods
         if "extraction_methods" in inputs:
             extraction_methods = []
 
@@ -96,11 +90,9 @@ class BaseGenerator(ABC):
 
             inputs["extraction_methods"] = extraction_methods
 
-        return self.extraction_methods.get(extraction_method_name, **inputs)
+        return self.extraction_methods.get(extraction_method_conf.method, **inputs)
 
-    def _run_extraction_method(
-        self, body: dict, extraction_method_conf: dict, **kwargs
-    ) -> dict:
+    def _run_extraction_method(self, body: dict, extraction_method_conf: dict, **kwargs) -> dict:
         """
         Run the specified extraction method.
 
@@ -111,15 +103,11 @@ class BaseGenerator(ABC):
         :return: body post extraction method
         """
 
-        extraction_method = self._load_extraction_method(
-            extraction_method_conf, **kwargs
-        )
+        extraction_method = self._load_extraction_method(extraction_method_conf, **kwargs)
 
-        return extraction_method.run(body)
+        return extraction_method._run(body)
 
-    def run_extraction_methods(
-        self, body: dict, extraction_methods: list, **kwargs: dict
-    ) -> dict:
+    def run_extraction_methods(self, body: dict, extraction_methods: list, **kwargs) -> dict:
         """
         Extract facets from the listed extraction methods
 
@@ -135,44 +123,14 @@ class BaseGenerator(ABC):
 
         return body
 
-    def run_member_of_methods(
-        self, body: dict, member_of: list, **kwargs: dict
-    ) -> dict:
-        """
-        Extract the raw facets from the listed extraction methods
-
-        :param body: Dict of current extracted data
-        :param member_of: list of membership
-        :param kwargs:
-
-        :return: updated body
-        """
-
-        update = defaultdict(list)
-
-        update["member_of_recipes"] = {}
-
-        for link in member_of:
-            body = self.run_extraction_methods(body, link.id, **kwargs)
-
-            link_id = body.pop(f"{link.type}_id")
-
-            update[f"{link.type}_id"].append(link_id)
-
-            update["member_of_recipes"][link_id] = link.key
-
-        body.update(update)
-
-        return body
-
-    def output(self, body: dict, recipe: Recipe, **kwargs) -> None:
+    def output(self, body: dict, outputs: list[Output], recipe: Recipe, **kwargs) -> None:
         """
         Run all configured outputs export methods.
 
         :param data: data to be output
         :param kwargs:
         """
-        for output in self.outputs:
+        for output in outputs:
             output.run(body, recipe, **kwargs)
 
     def finished(self) -> None:
@@ -180,27 +138,36 @@ class BaseGenerator(ABC):
         Run clear cache of remaining data for bulk outputs.
         """
         for output in self.outputs:
-            if isinstance(output, BaseBulkOutput):
+            if isinstance(output, BulkOutput):
                 output.clear_cache()
 
-    @abstractmethod
-    def _process(self, body: dict, **kwargs) -> None:
+    def process(self, body: dict, recipe: Recipe, **kwargs) -> None:
         """
-        Run generator.
+        process a generator record.
 
         :param body: body for object
         :param kwargs:
         """
+        LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
 
-    def process(self, uri: str, **kwargs) -> None:
+        return self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
+
+
+    def run(self) -> None:
         """
         Run generator.
-
-        :param uri: uri for object
-        :param kwargs:
         """
-        kwargs["TYPE"] = self.TYPE
+        for input_plugin in self.inputs:
+            for body in input_plugin.run():
+                kwargs = {"GENERATOR_TYPE": self.conf.get("generator")}
+                recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
 
-        body = {"uri": uri}
+                try:
+                    body = self.process(body, recipe, **kwargs)
+                    self.output(body, self.outputs, recipe, **kwargs)
 
-        self._process(body, **kwargs)
+                except Exception:
+                    body["ERROR"] = traceback.format_exc()
+                    self.output(body, self.failed_outputs, recipe, **kwargs)
+
+        self.finished()

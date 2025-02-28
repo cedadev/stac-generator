@@ -44,10 +44,7 @@ class Recipe(BaseModel):
     _key: Optional[str] = None
     type: str
     paths: Optional[list[Path]] = []
-    id: Optional[list[ExtractionMethodConf]] = []
     extraction_methods: Optional[list[ExtractionMethodConf]] = []
-    links: Optional[list[dict]] = []
-    _member_of: Optional[list[Recipe]] = []
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -58,17 +55,6 @@ class Recipe(BaseModel):
         """Get key"""
         # Hidden variables not used in model dump
         return self._key
-
-    @property
-    def member_of(self):
-        """Get member_of"""
-        # Hidden variables not used in model dump
-        return self._member_of
-
-    @member_of.setter
-    def member_of(self, value):
-        """Set member_of"""
-        self._member_of = value
 
     def set_key(self):
         """Fuction to set recipe key"""
@@ -118,13 +104,6 @@ class Recipes:
         with open(file, "r", encoding="utf-8") as reader:
             data = yaml.safe_load(reader)
 
-        links = []
-        for path in data.pop("member_of", []):
-            link_recipe = self._load_data(path)
-            links.append({"key": link_recipe.key, "type": link_recipe.type})
-
-        data["links"] = links
-
         recipe = Recipe(**data)
 
         self.recipes[recipe.type][recipe.key] = recipe
@@ -143,10 +122,6 @@ class Recipes:
         :param recipe: Recipe for links to be loaded for
         """
         recipe = self.recipes[recipe_type][key]
-
-        recipe.member_of = [
-            self.recipes[link["type"]][link["key"]] for link in recipe.links
-        ]
 
         return recipe
 

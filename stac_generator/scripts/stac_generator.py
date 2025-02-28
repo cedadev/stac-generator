@@ -12,12 +12,9 @@ import cProfile
 import logging
 
 import click
-import pkg_resources
 import yaml
 
-from stac_generator.core.exceptions import NoPluginsError
-from stac_generator.core.generator import BaseGenerator
-from stac_generator.core.utils import load_plugins
+from stac_generator.core.generator import Generator
 
 
 def setup_logging(conf):
@@ -26,43 +23,6 @@ def setup_logging(conf):
         config["format"] = "%(asctime)s %(name)s %(levelname)s %(message)s"
 
     logging.basicConfig(**config)
-
-
-def load_config(path):
-    with open(path) as reader:
-        conf = yaml.safe_load(reader)
-    return conf
-
-
-def load_generator(conf: dict) -> BaseGenerator:
-    """
-    Load the generator.
-
-    Looks for generator defined in the configuration in preference
-    and falls back to the first defined entry point
-    at ``stac_generator.generators``
-
-    :param conf: Configuration dict
-    :return: Generator
-    """
-
-    generator = None
-
-    if conf.get("generator"):
-        entry_points = pkg_resources.iter_entry_points(
-            "stac_generator.generators", conf.get("generator")
-        )
-
-        for entry_point in entry_points:
-            generator = entry_point.load()
-
-            # Only load the first one
-            break
-
-    if not generator:
-        raise NoPluginsError("No extraction plugins have been loaded")
-
-    return generator(conf)
 
 
 @click.command()
@@ -86,14 +46,12 @@ def main(conf, prof):
         profiler = cProfile.Profile()
         profiler.enable()
 
-    conf = load_config(conf)
+    with open(conf, mode="r", encoding="utf-8") as reader:
+        conf = yaml.safe_load(reader)
 
-    generator = load_generator(conf)
+    generator = Generator(conf)
 
-    input_plugins = load_plugins(conf["inputs"], "stac_generator.inputs")
-
-    for input_plugin in input_plugins:
-        input_plugin.start(generator)
+    generator.run()
 
     if prof:
         profiler.disable()

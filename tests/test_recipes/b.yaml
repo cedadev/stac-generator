@@ -4,12 +4,6 @@ paths:
 
 type: item
 
-id:
-  - method: default
-    inputs:
-      defaults:
-        item_id: another_item
-
 extraction_methods:
   - method: regex
     inputs:
