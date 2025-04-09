@@ -118,6 +118,8 @@ def load_plugins(plugins: list, entry_point: str) -> list:
 
     :return: List of loaded plugins
     """
+    if not plugins:
+        return []
 
     loaded_plugins = []
 
