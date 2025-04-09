@@ -9,7 +9,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import abstractmethod
-
+from collections.abc import Callable
 from stac_generator.core.process_config import SetConfig
 
 
@@ -17,9 +17,22 @@ class Input(SetConfig):
     """
     Base class to define an input
     """
+    blocking: bool = False
 
     @abstractmethod
     def run(self):
+        """
+        Run the input plugin.
+        """
+
+class BlockingInput(Input):
+    """
+    Base class to define an input
+    """
+    blocking: bool = True
+
+    @abstractmethod
+    def run(self, process_method: Callable):
         """
         Run the input plugin.
         """

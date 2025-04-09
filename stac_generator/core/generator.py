@@ -20,6 +20,7 @@ from extraction_methods.core.extraction_method import ExtractionMethod
 
 from stac_generator.core.bulk_output import BulkOutput
 from stac_generator.core.output import Output
+from stac_generator.core.input import Input
 
 from .baker import ExtractionMethodConf, Recipe, Recipes
 from .handler_picker import HandlerPicker
@@ -152,22 +153,43 @@ class Generator:
 
         return self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
+    def process_event(self, body: dict) -> None:
+        """
+        Run event.
+
+        :param body: initial body for object
+        """
+        kwargs = {"GENERATOR_TYPE": self.conf.get("generator")}
+        recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
+
+        try:
+            body = self.process(body, recipe, **kwargs)
+            self.output(body, self.outputs, recipe, **kwargs)
+
+        except Exception:
+            body["ERROR"] = traceback.format_exc()
+            self.output(body, self.failed_outputs, recipe, **kwargs)
+
+
+    def run_input(self, input_plugin: Input) -> None:
+        """
+        Run input.
+
+        :param input_plugin: Input plugin to be run
+        """
+        if input_plugin.blocking:
+            input_plugin.run(self.process_event)
+
+        else:
+            for body in input_plugin.run():
+                self.process_event(body)
+
+        self.finished()
 
     def run(self) -> None:
         """
         Run generator.
         """
+        print("RUNNING")
         for input_plugin in self.inputs:
-            for body in input_plugin.run():
-                kwargs = {"GENERATOR_TYPE": self.conf.get("generator")}
-                recipe = self.recipes.get(body.get("recipe_path", body["uri"]), self.conf.get("generator"))
-
-                try:
-                    body = self.process(body, recipe, **kwargs)
-                    self.output(body, self.outputs, recipe, **kwargs)
-
-                except Exception:
-                    body["ERROR"] = traceback.format_exc()
-                    self.output(body, self.failed_outputs, recipe, **kwargs)
-
-        self.finished()
+            self.run_input(input_plugin)

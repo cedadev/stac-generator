@@ -120,7 +120,7 @@ class RabbitMQConnection(BaseModel):
     host: str = Field(
         description="RabbitMQ host.",
     )
-    host: str = Field(
+    vhost: str = Field(
         description="RabbitMQ vhost.",
     )
     kwargs: dict = Field(
