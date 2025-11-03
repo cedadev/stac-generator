@@ -23,19 +23,10 @@ from pathlib import Path
 from typing import Optional
 
 import yaml
+from extraction_methods.core.extraction_method import ExtractionMethodConf
 from pydantic import BaseModel, field_serializer
 
 LOGGER = logging.getLogger(__name__)
-
-
-class ExtractionMethodConf(BaseModel):
-    """STAC extraction method model."""
-
-    method: str
-    inputs: Optional[dict] = {}
-
-    def __repr__(self):
-        return yaml.dump(self.model_dump())
 
 
 class Recipe(BaseModel):

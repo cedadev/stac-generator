@@ -169,7 +169,7 @@ class RabbitMQExchange(BaseModel):
         default="topic",
         description="RabbitMQ exchange type.",
     )
-    kwargs: str = Field(
+    kwargs: dict = Field(
         default={},
         description="RabbitMQ exchange kwargs.",
     )
@@ -276,9 +276,7 @@ class RabbitMQInput(Input):
         """
 
         # Create the credentials object
-        credentials = pika.PlainCredentials(
-            self.conf.connection.user, self.conf.connection.password
-        )
+        credentials = pika.PlainCredentials(self.conf.connection.user, self.conf.connection.password)
 
         # Start the rabbitMQ connection
         connection = pika.BlockingConnection(
@@ -304,15 +302,11 @@ class RabbitMQInput(Input):
         for queue in self.conf.queues:
             channel.queue_declare(queue=queue.name, **queue.declare_kwargs)
 
-            channel.queue_bind(
-                exchange=self.conf.exchange.name, queue=queue.name, **queue.bind_kwargs
-            )
+            channel.queue_bind(exchange=self.conf.exchange.name, queue=queue.name, **queue.bind_kwargs)
 
             # Set callback
             callback = functools.partial(self.callback, connection=connection)
-            channel.basic_consume(
-                queue=queue.name, on_message_callback=callback, **queue.consume_kwargs
-            )
+            channel.basic_consume(queue=queue.name, on_message_callback=callback, **queue.consume_kwargs)
 
         return channel
 

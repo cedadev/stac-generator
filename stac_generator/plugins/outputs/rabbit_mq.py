@@ -120,7 +120,7 @@ class RabbitMQConnection(BaseModel):
     host: str = Field(
         description="RabbitMQ host.",
     )
-    host: str = Field(
+    vhost: str = Field(
         description="RabbitMQ vhost.",
     )
     kwargs: dict = Field(
@@ -166,9 +166,7 @@ class RabbitMQOutput(Output):
         super().__init__(**kwargs)
 
         # Create the credentials object
-        credentials = pika.PlainCredentials(
-            self.conf.connection.user, self.conf.connection.password
-        )
+        credentials = pika.PlainCredentials(self.conf.connection.user, self.conf.connection.password)
 
         # Start the rabbitMQ connection
         rabbit_connection = pika.BlockingConnection(
