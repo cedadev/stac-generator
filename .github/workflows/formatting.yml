@@ -7,19 +7,19 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Python Blacken
-      uses: psf/black@stable
-      with:
-        options: "--check --diff"
-        version: "22.3.0"
-    - name: python-isort
-      uses: isort/isort-action@v0.1.0
-    - name: Flake8 with annotations
-      uses: TrueBrain/actions-flake8@v2.1
-      with:
-        path: stac_generator
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Python Blacken
+        uses: psf/black@stable
+        with:
+          options: "--check --diff"
+          version: "22.3.0"
+      - name: python-isort
+        uses: isort/isort-action@v0.1.0
+      - name: Flake8 with annotations
+        uses: TrueBrain/actions-flake8@v2.1
+        with:
+          path: stac_generator
