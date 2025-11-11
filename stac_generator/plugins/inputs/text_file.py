@@ -27,7 +27,6 @@ Example Configuration:
 """
 
 import json
-import traceback
 from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
@@ -79,9 +78,7 @@ class TextFileInput(Input):
         unique_lines = set()
 
         for file in file_list:
-            with (
-                open(file, "r", encoding="utf-8") as f,
-            ):
+            with (open(file, "r", encoding="utf-8") as f,):
                 for line in f:
                     if line not in unique_lines:
                         unique_lines.add(line)

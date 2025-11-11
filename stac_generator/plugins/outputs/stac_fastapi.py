@@ -101,7 +101,7 @@ class STACFastAPIOutput(Output):
         )
 
         if response.status_code == 404:
-            
+
             response_json = response.json()
 
             if response_json["description"] == f"Collection {collection} does not exist":
@@ -118,7 +118,8 @@ class STACFastAPIOutput(Output):
                             "interval": [["1992-01-01T00:00:00Z", "2015-12-31T00:00:00Z"]]
                         },
                     },
-                    "links": data.get("links", []) + [
+                    "links": data.get("links", [])
+                    + [
                         {
                             "rel": "self",
                             "type": "application/geo+json",
@@ -151,14 +152,14 @@ class STACFastAPIOutput(Output):
                     urljoin(self.conf.api_url, "collections"),
                     json=collection_data,
                     auth=auth,
-                    headers=headers,
+                    headers=self.conf.headers,
                 )
 
                 response = client.post(
                     urljoin(self.conf.api_url, f"collections/{collection}/items"),
                     json=data,
                     auth=auth,
-                    headers=headers,
+                    headers=self.conf.headers,
                 )
 
         if response.status_code == 409:
@@ -182,12 +183,12 @@ class STACFastAPIOutput(Output):
                     )
 
         elif response.status_code != 200:
-                LOGGER.warning(
-                    "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
-                    response.status_code,
-                    response.text,
-                    data,
-                )
+            LOGGER.warning(
+                "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
+                response.status_code,
+                response.text,
+                data,
+            )
 
     def collection(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
         response = client.post(urljoin(self.conf.api_url, "collections"), json=data, auth=auth)

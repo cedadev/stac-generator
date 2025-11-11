@@ -21,4 +21,3 @@ outputs:
   - name: text_file
     conf:
       filepath: input/collections.txt
-

@@ -10,11 +10,11 @@ Getting Started
 ================
 
 You can either run locally or launch in Binder:
- 
+
 Running in Binder
 -----------------
 
-Click 
+Click
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/cedadev/stac-generator/example/HEAD
@@ -51,15 +51,15 @@ The yaml files in conf setup the input and outputs for the script. In this case,
 .. code-block:: yaml
     # The type of generator to be run
     generator: item
-    
+
     # The root directory of the recipes
     recipes_root: recipes/
-    
+
     # The input plugins to be run for the generator
     inputs:
       - name: text_file
         filepath: input/assets.txt
-    
+
     # The output plugins to be run for the generator
     outputs:
       - name: standard_out
@@ -86,29 +86,29 @@ The recipes in example/recipes, describes the steps needed to extract and manipu
     paths:
       - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
       - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.C4MIP.MOHC.UKESM1-0-LL
-    
+
     # The type of STAC record that will be generated
     type: item
-    
+
     # These extraction methods will be run after `extraction_methods` and should generate the id of the record
     id:
       - method: default
         inputs:
           defaults:
             item_id: $instance_id
-    
+
     # The extaction methods are run in series with the output dictionary is passed from one to the next
     # extaction methods add, update or remove the data from the output dictionary
     extraction_methods:
       - method: regex
         inputs:
           regex: '\/(?P<mip_era>\w*)\.(?P<activity_id>\w*)\.(?P<institution_id>[\w-]*)\.(?P<source_id>[\w-]*)\/(?P<experiment_id>[\w-]*)\.(?P<member_id>\w*)\.(?P<table_id>\w*)\.(?P<var_id>\w*)\.(?P<grid_label>\w*)\.(?P<version>\w*)'
-    
+
       - method: string_template
         inputs:
           template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
           output_key: instance_id
-    
+
     # Some extraction methods generate assets which can also include their own list of extration methods to be run on the assets
       - method: intake_assets
         inputs:
@@ -127,19 +127,19 @@ The recipes in example/recipes, describes the steps needed to extract and manipu
               inputs:
                 defaults:
                   roles: ["data"]
-    
+
       - method: lambda
         inputs:
           function: 'lambda assets: {f"data{str(en+1).zfill(4)}": assets[key] for en, key in enumerate(sorted(assets))}'
           input_args:
             - $assets
           output_key: assets
-    
+
       - method: remove
         inputs:
           keys:
             - uri
-    
+
     # member of defines the other recipes that define a parent of this record
     member_of:
       - recipes/collection/CMIP6.CMIP.MOHC.UKESM1-0-LL.yaml

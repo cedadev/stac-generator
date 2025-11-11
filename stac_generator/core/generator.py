@@ -94,6 +94,7 @@ class Generator:
         """
 
         for extraction_method in extraction_methods:
+            # print("EXTRACTION METHOD", extraction_method)
             body = self._run_extraction_method(body, extraction_method, **kwargs)
 
         return body
@@ -123,7 +124,9 @@ class Generator:
         :param body: body for object
         :param kwargs:
         """
-        LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe
+        )
 
         return self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 

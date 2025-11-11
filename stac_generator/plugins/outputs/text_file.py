@@ -32,7 +32,6 @@ __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "kazi.mahir@stfc.ac.uk"
 
-import json
 import os
 
 from pydantic import BaseModel, Field

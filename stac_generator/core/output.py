@@ -1,7 +1,5 @@
 # encoding: utf-8
-"""
-
-"""
+""" """
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"

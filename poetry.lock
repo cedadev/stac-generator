@@ -825,14 +825,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "extraction-methods"
-version = "1.1.0"
+version = "1.1.1"
 description = "Methods to enable the extraction of metadata"
 optional = false
 python-versions = "<4,>=3.10"
 groups = ["main"]
 files = [
-    {file = "extraction_methods-1.1.0-py3-none-any.whl", hash = "sha256:ab8f9388056d201a111c2db845b3ba326c934dd11aeb3d59bdad466f83035e53"},
-    {file = "extraction_methods-1.1.0.tar.gz", hash = "sha256:264f435c20c7dbee2d99943d6a9c47b846613c1bab20b071033c258716d1beeb"},
+    {file = "extraction_methods-1.1.1-py3-none-any.whl", hash = "sha256:5319507a984b65dafa894a5aaf56c2cf28e79d1e5aca4f77419a95fdf013ef61"},
+    {file = "extraction_methods-1.1.1.tar.gz", hash = "sha256:5ff4c103eb872cdedd51337533db2193b38a167b172ba41e7b8e6bb63143e741"},
 ]
 
 [package.dependencies]
@@ -3890,4 +3890,4 @@ thredds = ["siphon"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10, <4"
-content-hash = "82dd43f0aa4fea75d74a7e8ed2341a3f4837d4a801773cb7a94a14125c06365a"
+content-hash = "bb90ecef103e711a393fe8b58038886ae18927898358bd3fb6e4c6d2e8bb4744"

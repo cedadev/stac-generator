@@ -41,7 +41,7 @@ Example Configuration:
                     aws_access_key_id: ACCESS_KEY,
                     aws_secret_access_key: SECRET_KEY
                 }
-                buckets: 
+                buckets:
                   - my_bucket
                 prefix: directory_or_file
                 delimiter: .zarr/
@@ -57,7 +57,6 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 import logging
 
 import boto3
-from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 # Package imports

@@ -107,7 +107,7 @@ Extraction Methods
 Defines a list of extraction methods used to generate the record's metadata.
 
 .. code-block:: yaml
-    
+
     extraction_methods:
       - method: lambda
         inputs:

@@ -16,10 +16,10 @@ jobs:
         uses: psf/black@stable
         with:
           options: "--check --diff"
-          version: "22.3.0"
+          version: "25.11.0"
       - name: python-isort
-        uses: isort/isort-action@v0.1.0
+        uses: isort/isort-action@v1.1.1
       - name: Flake8 with annotations
-        uses: TrueBrain/actions-flake8@v2.1
+        uses: TrueBrain/actions-flake8@v2.4
         with:
           path: stac_generator

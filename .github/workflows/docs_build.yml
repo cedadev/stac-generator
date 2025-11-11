@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
-      with: 
+      with:
         docs-folder: "docs/"
         # pre-build-command: "mkdir /tmp/sphinx-log"
     - name: Upload artifacts
@@ -18,7 +18,7 @@ jobs:
       with:
         name: html-docs
         path: docs/build/html/
-    # Deploys to the gh-pages branch if the commit was made to master, the 
+    # Deploys to the gh-pages branch if the commit was made to master, the
     # gh-pages then takes over serving the html
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
