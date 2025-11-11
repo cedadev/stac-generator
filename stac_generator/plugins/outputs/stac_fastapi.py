@@ -35,10 +35,11 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
+from typing import Any, Literal
 from urllib.parse import urljoin
 
 from httpx import Client
-from httpx_auth import OAuth2ClientCredentials
+from httpx_auth import OAuth2AuthorizationCodePKCE, OAuth2ClientCredentials
 from pydantic import BaseModel, Field
 
 from stac_generator.core.output import Output
@@ -46,9 +47,12 @@ from stac_generator.core.output import Output
 LOGGER = logging.getLogger(__name__)
 
 
-class STACAuthentication(BaseModel):
+class AuthenticationFlow(BaseModel):
     """STAC authentication model."""
 
+    flow: Literal["client_credentials", "authorization_code"] = Field(
+        description="Flow to use.",
+    )
     token_url: str = Field(
         description="Token URL for authentication server.",
     )
@@ -58,6 +62,29 @@ class STACAuthentication(BaseModel):
     client_secret: str = Field(
         description="Client secret.",
     )
+    kwargs: dict[str, Any] = Field(
+        default={},
+        description="Extra kwargs for Authentication.",
+    )
+
+
+class ClientCredentials(AuthenticationFlow):
+    """STAC Client Credentials model."""
+
+    flow: Literal["client_credentials"] = Field(
+        description="Flow to use.",
+    )
+
+
+class AuthorizationCode(AuthenticationFlow):
+    """STAC Authorization Code model."""
+
+    flow: Literal["authorization_code"] = Field(
+        description="Flow to use.",
+    )
+    authorization_url: str = Field(
+        description="Token URL for authentication server.",
+    )
 
 
 class STACFastAPIConf(BaseModel):
@@ -66,7 +93,7 @@ class STACFastAPIConf(BaseModel):
     api_url: str = Field(
         description="URL for API.",
     )
-    authentication: STACAuthentication = Field(
+    authentication: AuthorizationCode | ClientCredentials = Field(
         default=None,
         description="Authentication for STAC API.",
     )
@@ -89,7 +116,12 @@ class STACFastAPIOutput(Output):
 
     config_class = STACFastAPIConf
 
-    def item(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
+    def item(
+        self,
+        data: dict,
+        client: Client,
+        auth: OAuth2AuthorizationCodePKCE | OAuth2ClientCredentials | None,
+    ) -> None:
 
         collection = data["collection"]
 
@@ -175,14 +207,14 @@ class STACFastAPIOutput(Output):
                     auth=auth,
                 )
 
-                if response.status_code != 200:
+                if response.is_error:
                     LOGGER.warning(
                         "FastAPI Output Item update failed with status code: %s and response text: %s",
                         response.status_code,
                         response.text,
                     )
 
-        elif response.status_code != 200:
+        elif response.is_error:
             LOGGER.warning(
                 "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
                 response.status_code,
@@ -204,14 +236,14 @@ class STACFastAPIOutput(Output):
                     auth=auth,
                 )
 
-                if response.status_code != 200:
+                if response.is_error:
                     LOGGER.warning(
                         "FastAPI Output Collection update failed with status code: %s and response text: %s",
                         response.status_code,
                         response.text,
                     )
 
-        elif response.status_code != 200:
+        elif response.is_error:
             LOGGER.warning(
                 "FastAPI Output failed to post to STAC Fastapi collections endpoint returned status code: %s and response text: %s request data: %s",
                 response.status_code,
@@ -225,15 +257,25 @@ class STACFastAPIOutput(Output):
             timeout=180,
         )
 
-        if self.conf.authentication:
-            auth = OAuth2ClientCredentials(
-                self.conf.authentication.token_url,
-                client_id=self.conf.authentication.client_id,
-                client_secret=self.conf.authentication.client_secret,
-            )
+        auth = None
+        match self.conf.authentication:
 
-        else:
-            auth = None
+            case ClientCredentials():
+                auth = OAuth2ClientCredentials(
+                    token_url=self.conf.authentication.token_url,
+                    client_id=self.conf.authentication.client_id,
+                    client_secret=self.conf.authentication.client_secret,
+                    **self.conf.authentication.kwargs,
+                )
+
+            case AuthorizationCode():
+                auth = OAuth2AuthorizationCodePKCE(
+                    authorization_url=self.conf.authentication.authorization_url,
+                    token_url=self.conf.authentication.token_url,
+                    client_id=self.conf.authentication.client_id,
+                    client_secret=self.conf.authentication.client_secret,
+                    **self.conf.authentication.kwargs,
+                )
 
         if kwargs["GENERATOR_TYPE"] == "item":
             self.item(data, client, auth)

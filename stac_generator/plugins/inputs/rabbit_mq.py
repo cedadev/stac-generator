@@ -132,7 +132,7 @@ import pika
 from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
-from stac_generator.core.input import Input
+from stac_generator.core.input import BlockingInput
 
 LOGGER = logging.getLogger(__name__)
 
@@ -207,17 +207,14 @@ class RabbitMQConf(BaseModel):
         default=[],
         description="RabbitMQ queues to bind.",
     )
-    uri_term: str = Field(
-        description="Attritube to use as uri.",
-    )
-    regex: str = Field()
+    uri_term: str = Field(description="Attritube to use as uri.", default="uri")
     extra_terms: list[KeyOutputKey] = Field(
         default=[],
         description="List of extra attributes.",
     )
 
 
-class RabbitMQInput(Input):
+class RabbitMQInput(BlockingInput):
 
     config_class = RabbitMQConf
 
@@ -365,24 +362,26 @@ class RabbitMQInput(Input):
             return
 
         # Extract uri
-        output = {"uri": message["uri"]}
+        output = {"uri": message[self.conf.uri_term]}
 
         for extra_term in self.conf.extra_terms:
             output[extra_term.output_key] = message[extra_term.key]
 
-        LOGGER.info("Input processing: %s message: %s", message["uri"], message)
+        LOGGER.info("Input processing: %s message: %s", message[self.conf.uri_term], message)
 
-        yield output
+        self.process_method(output)
         self.acknowledge_message(ch, method.delivery_tag, connection)
 
-    def run(self):
+    def run(self, process_method: Callable):
+
+        self.process_method = process_method
 
         while True:
             channel = self._connect()
 
             try:
                 LOGGER.info("READY")
-                yield from channel.start_consuming()
+                channel.start_consuming()
 
             except KeyboardInterrupt:
                 channel.stop_consuming()
