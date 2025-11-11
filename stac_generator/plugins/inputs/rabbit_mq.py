@@ -126,6 +126,7 @@ import ast
 import functools
 import json
 import logging
+from typing import Callable
 
 # Third-party imports
 import pika

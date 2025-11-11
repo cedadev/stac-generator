@@ -8,6 +8,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 from abc import abstractmethod
 from collections.abc import Callable
+
 from stac_generator.core.process_config import SetConfig
 
 
@@ -15,6 +16,7 @@ class Input(SetConfig):
     """
     Base class to define an input
     """
+
     blocking: bool = False
 
     @abstractmethod
@@ -23,10 +25,12 @@ class Input(SetConfig):
         Run the input plugin.
         """
 
+
 class BlockingInput(Input):
     """
     Base class to define an input
     """
+
     blocking: bool = True
 
     @abstractmethod
