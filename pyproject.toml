@@ -36,7 +36,7 @@ dependencies = [
     "tqdm == 4.62.3",
     "typing-extensions == 4.7.1",
     "setuptools (>=75.8.2,<75.9.0)",
-    "extraction-methods == 1.1.1",
+    "extraction-methods == 1.1.2",
     "bokeh (>=3.6.3,<4.0.0)",
     "dask (>=2025.2.0,<2026.0.0)",
     "distributed (>=2025.2.0,<2026.0.0)",
