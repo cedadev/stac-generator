@@ -167,5 +167,6 @@ class Generator:
         Run generator.
         """
         print("RUNNING")
+        LOGGER.info("Running generator: %s", self.conf)
         for input_plugin in self.inputs:
             self.run_input(input_plugin)
