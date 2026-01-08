@@ -23,7 +23,6 @@ dependencies = [
     "packaging == 24.1",
     "pika == 1.2.0",
     "pydantic == 2.1.1",
-    "pygments == 2.17.0",
     "pyparsing == 2.4.7",
     "python-dateutil == 2.8.2",
     "python-magic == 0.4.25",
@@ -51,8 +50,10 @@ recipe_keys = 'stac_generator.scripts.recipe_keys:main'
 
 [project.optional-dependencies]
 docs = [
-    "mkdocs>=1.6.1",
     "mkdocstrings[python]>=0.18",
+    "mkdocs-material>=9.7.1",
+    "mkdocs-gen-files>=0.6.0",
+    "griffe-fieldz>=0.4.0"
 ]
 elasticsearch = ["elasticsearch"]
 intake-esm = ["intake-esm"]
