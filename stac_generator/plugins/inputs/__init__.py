@@ -13,6 +13,15 @@ Inputs are loaded as named entry points with the namespace:
     sequentially. For example, with the :ref:`file system input plugin <stac_generator/inputs:File System Input>`, you
     could configure several to scan multiple directories but the rabbit plugin
     creates a listening connection which would block any other inputs.
+
+Example Configuration:
+    .. code-block:: yaml
+
+        inputs:
+          - name: text_file
+            conf:
+              path: ../manifests/cmip6.txt
+
 """
 __author__ = "Richard Smith"
 __date__ = "08 Jun 2021"

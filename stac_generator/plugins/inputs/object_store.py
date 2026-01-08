@@ -1,52 +1,4 @@
 # encoding: utf-8
-"""
-Object Store Input
-------------------
-
-Takes an endpoint url and optionally a bucket prefix and delimiter and will
-scan the items at these points in the object store, submitting each to the
-asset generator
-
-**Plugin name:** ``object_store``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``session_kwargs``
-      - ``dict``
-      - ``REQUIRED`` Dictionary containing the S3 access and secret keys
-    * - ``endpoint_url``
-      - ``string``
-      - ``REQUIRED`` URL for S3 endpoint
-    * - ``bucket``
-      - ``string``
-      - Bucket to be scanned. If ``None`` all buckets in endpoint will be scanned.
-    * - ``prefix``
-      - ``string``
-      - Only items with prefix will be scanned
-    * - ``delimiter``
-      - ``string``
-      - Group items after delimiter into one object
-
-Example Configuration:
-    .. code-block:: yaml
-
-        inputs:
-            - method: object_store
-                endpoint_url: https://cedadev-o.s3-ext.jc.rl.ac.uk
-                session_kwargs: {
-                    aws_access_key_id: ACCESS_KEY,
-                    aws_secret_access_key: SECRET_KEY
-                }
-                buckets: 
-                  - my_bucket
-                prefix: directory_or_file
-                delimiter: .zarr/
-
-"""
 __author__ = "Rhys Evans"
 __date__ = "02 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -57,7 +9,6 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 import logging
 
 import boto3
-from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 # Package imports
@@ -89,7 +40,27 @@ class ObjectStoreConf(BaseModel):
 
 
 class ObjectStoreInput(Input):
-    """ """
+    """
+    Takes an endpoint url and optionally a bucket prefix and delimiter and will
+    scan the object store at these points to produce events.
+
+    **Plugin name:** ``object_store``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            name: object_store
+            conf:
+              endpoint_url: https://cedadev-o.s3-ext.jc.rl.ac.uk
+              session_kwargs:
+                aws_access_key_id: ACCESS_KEY,
+                aws_secret_access_key: SECRET_KEY
+              buckets:
+                - my_bucket
+              prefix: directory_or_file
+              delimiter: .zarr/
+
+    """
 
     config_class = ObjectStoreConf
 

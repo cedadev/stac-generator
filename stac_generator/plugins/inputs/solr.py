@@ -1,37 +1,3 @@
-"""
-Solr Input
-----------
-
-Uses a Solr index node for a source for file
-objects.
-
-**Plugin name:** ``solr``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``index_node``
-      - string
-      - ``REQUIRED`` Solr index
-    * - ``search_params``
-      - dict
-      - request params to send to Solr
-
-
-Example Configuration:
-    .. code-block:: yaml
-
-        inputs:
-            - method: solr
-              index_node: url.index-node.ac.uk
-              search_params:
-                q: "facet: value"
-                rows: 10000
-"""
-
 __author__ = "Mahir Rahman"
 __date__ = "23 Mar 2022"
 __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
@@ -96,6 +62,21 @@ class SolrConf(BaseModel):
 
 
 class SolrInput(Input):
+    """
+    Uses a Solr index node for a source for events.
+
+    **Plugin name:** ``solr``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            name: solr
+            conf:
+              index_node: url.index-node.ac.uk
+              search_params:
+                q: "facet: value"
+                rows: 10000
+    """
 
     config_class = SolrConf
 

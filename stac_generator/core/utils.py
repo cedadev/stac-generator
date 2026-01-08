@@ -1,7 +1,5 @@
 # encoding: utf-8
-"""
-
-"""
+""" """
 __author__ = "Richard Smith"
 __date__ = "08 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -11,6 +9,7 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import collections
 import logging
 import re
+from importlib.metadata import entry_points
 
 # Python imports
 from pathlib import Path
@@ -22,7 +21,6 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 
 from stac_generator.core.exceptions import NoPluginsError
-from stac_generator.core.handler_picker import HandlerPicker
 
 LOGGER = logging.getLogger(__name__)
 
@@ -106,7 +104,7 @@ class Stats:
         )
 
 
-def load_plugins(plugins: list, entry_point: str) -> list:
+def load_plugins(plugins: list, entry_point_group: str) -> list:
     """
     Load plugins from the entry points
 
@@ -118,20 +116,26 @@ def load_plugins(plugins: list, entry_point: str) -> list:
 
     :return: List of loaded plugins
     """
+    if not plugins:
+        return []
 
     loaded_plugins = []
 
-    plugins_picker = HandlerPicker(entry_point)
+    eps = entry_points(group=entry_point_group)
 
-    for plugin in plugins:
+    for plugin_conf in plugins:
+        plugin_name = plugin_conf.pop("name")
+
         try:
-            loaded_plugin = plugins_picker.get(**plugin)
+            ep = eps[plugin_name].load()
+            loaded_plugin = ep(**plugin_conf)
             loaded_plugins.append(loaded_plugin)
+
         except Exception:
-            LOGGER.error("Failed to load plugin: %s", plugin["name"], exc_info=True)
+            LOGGER.error("Failed to load plugin: %s", plugin_name, exc_info=True)
 
     if not loaded_plugins:
-        raise NoPluginsError(f"No plugins were successfully loaded from {entry_point}")
+        raise NoPluginsError(f"No plugins were successfully loaded from {entry_point_group}")
 
     return loaded_plugins
 

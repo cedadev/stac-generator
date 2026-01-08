@@ -14,16 +14,18 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
 import traceback
-from collections import defaultdict
+from importlib.metadata import entry_points
 
-from extraction_methods.core.extraction_method import ExtractionMethod
+from extraction_methods.core.extraction_method import (
+    ExtractionMethod,
+    set_extraction_method_defaults,
+)
 
 from stac_generator.core.bulk_output import BulkOutput
-from stac_generator.core.output import Output
 from stac_generator.core.input import Input
+from stac_generator.core.output import Output
 
-from .baker import ExtractionMethodConf, Recipe, Recipes
-from .handler_picker import HandlerPicker
+from .baker import Recipe, Recipes
 from .utils import load_plugins
 
 LOGGER = logging.getLogger(__name__)
@@ -35,6 +37,8 @@ class Generator:
     """
 
     def __init__(self, conf: dict):
+        set_extraction_method_defaults(conf.get("extraction_methods", {}))
+
         recipes_root = conf.get("recipes_root", "recipes")
 
         self.recipes = Recipes(recipes_root)
@@ -47,15 +51,7 @@ class Generator:
 
         self.conf = conf
 
-        self.extraction_methods = self.load_extraction_methods()
-
-    def load_extraction_methods(self) -> HandlerPicker:
-        """
-        Load extraction methods from entrypoint.
-
-        :return: HandlerPicker for extraction methods
-        """
-        return HandlerPicker("extraction_methods")
+        self.extraction_methods = entry_points(group="extraction_methods")
 
     def _load_extraction_method(self, extraction_method_conf: dict, **kwargs) -> ExtractionMethod:
         """
@@ -67,31 +63,9 @@ class Generator:
         :return: extraction method
         """
 
-        # Overide less specific inputs
-        inputs = (
-            self.conf.get("extraction_methods", {}).get(extraction_method_conf.method, {})
-            | extraction_method_conf.inputs
-            | kwargs
-        )
+        extraction_method = self.extraction_methods[extraction_method_conf.method].load()
 
-        # Collect "sub" extraction methods
-        if "extraction_methods" in inputs:
-            extraction_methods = []
-
-            for extraction_method in inputs.get("extraction_methods", []):
-                if isinstance(extraction_method, dict):
-                    extraction_methods.append(
-                        self._load_extraction_method(
-                            ExtractionMethodConf(**extraction_method), **kwargs
-                        )
-                    )
-
-                else:
-                    extraction_methods.append(extraction_method)
-
-            inputs["extraction_methods"] = extraction_methods
-
-        return self.extraction_methods.get(extraction_method_conf.method, **inputs)
+        return extraction_method(extraction_method_conf, **kwargs)
 
     def _run_extraction_method(self, body: dict, extraction_method_conf: dict, **kwargs) -> dict:
         """
@@ -120,6 +94,7 @@ class Generator:
         """
 
         for extraction_method in extraction_methods:
+            # print("EXTRACTION METHOD", extraction_method)
             body = self._run_extraction_method(body, extraction_method, **kwargs)
 
         return body
@@ -149,7 +124,9 @@ class Generator:
         :param body: body for object
         :param kwargs:
         """
-        LOGGER.debug("Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe)
+        LOGGER.debug(
+            "Generating %s : %s with recipe %s", self.conf.get("generator"), body["uri"], recipe
+        )
 
         return self.run_extraction_methods(body, recipe.extraction_methods, **kwargs)
 
@@ -169,7 +146,6 @@ class Generator:
         except Exception:
             body["ERROR"] = traceback.format_exc()
             self.output(body, self.failed_outputs, recipe, **kwargs)
-
 
     def run_input(self, input_plugin: Input) -> None:
         """
@@ -191,5 +167,6 @@ class Generator:
         Run generator.
         """
         print("RUNNING")
+        LOGGER.info("Running generator: %s", self.conf)
         for input_plugin in self.inputs:
             self.run_input(input_plugin)

@@ -1,33 +1,4 @@
-"""
-Text File
----------
-
-Takes file or directory path, uses the dictionary
-in the file(s) to pass into the extractor.
-
-**Plugin name:** ``text_file``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``filepath``
-      - ``string``
-      - ``REQUIRED`` the path to input file(s)
-
-Example Configuration:
-    .. code-block:: yaml
-
-        inputs:
-            - method: text_file
-              filepath: input_file(s)_location
-
-"""
-
 import json
-import traceback
 from datetime import datetime
 from os import listdir
 from os.path import isdir, isfile, join
@@ -56,8 +27,16 @@ class TextFileConf(BaseModel):
 
 class TextFileInput(Input):
     """
-    Use external file(s) as input to enter data to pass to
-    the processor.
+    Reads lines from file/files as a source for events.
+
+    **Plugin name:** ``text_file``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: text_file
+              conf:
+                filepath: /path/to/files
     """
 
     config_class = TextFileConf
@@ -79,9 +58,7 @@ class TextFileInput(Input):
         unique_lines = set()
 
         for file in file_list:
-            with (
-                open(file, "r", encoding="utf-8") as f,
-            ):
+            with (open(file, "r", encoding="utf-8") as f,):
                 for line in f:
                     if line not in unique_lines:
                         unique_lines.add(line)

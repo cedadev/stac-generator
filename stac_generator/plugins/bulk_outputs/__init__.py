@@ -12,6 +12,17 @@ to output the content to more than one place.
 
 Bulk Outputs are loaded with standard outputs as named entry points with the namespace:
 ``stac_generator.outputs``
+
+Example Configuration:
+    .. code-block:: yaml
+
+        outputs:
+            - name: elasticsearch_bulk
+              conf:
+                client_kwargs:
+                  hosts: ['host1','host2']
+                  index:
+                    name: 'assets-2021-06-02'
 """
 __author__ = "Richard Smith"
 __date__ = "08 Jun 2021"

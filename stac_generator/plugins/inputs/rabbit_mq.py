@@ -1,120 +1,4 @@
 # encoding: utf-8
-"""
-RabbitMQ Input
------------------
-
-Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a source for file objects.
-At the moment, this expects a CEDA specifc message format.
-TODO: Make the callback more flexible (open to collaboration)
-
-**Plugin name:** ``rabbitmq``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``connection.host``
-      - string
-      - ``REQUIRED`` RabbitMQ server host
-    * - ``connection.user``
-      - string
-      - ``REQUIRED`` Username
-    * - ``connection.password``
-      - string
-      - ``REQUIRED`` password
-    * - ``connection.vhost``
-      - string
-      - ``REQUIRED`` `Virtual host <https://www.rabbitmq.com/vhosts.html>`_
-    * - ``connection.kwargs``
-      - dict
-      - connection parameter kwargs `pika.conneciton.ConnectionParameters
-        <https://pika.readthedocs.io/en/stable/modules/parameters.html#connectionparameters>`_
-    * - ``exchange.source_exchange``
-      - dict
-      - Dictionary describing the source exchange. `exchange`_
-    * - ``exchange.dest_exchange``
-      - dict
-      - ``REQUIRED`` The final exchange. This is where the queues will be bound. `exchange`_
-    * - ``queues``
-      - ``list``
-      - ``REQUIRED`` Queue parameters. `queues`_
-
-
-exchange
-^^^^^^^^
-
-The source and dest exchange keys comprise:
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - method
-      - string
-      - ``REQUIRED`` Exchange name
-    * - type
-      - string
-      - ``REQUIRED`` `Exchange type <https://medium.com/trendyol-tech/rabbitmq-exchange-types-d7e1f51ec825>`_
-
-queues
-^^^^^^
-
-List of queue objects. Each queue object comprises:
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - method
-      - string
-      - ``REQUIRED`` Queue name
-    * - kwargs
-      - dict
-      - kwargs passed to `pika.channel.queue_declare <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.queue_declare>`_
-    * - bind_kwargs
-      - dict
-      - kwargs passed to `pika.channel.queue_bind <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.queue_bind>`_
-    * - consume_kwargs
-      - dict
-      - kwargs passed to `pika.channel.Channel.basic_consume <https://pika.readthedocs.io/en/stable/modules/channel.html#pika.channel.Channel.basic_consume>`_
-
-Example Configuration:
-
-    .. code-block:: yaml
-
-        inputs:
-            - method: rabbitmq
-              connection:
-                host: my-rabbit-server.co.uk
-                user: user
-                password: '*********'
-                vhost: my_virtual_host
-                kwargs:
-                    heartbeat: 300
-              exchange:
-                source_exchange:
-                    name: mysource-exchange
-                    type: fanout
-                destination_exchange:
-                    name: mydest-exchange
-                    type: fanout
-              queues:
-                - method:
-                  kwargs:
-                    durable: true
-                  bind_kwargs:
-                    routing_key: my.routing.key
-                  consume_kwargs:
-                    auto_ack: false
-
-
-"""
 __author__ = "Richard Smith"
 __date__ = "29 Sep 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -126,8 +10,7 @@ import ast
 import functools
 import json
 import logging
-from collections import namedtuple
-from collections.abc import Callable
+from typing import Callable
 
 # Third-party imports
 import pika
@@ -209,10 +92,7 @@ class RabbitMQConf(BaseModel):
         default=[],
         description="RabbitMQ queues to bind.",
     )
-    uri_term: str = Field(
-        description="Attritube to use as uri.",
-        default="uri"
-    )
+    uri_term: str = Field(description="Attritube to use as uri.", default="uri")
     extra_terms: list[KeyOutputKey] = Field(
         default=[],
         description="List of extra attributes.",
@@ -220,6 +100,39 @@ class RabbitMQConf(BaseModel):
 
 
 class RabbitMQInput(BlockingInput):
+    """
+    Uses a `RabbitMQ Queue <https://www.rabbitmq.com/>`_ as a source for events.
+
+    **Plugin name:** ``rabbitmq``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            name: rabbitmq
+            conf:
+              connection:
+                host: my-rabbit-server.co.uk
+                user: user
+                password: '*********'
+                vhost: my_virtual_host
+                kwargs:
+                  heartbeat: 300
+              exchange:
+                source_exchange:
+                  name: mysource-exchange
+                  type: fanout
+                destination_exchange:
+                  name: mydest-exchange
+                  type: fanout
+              queues:
+                - kwargs:
+                    durable: true
+                  bind_kwargs:
+                    routing_key: my.routing.key
+                  consume_kwargs:
+                    auto_ack: false
+
+    """
 
     config_class = RabbitMQConf
 

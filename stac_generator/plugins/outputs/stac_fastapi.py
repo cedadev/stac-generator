@@ -1,33 +1,4 @@
 # encoding: utf-8
-"""
-Elasticsearch
--------------
-
-An output backend which outputs the content generated to a STAC FastAPI
-using the Transaction endpoint extension
-
-**Plugin name:** ``stac_fastapi``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``api_url``
-      - ``str``
-      - ``REQUIRED`` root url of STAC API
-    * - ``verify``
-      - ``bool``
-      - Path to a yaml file which defines the mapping for the index
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - name: stac_fastapi
-              api_url: https://localhost
-"""
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -35,16 +6,17 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
 import logging
-from typing import Literal, Any
+from typing import Any, Literal
 from urllib.parse import urljoin
 
 from httpx import Client
-from httpx_auth import OAuth2ClientCredentials, OAuth2AuthorizationCodePKCE
+from httpx_auth import OAuth2AuthorizationCodePKCE, OAuth2ClientCredentials
 from pydantic import BaseModel, Field
 
 from stac_generator.core.output import Output
 
 LOGGER = logging.getLogger(__name__)
+
 
 class AuthenticationFlow(BaseModel):
     """STAC authentication model."""
@@ -66,6 +38,7 @@ class AuthenticationFlow(BaseModel):
         description="Extra kwargs for Authentication.",
     )
 
+
 class ClientCredentials(AuthenticationFlow):
     """STAC Client Credentials model."""
 
@@ -84,13 +57,14 @@ class AuthorizationCode(AuthenticationFlow):
         description="Token URL for authentication server.",
     )
 
+
 class STACFastAPIConf(BaseModel):
     """STAC FastAPI config model."""
 
     api_url: str = Field(
         description="URL for API.",
     )
-    authentication: AuthorizationCode|ClientCredentials = Field(
+    authentication: AuthorizationCode | ClientCredentials = Field(
         default=None,
         description="Authentication for STAC API.",
     )
@@ -106,9 +80,16 @@ class STACFastAPIConf(BaseModel):
 
 class STACFastAPIOutput(Output):
     """
-    Connects to an elasticsearch instance and exports the
-    documents to elasticsearch.
+    Output to a STAC FastAPI using the Transaction endpoint extension
 
+    **Plugin name:** ``stac_fastapi``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: stac_fastapi
+              conf:
+                api_url: https://localhost
     """
 
     config_class = STACFastAPIConf
@@ -130,7 +111,7 @@ class STACFastAPIOutput(Output):
         )
 
         if response.status_code == 404:
-            
+
             response_json = response.json()
 
             if response_json["description"] == f"Collection {collection} does not exist":
@@ -147,7 +128,8 @@ class STACFastAPIOutput(Output):
                             "interval": [["1992-01-01T00:00:00Z", "2015-12-31T00:00:00Z"]]
                         },
                     },
-                    "links": data.get("links", []) + [
+                    "links": data.get("links", [])
+                    + [
                         {
                             "rel": "self",
                             "type": "application/geo+json",
@@ -180,14 +162,14 @@ class STACFastAPIOutput(Output):
                     urljoin(self.conf.api_url, "collections"),
                     json=collection_data,
                     auth=auth,
-                    headers=headers,
+                    headers=self.conf.headers,
                 )
 
                 response = client.post(
                     urljoin(self.conf.api_url, f"collections/{collection}/items"),
                     json=data,
                     auth=auth,
-                    headers=headers,
+                    headers=self.conf.headers,
                 )
 
         if response.status_code == 409:
@@ -204,19 +186,14 @@ class STACFastAPIOutput(Output):
                 )
 
                 if response.is_error:
-                    LOGGER.warning(
-                        "FastAPI Output Item update failed with status code: %s and response text: %s",
-                        response.status_code,
-                        response.text,
+                    print(
+                        f"FastAPI Output Item update failed with status code: {response.status_code} and response text: {response.text}",
                     )
 
         elif response.is_error:
-                LOGGER.warning(
-                    "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
-                    response.status_code,
-                    response.text,
-                    data,
-                )
+            print(
+                f"FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: {response.status_code} and response text: {response.text} request data: {data}",
+            )
 
     def collection(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:
         response = client.post(urljoin(self.conf.api_url, "collections"), json=data, auth=auth)
@@ -252,7 +229,7 @@ class STACFastAPIOutput(Output):
             verify=self.conf.verify,
             timeout=180,
         )
-        
+
         auth = None
         match self.conf.authentication:
 
