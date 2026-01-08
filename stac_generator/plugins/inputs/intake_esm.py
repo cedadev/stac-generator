@@ -1,50 +1,4 @@
 # encoding: utf-8
-"""
-Intake Input
------------------
-
-Uses an `Intake catalog <https://intake.readthedocs.io/>`_
-as a source for file objects.
-
-**Plugin name:** ``intake_esm``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``uri``
-      - ``string``
-      - ``REQUIRED`` The URI of a path or URL to an ESM collection JSON file.
-    * - ``object_path_attr``
-      - ``string``
-      - ``REQUIRED`` The column header which contains the URI to
-        the file object.
-    * - ``catalog_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to
-        `intake.open_esm_datastore
-        <https://intake-esm.readthedocs.io/en/latest
-        /api.html#intake_esm.core.esm_datastore>`_
-    * - ``search_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to `esm_datastore.search
-        <https://intake-esm.readthedocs.io/en/latest
-        /api.html#intake_esm.core.esm_datastore.search>`_
-    * - ``skip``
-      - ``int``
-      - Optional value to skip the first n rows
-
-
-Example Configuration:
-    .. code-block:: yaml
-
-        inputs:
-            - name: intake_esm
-              uri: test_directory
-
-"""
 __author__ = "Richard Smith"
 __date__ = "23 Sep 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -95,7 +49,18 @@ class IntakeESMConf(BaseModel):
 
 class IntakeESMInput(Input):
     """
-    Performs an os.walk to provide a stream of paths for procesing.
+    Uses an `Intake catalog <https://intake.readthedocs.io/>`_
+    as a source for events.
+
+    **Plugin name:** ``intake_esm``
+
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            name: intake_esm
+            conf:
+              uri: test_directory
     """
 
     config_class = IntakeESMConf

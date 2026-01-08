@@ -1,47 +1,4 @@
 # encoding: utf-8
-"""
-Elasticsearch Input
--------------------
-
-Uses an `Elasticsearch index <https://www.elastic.co/>`_
-as a source for file objects.
-
-**Plugin name:** ``elasticsearch``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``id``
-      - ``string``
-      - ``REQUIRED`` The property which contains the URI of the object that
-        is to be created.
-    * - ``connection_kwargs``
-      - ``dict``
-      - Connection kwargs passed to
-        `elasticsearch.Elasticsearch
-        <https://elasticsearch-py.readthedocs.io/en/7.10.0/api.html>`_
-    * - ``search_kwargs``
-      - ``dict``
-      - Optional search kwargs passed to
-        `elasticsearch.Elasticsearch
-        <https://elasticsearch-py.readthedocs.io/en/v8.8.1/api.html>`_
-
-
-Example Configuration:
-    .. code-block:: yaml
-
-        name: elasticsearch
-        id_term: item_id
-        connection_kwargs:
-          index: ceda-index
-          hosts: ['host1:9200','host2:9200']
-          request_timeout: 60
-
-
-"""
 __author__ = "Rhys Evans"
 __date__ = "28 Jun 2023"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -51,13 +8,14 @@ __contact__ = "rhys.r.evans@stfc.ac.uk"
 import logging
 from datetime import datetime
 
-# Thirdparty imports
-from elasticsearch import Elasticsearch
 from extraction_methods.core.types import KeyOutputKey
 from pydantic import BaseModel, Field
 
 # Package imports
 from stac_generator.core.input import Input
+
+# Thirdparty imports
+from stac_generator.plugins.bulk_outputs.elasticsearch import Elasticsearch
 
 LOGGER = logging.getLogger(__name__)
 
@@ -104,7 +62,21 @@ class ElasticsearchConf(BaseModel):
 
 class ElasticsearchAggregationInput(Input):
     """
-    Performs an os.walk to provide a stream of paths for procesing.
+    Preforms an [Elasticsearch Aggregation](https://www.elastic.co/)
+    to provide a stream of events for procesing.
+
+    **Plugin name:** ``elasticsearch``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            name: elasticsearch
+            conf:
+              id_term: item_id
+              connection_kwargs:
+              index: ceda-index
+              hosts: ['host1:9200','host2:9200']
+              request_timeout: 60
     """
 
     config_class = ElasticsearchConf

@@ -1,45 +1,3 @@
-"""
-Intake-ESM Output Backend
--------------------------
-
-An output backend which outputs the content generated into a JSON catalog description and a zipped CSV file
-at a location of your choosing.
-
-This is only to be used for testing purposes and not suitable for large
-scale application.
-
-Note also that the CSV header is constructed from the first data payload processed. If there are attribute variations
-across files, attribute columns may not align, which will yield an invalid catalog.
-
-**Plugin name:** ``intake_esm_out``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``filepath``
-      - ``str``
-      - ``REQUIRED`` Path to output file(s), either directory or specific file to write.
-    * - ``collection``
-      - ``str``
-      - Collection name. If `filepath` is a directory, `collection` will be used as the output file name.
-    * - ``description``
-      - ``str``
-      - Textual description of the collection.
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - name: intake_esm_out
-              filepath: location/to/destination_files/
-              collection: my_collection
-              description: A long form description of the dataset catalog.
-
-"""
-
 __author__ = "David Huard"
 __date__ = "June 2022"
 __copyright__ = "Copyright 2022 Ouranos"
@@ -79,9 +37,26 @@ class ElasticsearchConf(BaseModel):
 
 class IntakeESMOutput(Output):
     """
-    Export data to
-    - a json catalog description file
-    - a zipped CSV content file
+    Outputs to a Intake ESM catalog description and a zipped CSV file
+    at a location of your choosing.
+
+    This is only to be used for testing purposes and not suitable for large
+    scale application.
+
+    Note also that the CSV header is constructed from the first data payload processed. If there are attribute variations
+    across files, attribute columns may not align, which will yield an invalid catalog.
+
+    **Plugin name:** ``intake_esm_out``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: intake_esm_out
+              conf:
+                filepath: location/to/destination_files/
+                collection: my_collection
+                description: A long form description of the dataset catalog.
+
     """
 
     def __init__(self, **kwargs):

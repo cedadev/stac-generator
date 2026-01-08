@@ -1,37 +1,4 @@
 # encoding: utf-8
-"""
-File System Input
------------------
-
-Takes a path and will scan the file system, submitting
-each file to the asset generator
-
-**Plugin name:** ``file_system``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``path``
-      - ``string``
-      - ``REQUIRED`` The root path to scan
-    * - ``kwargs``
-      - ``dict``
-      - Optional kwargs to pass to `os.walk <https://docs.python.org/3/library/os.html#os.walk>`_
-    * - ``filters``
-      - :ref:`Filters <stac_generator/filters:filters>`
-      - Optional filters
-
-Example Configuration:
-    .. code-block:: yaml
-
-        inputs:
-            - method: file_system
-              path: test_directory
-
-"""
 __author__ = "Richard Smith"
 __date__ = "02 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -66,6 +33,15 @@ class FileSystemConf(BaseModel):
 class FileSystemInput(Input):
     """
     Performs an os.walk to provide a stream of messages for procesing.
+
+    **Plugin name:** ``file_system``
+
+    Example Configuration:
+      .. code-block:: yaml
+
+        name: file_system
+        conf:
+          path: test_directory
     """
 
     config_class = FileSystemConf

@@ -1,26 +1,4 @@
 # encoding: utf-8
-"""
-Standard Out
-------------
-
-An output backend which outputs the generated metadata to standard out.
-Useful for testing and debugging.
-
-**Plugin name:** ``standard_out``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-
-Example configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - method: standard_out
-"""
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -34,8 +12,15 @@ from stac_generator.core.output import Output
 
 class StandardOutOutput(Output):
     """
-    Simple print backend which can be used
-    for testing and debugging.
+    Output to standard out.
+    Useful for testing and debugging.
+
+    **Plugin name:** ``standard_out``
+
+    Example configuration:
+        .. code-block:: yaml
+
+            - name: standard_out
     """
 
     def export(self, data: dict, **kwargs) -> None:

@@ -34,18 +34,21 @@ class STACConf(BaseModel):
 
 
 class STACMapping(BaseMapping):
-    """
+    """Map metadata into STAC.
 
-    Mapping Name: ``stac_mapping``
+    Mapping Name**: ``stac_mapping``
 
     Description:
-        Takes body, and recipe and returns object in STAC mapping.
+
 
     Example Configuration:
 
         .. code-block:: yaml
 
-            - method: stac_mapping
+            - name: stac_mapping
+              conf:
+                stac_root_url: http://stac.catalog
+                stac_version: 0.0.1
 
     """
 

@@ -1,50 +1,4 @@
 # encoding: utf-8
-"""
-Thredds Input
------------------
-
-Uses a `Thredds Data Server <https://www.unidata.ucar.edu/software/tds/current/>`_
-as a source.
-
-**Plugin name:** ``thredds``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``uri``
-      - ``string``
-      - ``REQUIRED`` The URL to a Thredds Data Server.
-    * - ``object_path_attr``
-      - ``string``
-      - ``REQUIRED`` The column header which contains the URI to
-        the file object.
-    * - ``catalog_kwargs``
-      - ``dict``
-      - Optional kwargs to pass to
-        `siphon.catalog.TDSCatalog
-        <https://unidata.github.io/siphon/latest/api/catalog.html#siphon.catalog.TDSCatalog>`_
-
-
-Example Configuration with OPENDAP:
-    .. code-block:: yaml
-
-        inputs:
-            - method: thredds
-              uri: test-url
-              object_path_attr: access_urls.OPENDAP
-
-Example Configuration with NCML:
-    .. code-block:: yaml
-
-        inputs:
-            - name: thredds
-              uri: test-url
-              object_path_attr: access_urls.NCML
-
-"""
 __author__ = "Mathieu Provencher"
 __date__ = "3 Dec 2021"
 __copyright__ = "Copyright 2021 Computer Research Institute of Montreal"
@@ -90,7 +44,19 @@ class ThreddsConf(BaseModel):
 
 class ThreddsInput(Input):
     """
-    Process each dataset underneath a TDS catalog.
+    Uses a `Thredds Data Server <https://www.unidata.ucar.edu/software/tds/current/>`_
+    as an event source.
+
+    **Plugin name:** ``thredds``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: thredds
+              conf:
+                uri: test-url
+                object_path_attr: access_urls.OPENDAP
+
     """
 
     config_class = ThreddsConf

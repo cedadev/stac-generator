@@ -1,37 +1,3 @@
-"""
-File Output Backend
--------------------
-
-An output backend which outputs the content generated into a JSON file
-in a location of your choosing.
-This is only to be used for testing purposes and not suitable for large
-scale application.
-
-**Plugin name:** ``json_out``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``dirpath``
-      - ``str``
-      - ``REQUIRED`` Path to output directory.
-    * - ``filename_term``
-      - ``str``
-      - ``REQUIRED`` Term to be used for the file name (typically the id).
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - method: json_out
-              dirpath: location_to_destination_file
-              filename_term: item_id
-
-"""
-
 __author__ = "Mahir Rahman"
 __date__ = "23 Mar 2022"
 __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
@@ -60,7 +26,17 @@ class JsonFileConf(BaseModel):
 
 class JsonFileOutput(Output):
     """
-    Export data to a json file
+    Output to a JSON file.
+
+    **Plugin name:** ``json_out``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: json_out
+              conf:
+                dirpath: location_to_destination_file
+                filename_term: item_id
     """
 
     config_class = JsonFileConf

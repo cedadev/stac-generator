@@ -1,31 +1,3 @@
-"""
-File Output Backend
--------------------
-
-An output backend which outputs the content generated into a text file
-in a location of your choosing.
-
-**Plugin name:** ``file_out``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``filepath``
-      - ``str``
-      - ``REQUIRED`` Path to output file(s), either directory or specific file to write.
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - method: file_out
-              filepath: location_to_destination_file
-
-"""
-
 __author__ = "Mahir Rahman"
 __date__ = "23 Mar 2022"
 __copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
@@ -49,8 +21,16 @@ class TextFileConf(BaseModel):
 
 class TextFileOutput(Output):
     """
-    Create/Append to files to export data from
-    the processor.
+    Outputs to a text file.
+
+    **Plugin name:** ``file_out``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: file_out
+              conf:
+                filepath: location_to_destination_file
     """
 
     config_class = TextFileConf

@@ -1,33 +1,4 @@
 # encoding: utf-8
-"""
-Elasticsearch
--------------
-
-An output backend which outputs the content generated to a STAC FastAPI
-using the Transaction endpoint extension
-
-**Plugin name:** ``stac_fastapi``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``api_url``
-      - ``str``
-      - ``REQUIRED`` root url of STAC API
-    * - ``verify``
-      - ``bool``
-      - Path to a yaml file which defines the mapping for the index
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - name: stac_fastapi
-              api_url: https://localhost
-"""
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -109,9 +80,16 @@ class STACFastAPIConf(BaseModel):
 
 class STACFastAPIOutput(Output):
     """
-    Connects to an elasticsearch instance and exports the
-    documents to elasticsearch.
+    Output to a STAC FastAPI using the Transaction endpoint extension
 
+    **Plugin name:** ``stac_fastapi``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: stac_fastapi
+              conf:
+                api_url: https://localhost
     """
 
     config_class = STACFastAPIConf
@@ -208,18 +186,13 @@ class STACFastAPIOutput(Output):
                 )
 
                 if response.is_error:
-                    LOGGER.warning(
-                        "FastAPI Output Item update failed with status code: %s and response text: %s",
-                        response.status_code,
-                        response.text,
+                    print(
+                        f"FastAPI Output Item update failed with status code: {response.status_code} and response text: {response.text}",
                     )
 
         elif response.is_error:
-            LOGGER.warning(
-                "FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: %s and response text: %s request data: %s",
-                response.status_code,
-                response.text,
-                data,
+            print(
+                f"FastAPI Output failed to post to STAC Fastapi items endpoint returned status code: {response.status_code} and response text: {response.text} request data: {data}",
             )
 
     def collection(self, data: dict, client: Client, auth: OAuth2ClientCredentials | None) -> None:

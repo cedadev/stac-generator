@@ -1,50 +1,15 @@
 # encoding: utf-8
-"""
-Elasticsearch
--------------
-
-An output backend which outputs the content generated to elasticsearch
-using the Elasticsearch API
-
-**Plugin name:** ``elasticsearch``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``connection_kwargs``
-      - ``dict``
-      - ``REQUIRED`` Connection kwargs passed to the `elasticsearch client  <https://elasticsearch-py.readthedocs.io/en/latest/api.html#elasticsearch>`_
-    * - ``index.name``
-      - ``str``
-      - ``REQUIRED`` The index to output the content.
-    * - ``index.mapping``
-      - ``str``
-      - Path to a yaml file which defines the mapping for the index
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - method: elasticsearch
-              connection_kwargs:
-                hosts: ['host1','host2']
-              index:
-                name: 'assets-2021-06-02'
-"""
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-from elasticsearch import Elasticsearch
 from pydantic import BaseModel, Field
 
 from stac_generator.core.output import Output
 from stac_generator.core.utils import load_yaml
+from stac_generator.plugins.bulk_outputs.elasticsearch import Elasticsearch
 
 
 class ElasticsearchIndex(BaseModel):
@@ -77,9 +42,19 @@ class ElasticsearchConf(BaseModel):
 
 class ElasticsearchOutput(Output):
     """
-    Connects to an elasticsearch instance and exports the
-    documents to elasticsearch.
+    Output generated meta data to elasticsearch.
 
+    **Plugin name:** ``elasticsearch``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: elasticsearch
+                conf:
+                  client_kwargs:
+                    hosts: ['host1','host2']
+                  index:
+                    name: 'assets-2021-06-02'
     """
 
     config_class = ElasticsearchConf

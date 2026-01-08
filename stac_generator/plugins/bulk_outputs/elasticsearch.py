@@ -1,39 +1,4 @@
 # encoding: utf-8
-"""
-Elasticsearch
--------------
-
-An output backend which outputs the content generated to elasticsearch
-using the Elasticsearch API
-
-**Plugin name:** ``elasticsearch_bulk``
-
-.. list-table::
-    :header-rows: 1
-
-    * - Option
-      - Value Type
-      - Description
-    * - ``connection_kwargs``
-      - ``dict``
-      - ``REQUIRED`` Connection kwargs passed to the `elasticsearch client  <https://elasticsearch-py.readthedocs.io/en/latest/api.html#elasticsearch>`_
-    * - ``index.name``
-      - ``str``
-      - ``REQUIRED`` The index to output the content.
-    * - ``index.mapping``
-      - ``str``
-      - Path to a yaml file which defines the mapping for the index
-
-Example Configuration:
-    .. code-block:: yaml
-
-        outputs:
-            - method: elasticsearch_bulk
-              connection_kwargs:
-                hosts: ['host1','host2']
-              index:
-                name: 'assets-2021-06-02'
-"""
 __author__ = "Richard Smith"
 __date__ = "01 Jun 2021"
 __copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
@@ -43,12 +8,12 @@ __contact__ = "richard.d.smith@stfc.ac.uk"
 import logging
 from collections.abc import Iterator
 
-from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 from pydantic import BaseModel, Field
 
 from stac_generator.core.bulk_output import BulkOutput, BulkOutputConf
 from stac_generator.core.utils import load_yaml
+from stac_generator.plugins.bulk_outputs.elasticsearch import Elasticsearch
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,8 +48,19 @@ class ElasticsearchConf(BulkOutputConf):
 
 class ElasticsearchBulkOutput(BulkOutput):
     """
-    Connects to an elasticsearch instance and exports the
-    documents to elasticsearch.
+    Outputs to elasticsearch.
+
+    **Plugin name:** ``elasticsearch_bulk``
+
+    Example Configuration:
+        .. code-block:: yaml
+
+            - name: elasticsearch_bulk
+              conf:
+                client_kwargs:
+                  hosts: ['host1','host2']
+                  index:
+                    name: 'assets-2021-06-02'
 
     """
 

@@ -30,18 +30,17 @@ class Jinja2Conf(BaseModel):
 
 
 class Jinja2Mapping(BaseMapping):
-    """
+    """Render extracted metadata into Jinja template.
 
-    Mapping Name: ``jinja2_mapping``
-
-    Description:
-        Takes body, and recipe and returns object in CEDA mapping.
+    **Plugin name:** ``jinja2_mapping``
 
     Example Configuration:
-
         .. code-block:: yaml
 
-            - method: jinja2_mapping
+            - name: jinja2_mapping
+              conf:
+                template_directory: /path/to/template/directory
+                template: template_name
 
     """
 
