@@ -9,23 +9,25 @@
       
       
       
+        <link rel="prev" href="../../mappings/stac/">
       
-        <link rel="next" href="generator_config/">
+      
+        <link rel="next" href="../intake_esm/">
       
       
         
       
       
-      <link rel="icon" href="images/favicon.ico">
+      <link rel="icon" href="../../images/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>STAC Generator Docs</title>
+        <title>Elasticsearch - STAC Generator Docs</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -44,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#stac-generator" class="md-skip">
+        <a href="#stac_generator.plugins.outputs.elasticsearch" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +82,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="STAC Generator Docs" class="md-header__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
+    <a href="../.." title="STAC Generator Docs" class="md-header__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              STAC Generator
+              Elasticsearch
             
           </span>
         </div>
@@ -190,7 +192,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="STAC Generator Docs" class="md-nav__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
+    <a href="../.." title="STAC Generator Docs" class="md-nav__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -217,37 +219,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    STAC Generator
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -263,59 +238,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-the-generator-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How the Generator works?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-configure-the-generator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to configure the Generator?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-stac" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is STAC?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -327,7 +249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="generator_config/" class="md-nav__link">
+      <a href="../../generator_config/" class="md-nav__link">
         
   
   
@@ -354,7 +276,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/" class="md-nav__link">
+      <a href="../../inputs/" class="md-nav__link">
         
   
   
@@ -381,7 +303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/" class="md-nav__link">
+      <a href="../../mappings/" class="md-nav__link">
         
   
   
@@ -408,7 +330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -435,7 +357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="recipes/" class="md-nav__link">
+      <a href="../../recipes/" class="md-nav__link">
         
   
   
@@ -509,7 +431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/elasticsearch/" class="md-nav__link">
+      <a href="../../bulk_outputs/elasticsearch/" class="md-nav__link">
         
   
   
@@ -537,7 +459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/rabbit_mq/" class="md-nav__link">
+      <a href="../../bulk_outputs/rabbit_mq/" class="md-nav__link">
         
   
   
@@ -565,7 +487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/standard_out/" class="md-nav__link">
+      <a href="../../bulk_outputs/standard_out/" class="md-nav__link">
         
   
   
@@ -647,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/elasticsearch_aggregation/" class="md-nav__link">
+      <a href="../../inputs/elasticsearch_aggregation/" class="md-nav__link">
         
   
   
@@ -675,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/file_system/" class="md-nav__link">
+      <a href="../../inputs/file_system/" class="md-nav__link">
         
   
   
@@ -703,7 +625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/intake_esm/" class="md-nav__link">
+      <a href="../../inputs/intake_esm/" class="md-nav__link">
         
   
   
@@ -731,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/object_store/" class="md-nav__link">
+      <a href="../../inputs/object_store/" class="md-nav__link">
         
   
   
@@ -759,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/rabbit_mq/" class="md-nav__link">
+      <a href="../../inputs/rabbit_mq/" class="md-nav__link">
         
   
   
@@ -787,7 +709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/solr/" class="md-nav__link">
+      <a href="../../inputs/solr/" class="md-nav__link">
         
   
   
@@ -815,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/text_file/" class="md-nav__link">
+      <a href="../../inputs/text_file/" class="md-nav__link">
         
   
   
@@ -843,7 +765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/thredds/" class="md-nav__link">
+      <a href="../../inputs/thredds/" class="md-nav__link">
         
   
   
@@ -925,7 +847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/jinja2/" class="md-nav__link">
+      <a href="../../mappings/jinja2/" class="md-nav__link">
         
   
   
@@ -953,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/stac/" class="md-nav__link">
+      <a href="../../mappings/stac/" class="md-nav__link">
         
   
   
@@ -985,18 +907,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
         
           
           <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
@@ -1017,7 +941,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1032,10 +956,35 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="outputs/elasticsearch/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1051,6 +1000,68 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.outputs.elasticsearch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        elasticsearch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchConf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ElasticsearchConf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchIndex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ElasticsearchIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchOutput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ElasticsearchOutput
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1063,7 +1074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/intake_esm/" class="md-nav__link">
+      <a href="../intake_esm/" class="md-nav__link">
         
   
   
@@ -1091,7 +1102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/json_file/" class="md-nav__link">
+      <a href="../json_file/" class="md-nav__link">
         
   
   
@@ -1119,7 +1130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/rabbit_mq/" class="md-nav__link">
+      <a href="../rabbit_mq/" class="md-nav__link">
         
   
   
@@ -1147,7 +1158,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/stac_fastapi/" class="md-nav__link">
+      <a href="../stac_fastapi/" class="md-nav__link">
         
   
   
@@ -1175,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/standard_out/" class="md-nav__link">
+      <a href="../standard_out/" class="md-nav__link">
         
   
   
@@ -1203,7 +1214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/text_file/" class="md-nav__link">
+      <a href="../text_file/" class="md-nav__link">
         
   
   
@@ -1248,8 +1259,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1258,10 +1267,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-the-generator-works" class="md-nav__link">
+  <a href="#stac_generator.plugins.outputs.elasticsearch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How the Generator works?
+        elasticsearch
       
     </span>
   </a>
@@ -1269,10 +1278,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-configure-the-generator" class="md-nav__link">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchConf" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to configure the Generator?
+        ElasticsearchConf
       
     </span>
   </a>
@@ -1280,10 +1289,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-is-stac" class="md-nav__link">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchIndex" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What is STAC?
+        ElasticsearchIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.outputs.elasticsearch.ElasticsearchOutput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ElasticsearchOutput
       
     </span>
   </a>
@@ -1306,30 +1326,335 @@
                   
 
 
-  
-  
+
+  <h1>Elasticsearch</h1>
+
+<div class="doc doc-object doc-module">
 
 
-<h1 id="stac-generator">STAC Generator</h1>
-<p>The STAC Generator provides a framework that leverages a modular, plugin architecture
-to allow users to configure a workflow to generate, extract, and manipulate metadata to
-fit their requirement's needs.</p>
-<p>The framework was constructed to extract metadata for STAC catalogs but could be used to extract
-metadata for any number of systems.</p>
-<h2 id="how-the-generator-works">How the Generator works?</h2>
-<p><a href="inputs/">Input plugins</a> can be configured to produce a series of "events".
-For each event the relevant <a href="recipes/">recipe</a> is found and it's <a href="recipes/#extraction-methods">extraction methods</a>
-are ran to produce a metadata record. This record can then be mapped to a desired format, 
-such as STAC, using <a href="mappings/">mapping plugins</a> and then output to one or more <a href="outputs/">output plugins</a>.</p>
-<h2 id="how-to-configure-the-generator">How to configure the Generator?</h2>
-<p>Generator configutation is spread across two levels. The main configuration defines which Inputs are to be run, if the data needs to be mapped, where the 
-generated data should be output to, and the location of the other configuration. The second level of configuration, known as recipes, define which extraction methods
-should be run for each event. Having this second level allows different extraction methods to be run on different events to produce more specific metadata.</p>
-<h2 id="what-is-stac">What is STAC?</h2>
-<p>The SpatioTemporal Asset Catalog (<a href="https://stacspec.org/">STAC</a>) specification provides a common language to
-describe a range of geospatial information, so it can more easily be indexed and discovered.
-A "spatiotemporal asset" is any file that represents information about the earth captured
-in a certain space and time.</p>
+
+<a id="stac_generator.plugins.outputs.elasticsearch"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="stac_generator.plugins.outputs.elasticsearch.ElasticsearchConf" class="doc doc-heading">
+            <code>ElasticsearchConf</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+        <p>Elasticsearch config model.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>stac_generator/plugins/outputs/elasticsearch.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchConf</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Elasticsearch config model.&quot;&quot;&quot;</span>
+
+    <span class="n">index</span><span class="p">:</span> <span class="n">ElasticsearchIndex</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Elasticsearch index to post to.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Elasticsearch connection kwargs.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">request_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Request timeout for search.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="stac_generator.plugins.outputs.elasticsearch.ElasticsearchIndex" class="doc doc-heading">
+            <code>ElasticsearchIndex</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+        <p>Elasticsearch index model.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>stac_generator/plugins/outputs/elasticsearch.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchIndex</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Elasticsearch index model.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Name of index.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Index initial mapping.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="stac_generator.plugins.outputs.elasticsearch.ElasticsearchOutput" class="doc doc-heading">
+            <code>ElasticsearchOutput</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="stac_generator.core.output.Output">Output</span></code></p>
+
+
+
+        <p>Output generated meta data to elasticsearch.</p>
+<p><strong>Plugin name:</strong> <code>elasticsearch</code></p>
+
+
+<details class="example-configuration" open>
+  <summary>Example Configuration</summary>
+  <p>.. code-block:: yaml</p>
+<pre><code>- name: elasticsearch
+    conf:
+      client_kwargs:
+        hosts: ['host1','host2']
+      index:
+        name: 'assets-2021-06-02'
+</code></pre>
+</details>
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>stac_generator/plugins/outputs/elasticsearch.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ElasticsearchOutput</span><span class="p">(</span><span class="n">Output</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Output generated meta data to elasticsearch.</span>
+
+<span class="sd">    **Plugin name:** ``elasticsearch``</span>
+
+<span class="sd">    Example Configuration:</span>
+<span class="sd">        .. code-block:: yaml</span>
+
+<span class="sd">            - name: elasticsearch</span>
+<span class="sd">                conf:</span>
+<span class="sd">                  client_kwargs:</span>
+<span class="sd">                    hosts: [&#39;host1&#39;,&#39;host2&#39;]</span>
+<span class="sd">                  index:</span>
+<span class="sd">                    name: &#39;assets-2021-06-02&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config_class</span> <span class="o">=</span> <span class="n">ElasticsearchConf</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">es</span> <span class="o">=</span> <span class="n">Elasticsearch</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">client_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Create the index, if it doesn&#39;t already exist</span>
+        <span class="k">if</span> <span class="n">mapping</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">mapping</span> <span class="o">=</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;doc_as_upsert&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="n">request_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">request_timeout</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -1379,10 +1704,10 @@ in a certain space and time.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

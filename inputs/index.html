@@ -9,23 +9,25 @@
       
       
       
+        <link rel="prev" href="../generator_config/">
       
-        <link rel="next" href="generator_config/">
+      
+        <link rel="next" href="../mappings/">
       
       
         
       
       
-      <link rel="icon" href="images/favicon.ico">
+      <link rel="icon" href="../images/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>STAC Generator Docs</title>
+        <title>Inputs - STAC Generator Docs</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -44,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#stac-generator" class="md-skip">
+        <a href="#stac_generator.plugins.inputs" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +82,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="STAC Generator Docs" class="md-header__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
+    <a href=".." title="STAC Generator Docs" class="md-header__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              STAC Generator
+              Inputs
             
           </span>
         </div>
@@ -190,7 +192,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="STAC Generator Docs" class="md-nav__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
+    <a href=".." title="STAC Generator Docs" class="md-nav__button md-logo" aria-label="STAC Generator Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -217,37 +219,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    STAC Generator
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -263,59 +238,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-the-generator-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How the Generator works?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-configure-the-generator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to configure the Generator?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-stac" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is STAC?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -327,7 +249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="generator_config/" class="md-nav__link">
+      <a href="../generator_config/" class="md-nav__link">
         
   
   
@@ -351,10 +273,35 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="inputs/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inputs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -370,6 +317,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stac_generator.plugins.inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        inputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -381,7 +357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/" class="md-nav__link">
+      <a href="../mappings/" class="md-nav__link">
         
   
   
@@ -408,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/" class="md-nav__link">
+      <a href="../outputs/" class="md-nav__link">
         
   
   
@@ -435,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="recipes/" class="md-nav__link">
+      <a href="../recipes/" class="md-nav__link">
         
   
   
@@ -509,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/elasticsearch/" class="md-nav__link">
+      <a href="../bulk_outputs/elasticsearch/" class="md-nav__link">
         
   
   
@@ -537,7 +513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/rabbit_mq/" class="md-nav__link">
+      <a href="../bulk_outputs/rabbit_mq/" class="md-nav__link">
         
   
   
@@ -565,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bulk_outputs/standard_out/" class="md-nav__link">
+      <a href="../bulk_outputs/standard_out/" class="md-nav__link">
         
   
   
@@ -647,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/elasticsearch_aggregation/" class="md-nav__link">
+      <a href="elasticsearch_aggregation/" class="md-nav__link">
         
   
   
@@ -675,7 +651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/file_system/" class="md-nav__link">
+      <a href="file_system/" class="md-nav__link">
         
   
   
@@ -703,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/intake_esm/" class="md-nav__link">
+      <a href="intake_esm/" class="md-nav__link">
         
   
   
@@ -731,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/object_store/" class="md-nav__link">
+      <a href="object_store/" class="md-nav__link">
         
   
   
@@ -759,7 +735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/rabbit_mq/" class="md-nav__link">
+      <a href="rabbit_mq/" class="md-nav__link">
         
   
   
@@ -787,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/solr/" class="md-nav__link">
+      <a href="solr/" class="md-nav__link">
         
   
   
@@ -815,7 +791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/text_file/" class="md-nav__link">
+      <a href="text_file/" class="md-nav__link">
         
   
   
@@ -843,7 +819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="inputs/thredds/" class="md-nav__link">
+      <a href="thredds/" class="md-nav__link">
         
   
   
@@ -925,7 +901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/jinja2/" class="md-nav__link">
+      <a href="../mappings/jinja2/" class="md-nav__link">
         
   
   
@@ -953,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mappings/stac/" class="md-nav__link">
+      <a href="../mappings/stac/" class="md-nav__link">
         
   
   
@@ -1035,7 +1011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/elasticsearch/" class="md-nav__link">
+      <a href="../outputs/elasticsearch/" class="md-nav__link">
         
   
   
@@ -1063,7 +1039,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/intake_esm/" class="md-nav__link">
+      <a href="../outputs/intake_esm/" class="md-nav__link">
         
   
   
@@ -1091,7 +1067,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/json_file/" class="md-nav__link">
+      <a href="../outputs/json_file/" class="md-nav__link">
         
   
   
@@ -1119,7 +1095,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/rabbit_mq/" class="md-nav__link">
+      <a href="../outputs/rabbit_mq/" class="md-nav__link">
         
   
   
@@ -1147,7 +1123,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/stac_fastapi/" class="md-nav__link">
+      <a href="../outputs/stac_fastapi/" class="md-nav__link">
         
   
   
@@ -1175,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/standard_out/" class="md-nav__link">
+      <a href="../outputs/standard_out/" class="md-nav__link">
         
   
   
@@ -1203,7 +1179,7 @@
   
   
     <li class="md-nav__item">
-      <a href="outputs/text_file/" class="md-nav__link">
+      <a href="../outputs/text_file/" class="md-nav__link">
         
   
   
@@ -1248,8 +1224,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1258,32 +1232,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-the-generator-works" class="md-nav__link">
+  <a href="#stac_generator.plugins.inputs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How the Generator works?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-configure-the-generator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to configure the Generator?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-stac" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is STAC?
+        inputs
       
     </span>
   </a>
@@ -1310,26 +1262,63 @@
   
 
 
-<h1 id="stac-generator">STAC Generator</h1>
-<p>The STAC Generator provides a framework that leverages a modular, plugin architecture
-to allow users to configure a workflow to generate, extract, and manipulate metadata to
-fit their requirement's needs.</p>
-<p>The framework was constructed to extract metadata for STAC catalogs but could be used to extract
-metadata for any number of systems.</p>
-<h2 id="how-the-generator-works">How the Generator works?</h2>
-<p><a href="inputs/">Input plugins</a> can be configured to produce a series of "events".
-For each event the relevant <a href="recipes/">recipe</a> is found and it's <a href="recipes/#extraction-methods">extraction methods</a>
-are ran to produce a metadata record. This record can then be mapped to a desired format, 
-such as STAC, using <a href="mappings/">mapping plugins</a> and then output to one or more <a href="outputs/">output plugins</a>.</p>
-<h2 id="how-to-configure-the-generator">How to configure the Generator?</h2>
-<p>Generator configutation is spread across two levels. The main configuration defines which Inputs are to be run, if the data needs to be mapped, where the 
-generated data should be output to, and the location of the other configuration. The second level of configuration, known as recipes, define which extraction methods
-should be run for each event. Having this second level allows different extraction methods to be run on different events to produce more specific metadata.</p>
-<h2 id="what-is-stac">What is STAC?</h2>
-<p>The SpatioTemporal Asset Catalog (<a href="https://stacspec.org/">STAC</a>) specification provides a common language to
-describe a range of geospatial information, so it can more easily be indexed and discovered.
-A "spatiotemporal asset" is any file that represents information about the earth captured
-in a certain space and time.</p>
+  <h1>Inputs</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="stac_generator.plugins.inputs"></a>
+    <div class="doc doc-contents first">
+
+        <p>The input plugins generate a stream of dictionaries to be passed to the generator for processing.</p>
+<p>You can configure more than one input plugin, if you wanted
+to input the content from more than one place.</p>
+<p>Inputs are loaded as named entry points with the namespace:
+<code>stac_generator.inputs</code></p>
+<p>.. warning::
+    Blocking input plugins will prevent others from being run. They are run
+    sequentially. For example, with the :ref:<code>file system input plugin &lt;stac_generator/inputs:File System Input&gt;</code>, you
+    could configure several to scan multiple directories but the rabbit plugin
+    creates a listening connection which would block any other inputs.</p>
+
+
+<details class="example-configuration" open>
+  <summary>Example Configuration</summary>
+  <p>.. code-block:: yaml</p>
+<pre><code>inputs:
+  - name: text_file
+    conf:
+      path: ../manifests/cmip6.txt
+</code></pre>
+</details>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -1379,10 +1368,10 @@ in a certain space and time.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
