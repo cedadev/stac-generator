@@ -40,5 +40,5 @@ class TextFileOutput(Output):
         if os.path.isdir(self.conf.filepath):
             self.conf.filepath = os.path.join(self.conf.filepath, "file_out.txt")
 
-        with open(self.conf.filepat, "a", encoding="utf-8") as file:
+        with open(self.conf.filepath, "a", encoding="utf-8") as file:
             file.write(f"{data}\n")
