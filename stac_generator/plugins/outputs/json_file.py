@@ -42,8 +42,10 @@ class JsonFileOutput(Output):
     config_class = JsonFileConf
 
     def export(self, data: dict, **kwargs) -> None:
-        filename = f"{data[self.conf.filename].strip('/').replace('/', '.')}.json"
+
+        filename = self.conf.filename
         filepath = os.path.join(self.conf.dirpath, filename)
 
         with open(filepath, "w+", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
+
