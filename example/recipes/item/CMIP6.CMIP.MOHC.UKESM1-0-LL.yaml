@@ -6,17 +6,6 @@ paths:
 # The type of record that will be generated
 type: item
 
-# This section is optional and can be run seperatly to find the id of a record
-id:
-  - method: regex
-    inputs:
-      regex: '\/(?P<mip_era>\w*)\.(?P<activity_id>\w*)\.(?P<institution_id>[\w-]*)\.(?P<source_id>[\w-]*)\/(?P<experiment_id>[\w-]*)\.(?P<member_id>\w*)\.(?P<table_id>\w*)\.(?P<var_id>\w*)\.(?P<grid_label>\w*)\.(?P<version>\w*)'
-
-  - method: string_template
-    inputs:
-      template: '{mip_era}.{activity_id}.{institution_id}.{source_id}.{table_id}.{var_id}.{version}'
-      output_key: id
-
 # The extaction methods are run in series with the output dictionary is passed from one to the next
 # extaction methods add, update or remove the data from the output dictionary
 extraction_methods:
@@ -60,7 +49,3 @@ extraction_methods:
     inputs:
       keys:
         - uri
-
-# member of defines the other recipes that define a parent of this record
-member_of:
-  - recipes/collection/CMIP6.CMIP.MOHC.UKESM1-0-LL.yaml

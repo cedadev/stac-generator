@@ -8,7 +8,7 @@ recipes_root: recipes/
 inputs:
   - name: text_file
     conf:
-      filepath: input/collections.txt
+      filepath: input/manifest.txt
 
 # The output plugins to be run for the generator
 outputs:

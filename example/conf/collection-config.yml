@@ -1,5 +1,5 @@
 # The type of generator to be run
-generator: item
+generator: collection
 
 # The root directory of the recipes
 recipes_root: recipes/
@@ -8,7 +8,7 @@ recipes_root: recipes/
 inputs:
   - name: text_file
     conf:
-      filepath: input/manifest.txt
+      path: input/sentinel2_ard/content.jsonl
 
 # The output plugins to be run for the generator
 outputs:
@@ -16,5 +16,13 @@ outputs:
 # Output plugins can use mappings to reshape the output
     mappings:
       - name: stac
-        stac_version: '1.0.0'
-        stac_extensions: []
+        conf:
+          stac_version: '1.0.0'
+          stac_extensions: []
+          stac_root_url: 'https://api.stac.ceda.ac.uk'
+  - name: text_file
+    conf:
+      filepath: ./outputs/sentinel2_ard_collection_raw.txt
+
+failed_outputs:
+  - name: standard_out

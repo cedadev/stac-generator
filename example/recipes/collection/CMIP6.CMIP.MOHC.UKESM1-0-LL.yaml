@@ -1,12 +1,10 @@
+# The paths that the recipe will be run on
+paths:
+  - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.CMIP.MOHC.UKESM1-0-LL
+  - https://cmip6-zarr-o.s3-ext.jc.rl.ac.uk/CMIP6.C4MIP.MOHC.UKESM1-0-LL
+
 # The type of record that will be generated
 type: collection
-
-# This section is optional and can be run seperatly to find the id of a record
-id:
-  - method: default
-    inputs:
-      defaults:
-        id: dkrz
 
 # The extaction methods are run in series with the output dictionary is passed from one to the next
 # extaction methods add, update or remove the data from the output dictionary

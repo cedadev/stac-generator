@@ -26,8 +26,5 @@
         "version": "v20191210",
         "instance_id": "CMIP6.CMIP.MOHC.UKESM1-0-LL.Amon.tas.v20191210"
     },
-    "member_of_recipes": {
-        "cmip6": "cce91d867703049b5f46f227d8d71bad"
-    },
     "collection": "cmip6"
 }
