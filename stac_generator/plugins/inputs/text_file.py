@@ -63,7 +63,12 @@ class TextFileInput(Input):
                     if line not in unique_lines:
                         unique_lines.add(line)
 
-                        data = json.loads(line)
+                        # Try parsing line as JSON, else raise Exception
+                        try:
+                            data = json.loads(line)
+                        except Exception as exc:
+                            raise Exception(f"[ERROR] Cannot load line: '{line.strip()}' from file: {file}")
+
                         output = {"uri": data[self.conf.uri_term]}
 
                         for extra_term in self.conf.extra_terms:
@@ -73,4 +78,4 @@ class TextFileInput(Input):
                         total_generated += 1
 
         end = datetime.now()
-        print(f"Processed {total_generated} elasticsearch records in {end-start}")
+        print(f"Processed {total_generated} records in {end-start}")
