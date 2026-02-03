@@ -47,8 +47,8 @@ class JsonFileOutput(Output):
 
     def export(self, data: dict, **kwargs) -> None:
 
-        filename = self.conf.file_field
-        if self.conf.file_field[0] == "$":
+        filename = self.conf.filename
+        if self.conf.filename[0] == "$":
             filename = data.pop(filename[1:]) if self.conf.pop else data[filename[1:]]
 
         filepath = os.path.join(self.conf.dirpath, filename)

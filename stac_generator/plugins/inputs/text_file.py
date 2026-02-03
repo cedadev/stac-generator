@@ -67,7 +67,9 @@ class TextFileInput(Input):
                         try:
                             data = json.loads(line)
                         except Exception as exc:
-                            raise Exception(f"[ERROR] Cannot load line: '{line.strip()}' from file: {file}")
+                            raise Exception(
+                                f"[ERROR] Cannot load line: '{line.strip()}' from file: {file} exception: {exc.message}"
+                            )
 
                         output = {"uri": data[self.conf.uri_term]}
 

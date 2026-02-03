@@ -59,9 +59,7 @@ elasticsearch = ["elasticsearch"]
 intake-esm = ["intake-esm"]
 rabbitmq = ["pika"]
 thredds = ["siphon"]
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.0.1"
+test = ["pytest>=8.0.1"]
 
 [tool.black]
 line-length = 100

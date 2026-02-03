@@ -11,12 +11,12 @@ metadata for any number of systems.
 
 [Input plugins](inputs.md) can be configured to produce a series of "events".
 For each event the relevant [recipe](recipes.md) is found and it's [extraction methods](recipes.md#extraction-methods)
-are ran to produce a metadata record. This record can then be mapped to a desired format, 
+are ran to produce a metadata record. This record can then be mapped to a desired format,
 such as STAC, using [mapping plugins](mappings.md) and then output to one or more [output plugins](outputs.md).
 
 ## How to configure the Generator?
 
-Generator configutation is spread across two levels. The main configuration defines which Inputs are to be run, if the data needs to be mapped, where the 
+Generator configutation is spread across two levels. The main configuration defines which Inputs are to be run, if the data needs to be mapped, where the
 generated data should be output to, and the location of the other configuration. The second level of configuration, known as recipes, define which extraction methods
 should be run for each event. Having this second level allows different extraction methods to be run on different events to produce more specific metadata.
 
