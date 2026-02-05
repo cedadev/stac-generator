@@ -133,7 +133,7 @@ class CroissantMapping(BaseMapping):
             "id": body.pop("id"),
         }
 
-        output = CROISSANT_FIXED_PROPERTIES | {"@type": "sc:Dataset"} | body
+        output = fixed | CROISSANT_FIXED_PROPERTIES | {"@type": "sc:Dataset"} | body
 
         # If mapper file is imported, then use mappings
         get_parent = self._get_parent_from_nested_dict
@@ -164,7 +164,7 @@ class CroissantMapping(BaseMapping):
             print("Removing fields")
             for key in getattr(scm, "removals", []):
                 key_path = key.split(delimiter)
-                del get_parent(output, key_path)[key_path[-1]]
+                get_parent(output, key_path).pop(key_path[-1], None)
 
         print("Mapped STAC content to Croissant.")
         return output
