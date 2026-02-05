@@ -6,6 +6,7 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import json
 import os
+import re
 
 from pydantic import BaseModel, Field
 
@@ -47,9 +48,14 @@ class JsonFileOutput(Output):
 
     def export(self, data: dict, **kwargs) -> None:
 
-        filename = self.conf.filename
-        if self.conf.filename[0] == "$":
-            filename = data.pop(filename[1:]) if self.conf.pop else data[filename[1:]]
+        terms = re.findall("{(.*?)}", self.conf.filename)
+
+        if self.conf.pop:
+            format_terms = {term: data.pop(term, "") for term in terms}
+        else:
+            format_terms = {term: data.get(term, "") for term in terms}
+
+        filename = self.conf.filename.format(**format_terms)
 
         filepath = os.path.join(self.conf.dirpath, filename)
 
