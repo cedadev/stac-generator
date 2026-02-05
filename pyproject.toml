@@ -99,6 +99,7 @@ text_file = "stac_generator.plugins.outputs.text_file:TextFileOutput"
 ceda = "stac_generator.plugins.mappings.ceda:CEDAMapping"
 jinja = "stac_generator.plugins.mappings.jinja2:Jinja2Mapping"
 stac = "stac_generator.plugins.mappings.stac:STACMapping"
+croissant ="stac_generator.plugins.mappings.croissant:CroissantMapping"
 
 [project.entry-points."stac_generator.generator"]
 generator = "stac_generator.core.generator:Generator"
