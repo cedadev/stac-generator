@@ -72,6 +72,12 @@ class STACMapping(BaseMapping):
             },
         }
 
+        if "title" in body:
+            output["title"] = body.pop("title")
+
+        if "description" in body:
+            output["description"] = body.pop("description")
+
         if "datetime" in body:
             output["properties"]["datetime"] = self.datetime_field(body.pop("datetime"))
 
