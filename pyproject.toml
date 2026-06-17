@@ -5,7 +5,7 @@ description = "Framework providing a plugin architecture for metadata extraction
 authors = [
     {"name" = "Rhys Evans", "email" = "rhys.r.evans@stfc.ac.uk"}
 ]
-requires-python = ">=3.10, <4"
+requires-python = ">=3.12, <4"
 license = "BSD - See stac_generator/LICENSE file for details"
 readme = "README.md"
 keywords = ['stac', 'metadata', 'plugin', 'framework']
@@ -63,7 +63,7 @@ test = ["pytest>=8.0.1"]
 
 [tool.black]
 line-length = 100
-target-version = ['py310', 'py311', 'py312']
+target-version = ['py312', 'py313', 'py314']
 
 [tool.isort]
 profile = "black"

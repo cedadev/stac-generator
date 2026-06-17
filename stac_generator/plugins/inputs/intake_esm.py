@@ -93,4 +93,4 @@ class IntakeESMInput(Input):
             count += 1
 
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.conf.url} in {end-start}")
+        print(f"Processed {total_files} files from {self.conf.url} in {end - start}")

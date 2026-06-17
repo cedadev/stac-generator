@@ -80,4 +80,4 @@ class TextFileInput(Input):
                         total_generated += 1
 
         end = datetime.now()
-        print(f"Processed {total_generated} records in {end-start}")
+        print(f"Processed {total_generated} records in {end - start}")

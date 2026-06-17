@@ -58,4 +58,4 @@ class FileSystemInput(Input):
                 total_files += 1
 
         end = datetime.now()
-        print(f"Processed {total_files} files from {self.conf.path} in {end-start}")
+        print(f"Processed {total_files} files from {self.conf.path} in {end - start}")

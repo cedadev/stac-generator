@@ -145,4 +145,4 @@ class ElasticsearchAggregationInput(Input):
             body["aggs"]["bucket"]["composite"]["after"] = aggregation["after_key"]
 
         end = datetime.now()
-        print(f"Processed {total_generated} elasticsearch records in {end-start}")
+        print(f"Processed {total_generated} elasticsearch records in {end - start}")

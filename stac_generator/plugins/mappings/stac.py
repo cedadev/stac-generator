@@ -69,21 +69,22 @@ class STACMapping(BaseMapping):
             "properties": {
                 "datetime": None,
             },
-            "links": body.pop("links", []) + [
+            "links": body.pop("links", [])
+            + [
                 {
                     "rel": "self",
                     "type": "application/geo+json",
-                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}/items/{output['id']}",
+                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}/items/{body['id']}",
                 },
                 {
                     "rel": "parent",
                     "type": "application/json",
-                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
+                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
                 },
                 {
                     "rel": "collection",
                     "type": "application/json",
-                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
+                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
                 },
                 {
                     "rel": "root",
@@ -152,14 +153,18 @@ class STACMapping(BaseMapping):
         if providers := body.pop("providers", []):
             output["providers"] = providers
 
-        if extent := body.pop("extent", {"temporal": {
+        if extent := body.pop(
+            "extent",
+            {
+                "temporal": {
                     "interval": None,
                 },
                 "spatial": {
                     "bbox": None,
-                },}):
+                },
+            },
+        ):
             output["extent"] = extent
-
 
         if bbox := body.pop("bbox", None):
             output["extent"]["spatial"]["bbox"] = bbox

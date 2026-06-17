@@ -5,8 +5,8 @@ __copyright__ = "Copyright 2026 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 __contact__ = "richard.d.smith@stfc.ac.uk"
 
-import logging
 import copy
+import logging
 import os
 import sys
 
@@ -23,6 +23,7 @@ sys.path.insert(0, ".")
 STAC_CROISSANT_MAP_FILE = "stac_croissant_map.py"
 if os.path.isfile(STAC_CROISSANT_MAP_FILE):
     import stac_croissant_map as scm
+
     print(f"Loaded: {STAC_CROISSANT_MAP_FILE}")
 else:
     scm = None
@@ -39,16 +40,10 @@ CROISSANT_FIXED_PROPERTIES = {
         "column": "cr:column",
         "conformsTo": "dct:conformsTo",
         "cr": "http://mlcommons.org/croissant/",
-        "data": {
-            "@id": "cr:data",
-            "@type": "@json"
-        },
+        "data": {"@id": "cr:data", "@type": "@json"},
         "dataBiases": "cr:dataBiases",
         "dataCollection": "cr:dataCollection",
-        "dataType": {
-            "@id": "cr:dataType",
-            "@type": "@vocab"
-        },
+        "dataType": {"@id": "cr:dataType", "@type": "@vocab"},
         "dct": "http://purl.org/dc/terms/",
         "extract": "cr:extract",
         "field": "cr:field",
@@ -75,9 +70,10 @@ CROISSANT_FIXED_PROPERTIES = {
         "source": "cr:source",
         "subField": "cr:subField",
         "transform": "cr:transform",
-        "containedIn": "cr:containedIn"
+        "containedIn": "cr:containedIn",
     }
 }
+
 
 class CroissantConf(BaseModel):
     """Croissant mapping config model."""
@@ -87,8 +83,7 @@ class CroissantConf(BaseModel):
         description="Croissant version.",
     )
     conformsTo: str = Field(
-        default="http://mlcommons.org/croissant/1.0",
-        description="Croissant conformance link"
+        default="http://mlcommons.org/croissant/1.0", description="Croissant conformance link"
     )
 
 
@@ -125,7 +120,6 @@ class CroissantMapping(BaseMapping):
             current_dct = current_dct[key]
 
         return current_dct
-
 
     def croissant_record(self, body: dict) -> dict:
         fixed = {
