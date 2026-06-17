@@ -8,17 +8,17 @@ theme:
     - content.code.copy
 
 plugins:
-- search
-- gen-files:
-    scripts:
+  - search
+  - gen-files:
+      scripts:
         - docs/scripts/gen_plugins.py
-- mkdocstrings:
-    default_handler: python
-    handlers:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
         python:
-            options:
-                import:
-                    - https://docs.python.org/3/objects.inv
-                    - https://docs.pydantic.dev/latest/objects.inv
-                extensions:
-                  - griffe_fieldz
+          options:
+            extensions:
+              - griffe_fieldz
+            inventories:
+              - url: https://docs.python.org/3/objects.inv
+              - url: https://docs.pydantic.dev/latest/objects.inv
