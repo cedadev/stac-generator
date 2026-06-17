@@ -4109,4 +4109,4 @@ thredds = ["siphon"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12, <4"
-content-hash = "e14cfebcce30eb313accf8aa34ea88bb68546d1416e305967be30bf66f377a10"
+content-hash = "cab7fe2243bc7cb17595fc5f8f235ed7410c11c86299332d018ec4c08d8f8037"

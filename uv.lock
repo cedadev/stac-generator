@@ -3360,7 +3360,7 @@ requires-dist = [
     { name = "jmespath", specifier = ">=0.10.0" },
     { name = "mkdocs-gen-files", marker = "extra == 'docs'", specifier = ">=0.6.0" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.7.1" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.18" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.25" },
     { name = "packaging", specifier = ">=25.0" },
     { name = "pika", specifier = ">=1.2.0" },
     { name = "pika", marker = "extra == 'rabbitmq'" },
