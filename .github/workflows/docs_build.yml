@@ -14,5 +14,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install \
-          mkdocs-material 'mkdocstrings[python]' griffe-fieldz mkdocs-gen-files
+          mkdocs-material 'mkdocstrings[python]>=0.25' griffe-fieldz>=0.40 mkdocs-gen-files
       - run: mkdocs gh-deploy
