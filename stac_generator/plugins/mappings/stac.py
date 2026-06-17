@@ -64,13 +64,45 @@ class STACMapping(BaseMapping):
             "stac_version": self.conf.stac_version,
             "stac_extensions": body.pop("stac_extensions", []) + self.conf.stac_extensions,
             "id": body.pop("id"),
-            "collection": body.pop("collection"),
             "geometry": body.pop("geometry", None),
-            "assets": body.pop("assets", {}),
+            "bbox": body.pop("bbox"),
             "properties": {
                 "datetime": None,
             },
+            "links": body.pop("links", []) + [
+                {
+                    "rel": "self",
+                    "type": "application/geo+json",
+                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}/items/{output['id']}",
+                },
+                {
+                    "rel": "parent",
+                    "type": "application/json",
+                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
+                },
+                {
+                    "rel": "collection",
+                    "type": "application/json",
+                    "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
+                },
+                {
+                    "rel": "root",
+                    "type": "application/json",
+                    "href": self.conf.stac_root_url,
+                },
+            ],
+            "assets": body.pop("assets", {}),
+            "collection": body.pop("collection"),
         }
+
+        if title := body.pop("title", None):
+            output["properties"]["title"] = title
+
+        if description := body.pop("description", None):
+            output["properties"]["description"] = description
+
+        if version := body.pop("version", None):
+            output["properties"]["version"] = version
 
         if "datetime" in body:
             output["properties"]["datetime"] = self.datetime_field(body.pop("datetime"))
@@ -81,31 +113,17 @@ class STACMapping(BaseMapping):
         if "end_datetime" in body:
             output["properties"]["end_datetime"] = self.datetime_field(body.pop("end_datetime"))
 
-        if "bbox" in body:
-            output["bbox"] = body.pop("bbox")
+        if project := body.pop("project", None):
+            output["properties"]["project"] = project
 
-        output["links"] = body.pop("links", []) + [
-            {
-                "rel": "self",
-                "type": "application/geo+json",
-                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}/items/{output['id']}",
-            },
-            {
-                "rel": "parent",
-                "type": "application/json",
-                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
-            },
-            {
-                "rel": "collection",
-                "type": "application/json",
-                "href": f"{self.conf.stac_root_url}/collections/{output['collection']}",
-            },
-            {
-                "rel": "root",
-                "type": "application/json",
-                "href": self.conf.stac_root_url,
-            },
-        ]
+        if license := body.pop("license", None):
+            output["properties"]["license"] = license
+
+        if sci_doi := body.pop("sci:doi", None):
+            output["properties"]["sci:doi"] = sci_doi
+
+        if sci_citation := body.pop("sci:citation", None):
+            output["properties"]["sci:citation"] = sci_citation
 
         output["properties"] |= body
 
@@ -117,41 +135,39 @@ class STACMapping(BaseMapping):
             "stac_version": self.conf.stac_version,
             "stac_extensions": self.conf.stac_extensions,
             "id": body.pop("id"),
-            "extent": {
-                "temporal": {
+        }
+
+        if title := body.pop("title", None):
+            output["title"] = title
+
+        if description := body.pop("description", None):
+            output["description"] = description
+
+        if keywords := body.pop("keywords", []):
+            output["keywords"] = keywords
+
+        if license := body.pop("license", None):
+            output["properties"]["license"] = license
+
+        if providers := body.pop("providers", []):
+            output["providers"] = providers
+
+        if extent := body.pop("extent", {"temporal": {
                     "interval": None,
                 },
                 "spatial": {
                     "bbox": None,
-                },
-            },
-            "summaries": {},
-            "assets": {},
-            "providers": [],
-            "license": "",
-        }
+                },}):
+            output["extent"] = extent
 
-        if "description" in body:
-            output["description"] = body.pop("description")
 
-        if "interval" in body:
-            output["extent"]["temporal"]["interval"] = body.pop("interval")
+        if bbox := body.pop("bbox", None):
+            output["extent"]["spatial"]["bbox"] = bbox
 
-        if "bbox" in body:
-            output["extent"]["spatial"]["bbox"] = body.pop("bbox")
+        if interval := body.pop("interval", None):
+            output["extent"]["temporal"]["interval"] = interval
 
-        if "license" in body:
-            output["license"] = body.pop("license")
-
-        if "providers" in body:
-            output["providers"] = body.pop("providers")
-
-        if "member_of_recipes" in body:
-            output["member_of_recipes"] = body.pop("member_of_recipes")
-
-        output["summaries"] |= body
-
-        output["links"] = [
+        output["links"] = body.pop("links", []) + [
             {
                 "rel": "self",
                 "type": "application/geo+json",
@@ -178,6 +194,14 @@ class STACMapping(BaseMapping):
                 "href": self.conf.stac_root_url,
             },
         ]
+
+        if assets := body.pop("assets", {}):
+            output["assets"] = assets
+
+        if item_assets := body.pop("item_assets", {}):
+            output["item_assets"] = item_assets
+
+        output["summaries"] |= body
 
         return output
 
