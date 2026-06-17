@@ -6,6 +6,7 @@ __contact__ = "kazi.mahir@stfc.ac.uk"
 
 import json
 import os
+import re
 
 from pydantic import BaseModel, Field
 
@@ -18,6 +19,10 @@ class JsonFileConf(BaseModel):
     filename: str = Field(
         default="$id",
         description="Term to use for the JSON file name.",
+    )
+    pop: bool = Field(
+        default=False,
+        description="If the field used for the id should be removed from the data.",
     )
     dirpath: str = Field(
         description="Root directory for JSON files.",
@@ -42,7 +47,16 @@ class JsonFileOutput(Output):
     config_class = JsonFileConf
 
     def export(self, data: dict, **kwargs) -> None:
-        filename = f"{data[self.conf.filename].strip('/').replace('/', '.')}.json"
+
+        terms = re.findall("{(.*?)}", self.conf.filename)
+
+        if self.conf.pop:
+            format_terms = {term: data.pop(term, "") for term in terms}
+        else:
+            format_terms = {term: data.get(term, "") for term in terms}
+
+        filename = self.conf.filename.format(**format_terms)
+
         filepath = os.path.join(self.conf.dirpath, filename)
 
         with open(filepath, "w+", encoding="utf-8") as file:
