@@ -3282,7 +3282,7 @@ wheels = [
 
 [[package]]
 name = "stac-generator"
-version = "2.0.1"
+version = "2.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "bokeh" },
