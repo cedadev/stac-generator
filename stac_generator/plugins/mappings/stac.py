@@ -59,6 +59,28 @@ class STACMapping(BaseMapping):
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def item(self, body: dict) -> dict:
+        default_links = [
+            {
+                "rel": "self",
+                "type": "application/geo+json",
+                "href": f"{self.conf.stac_root_url}/collections/{body['collection']}/items/{body['id']}",
+            },
+            {
+                "rel": "parent",
+                "type": "application/json",
+                "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
+            },
+            {
+                "rel": "collection",
+                "type": "application/json",
+                "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
+            },
+            {
+                "rel": "root",
+                "type": "application/json",
+                "href": self.conf.stac_root_url,
+            },
+        ]
         output = {
             "type": "Feature",
             "stac_version": self.conf.stac_version,
@@ -69,29 +91,7 @@ class STACMapping(BaseMapping):
             "properties": {
                 "datetime": None,
             },
-            "links": body.pop("links", [])
-            + [
-                {
-                    "rel": "self",
-                    "type": "application/geo+json",
-                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}/items/{body['id']}",
-                },
-                {
-                    "rel": "parent",
-                    "type": "application/json",
-                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
-                },
-                {
-                    "rel": "collection",
-                    "type": "application/json",
-                    "href": f"{self.conf.stac_root_url}/collections/{body['collection']}",
-                },
-                {
-                    "rel": "root",
-                    "type": "application/json",
-                    "href": self.conf.stac_root_url,
-                },
-            ],
+            "links": body.pop("links", []) + default_links,
             "assets": body.pop("assets", {}),
             "collection": body.pop("collection"),
         }
